@@ -1,31 +1,40 @@
+import { INVALID_MOVE } from 'boardgame.io/core';
+
 export const ForbiddenDesert = {
-    setup: () => ({
-        currPlayerActions: 4,
+    setup: (ctx) => ({
+        players: setupPlayers(ctx.numPlayers),
         tiles: Array(25).fill(tile),
     }),
 
     moves: {
         move: (G, ctx, id) => {
-            G.tiles[id].players.push(ctx.currentPlayer);
+            if (id >= 0 && id <= 24 && 
+                (id === G.players[ctx.currentPlayer].position - 1 || id === G.players[ctx.currentPlayer].position + 1 || 
+                id === G.players[ctx.currentPlayer].position - 5 || id === G.players[ctx.currentPlayer].position + 5)) {
+                G.players[ctx.currentPlayer].position = id;
+            }
+            else {
+                return INVALID_MOVE;
+            }
         },
     },
 
     turn: {
-        onEnd: (G, ctx) => {
-            G.currPlayerActions = 4;
-        },
-        onMove: (G, ctx) => {
-            G.currPlayerActions--;
-        },
-        endIf: (G, ctx) => G.currPlayerActions == 0,
+        moveLimit: 4,
     },
 }; 
 
-var tile = {
-    revealed: false,
-    players: [],
+var setupPlayers = (numPlayers) => {
+    var players = [];
+    for (var i = 0; i < numPlayers; i++) {
+        players.push({
+            //REPLACE WITH HELICOPTER CRASH TILE POSITION
+            position: 3,
+        });
+    }
+    return players;
 }
 
-var isAdjacentTile = (id) => {
-
+var tile = {
+    isRevealed: false,
 }
