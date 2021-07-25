@@ -1,25 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import { Client } from 'boardgame.io/react';
+import { ForbiddenDesert } from './Game';
+import { SocketIO } from 'boardgame.io/multiplayer';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const ForbiddenDesertClient = Client({
+  game: ForbiddenDesert,
+  multiplayer: SocketIO({ server: 'localhost:8000' }),
+});
+
+const App = () => (
+  <div>
+    <ForbiddenDesertClient playerID="0" />
+    <ForbiddenDesertClient playerID="1" />
+  </div>
+);
+
 
 export default App;
