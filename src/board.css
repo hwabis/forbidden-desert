@@ -25,7 +25,13 @@ td {
     text-align: center;
 }
 
-.sand-text {
+.sand-black {
     position: absolute;
     bottom: 0;
+}
+
+.sand-red {
+    position: absolute;
+    bottom: 0;
+    color: red
 }

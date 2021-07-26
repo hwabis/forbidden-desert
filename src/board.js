@@ -26,9 +26,19 @@ export class ForbiddenDesertBoard extends React.Component {
                         players.push(k);
                     }
                 }
+
                 if (this.props.G.tiles[id].isStorm){
                     cells.push(
                         <td key={id} id="storm">
+                        </td>
+                    );
+                }
+                else if (this.props.G.tiles[id].sandCount > 0) {
+                    cells.push(
+                        <td key={id} onClick={() => this.onClick(id)}>
+                            <div className="player-marker">{players}</div>
+                            <div className={this.props.G.tiles[id].sandCount > 1 ? "sand-red" : "sand-black"}>
+                                Sand: {this.props.G.tiles[id].sandCount}</div>
                         </td>
                     );
                 }
@@ -36,7 +46,6 @@ export class ForbiddenDesertBoard extends React.Component {
                     cells.push(
                         <td key={id} onClick={() => this.onClick(id)}>
                             <div className="player-marker">{players}</div>
-                            <div className="sand-text">Sand: {this.props.G.tiles[id].sandCount}</div>
                         </td>
                     );
                 }
