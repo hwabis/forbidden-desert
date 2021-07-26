@@ -7,11 +7,9 @@ export const ForbiddenDesert = {
     }),
 
     moves: {
-        move: (G, ctx, id) => {
-            if (id >= 0 && id <= 24 && 
-                (id === G.players[ctx.currentPlayer].position - 1 || id === G.players[ctx.currentPlayer].position + 1 || 
-                id === G.players[ctx.currentPlayer].position - 5 || id === G.players[ctx.currentPlayer].position + 5)) {
-                G.players[ctx.currentPlayer].position = id;
+        move: (G, ctx, pos) => {
+            if (tileIsAdjacent(pos, G.players[ctx.currentPlayer].position)) {
+                G.players[ctx.currentPlayer].position = pos;
             }
             else {
                 return INVALID_MOVE;
@@ -38,3 +36,7 @@ var setupPlayers = (numPlayers) => {
 var tile = {
     isRevealed: false,
 }
+
+var tileIsAdjacent = (newPos, oldPos) => (newPos >= 0 && newPos <= 24 && 
+    (newPos === oldPos - 1 || newPos === oldPos + 1 || 
+        newPos === oldPos - 5 || newPos === oldPos + 5));
