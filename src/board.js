@@ -12,7 +12,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.props.moves.dig(id);
                 this.state.digging = false;
             }
-            else if (!this.isSameTile(id)) {
+            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2) {
                 this.props.moves.move(id);
             }
         }
