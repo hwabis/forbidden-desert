@@ -2,18 +2,31 @@ import React from 'react';
 import './board.css';
 
 export class ForbiddenDesertBoard extends React.Component {
+    state = {
+        digging: false
+    }
+
     onClick(id) {
-        if (this.validMove(id)){
-            this.props.moves.move(id);
+        if (this.isAdjacentTile(id) || this.isSameTile(id)) {
+            if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
+                this.props.moves.dig(id);
+                this.state.digging = false;
+            }
+            else if (!this.isSameTile(id)) {
+                this.props.moves.move(id);
+            }
         }
     }
-    validMove(id) {
+    isAdjacentTile(id) {
         const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
-        const tileIsAdjacent = id >= 0 && id <= 24 && 
-            (id === currentPlayerPos - 1 || id === currentPlayerPos + 1 || 
-                id === currentPlayerPos - 5 || id === currentPlayerPos + 5);
-        return tileIsAdjacent && !this.props.G.tiles[id].isStorm;
+        return (id >= 0 && id <= 24 &&
+            (id === currentPlayerPos - 1 || id === currentPlayerPos + 1 ||
+                id === currentPlayerPos - 5 || id === currentPlayerPos + 5));
     }
+    isSameTile(id) {
+        return (id === this.props.G.players[this.props.ctx.currentPlayer].position);
+    }
+
     render() {
         var tbody = [];
         for (var i = 0; i < 5; i++) {
@@ -27,7 +40,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     }
                 }
 
-                if (this.props.G.tiles[id].isStorm){
+                if (this.props.G.tiles[id].isStorm) {
                     cells.push(
                         <td key={id} id="storm">
                         </td>
@@ -56,17 +69,27 @@ export class ForbiddenDesertBoard extends React.Component {
         return (
             <div>
                 <div className="center">
-                    You are player: {this.props.playerID}
-                </div>
-                <div className="center">
-                    Current player: {this.props.ctx.currentPlayer}
-                </div>
-                <div className="center">
-                    Moves left in turn: {4 - this.props.ctx.numMoves}
+                    <div>
+                        You are player: {this.props.playerID}
+                    </div>
+                    <div>
+                        Current player: {this.props.ctx.currentPlayer}
+                    </div>
+                    <div>
+                        Moves left in turn: {4 - this.props.ctx.numMoves}
+                    </div>
                 </div>
                 <table id="board" className="center">
                     <tbody>{tbody}</tbody>
                 </table>
+                <div className="center">
+                    <button onClick={() => { this.setState({digging: !this.state.digging}); }}>
+                        Dig
+                    </button>
+                    <div>
+                        {this.state.digging ? "Choose a tile to dig." : ""}
+                    </div>
+                </div>
             </div>
         );
     }
