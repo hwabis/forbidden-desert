@@ -1,0 +1,11 @@
+td {
+    border: 1px solid #555;
+    border-radius: 5px;
+    width: 150px;
+    height: 150px;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}

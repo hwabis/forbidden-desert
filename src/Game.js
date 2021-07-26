@@ -26,7 +26,7 @@ var setupPlayers = (numPlayers) => {
     var players = [];
     for (var i = 0; i < numPlayers; i++) {
         players.push({
-            //REPLACE WITH HELICOPTER CRASH TILE POSITION
+            //TODO: REPLACE WITH HELICOPTER CRASH TILE POSITION
             position: 3,
         });
     }
