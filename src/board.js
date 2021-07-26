@@ -3,13 +3,18 @@ import './board.css';
 
 export class ForbiddenDesertBoard extends React.Component {
     onClick(id) {
-        this.props.moves.move(id);
+        if (this.validMove(id)){
+            this.props.moves.move(id);
+        }
+    }
+    validMove(id) {
+        const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
+        const tileIsAdjacent = id >= 0 && id <= 24 && 
+            (id === currentPlayerPos - 1 || id === currentPlayerPos + 1 || 
+                id === currentPlayerPos - 5 || id === currentPlayerPos + 5);
+        return tileIsAdjacent && !this.props.G.tiles[id].isStorm;
     }
     render() {
-        var playersPos = [];
-        for (var i = 0; i < this.props.G.players.length; i++) {
-            playersPos.push(this.props.G.players[i].position);
-        }
         var tbody = [];
         for (var i = 0; i < 5; i++) {
             var cells = [];
@@ -20,6 +25,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 for (k; k < this.props.G.players.length; k++) {
                     if (this.props.G.players[k].position === id) {
                         playerOnSquare = true;
+                        //TODO: show multiple people on one square instead of just the first
                         break;
                     }
                 }

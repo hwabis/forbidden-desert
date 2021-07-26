@@ -1,19 +1,12 @@
-import { INVALID_MOVE } from 'boardgame.io/core';
-
 export const ForbiddenDesert = {
     setup: (ctx) => ({
         players: setupPlayers(ctx.numPlayers),
-        tiles: Array(25).fill(tile),
+        tiles: setupTiles(),
     }),
 
     moves: {
         move: (G, ctx, pos) => {
-            if (tileIsAdjacent(pos, G.players[ctx.currentPlayer].position)) {
-                G.players[ctx.currentPlayer].position = pos;
-            }
-            else {
-                return INVALID_MOVE;
-            }
+            G.players[ctx.currentPlayer].position = pos;
         },
     },
 
@@ -33,10 +26,15 @@ var setupPlayers = (numPlayers) => {
     return players;
 }
 
-var tile = {
-    isRevealed: false,
+var setupTiles = () => {
+    var tiles = [];
+    for (var i = 0; i < 25; i++) {
+        var tile = {
+            isStorm: false,
+            isRevealed: false,
+        }
+        tiles.push(tile);
+    }
+    tiles[12].isStorm = true;
+    return tiles;
 }
-
-var tileIsAdjacent = (newPos, oldPos) => (newPos >= 0 && newPos <= 24 && 
-    (newPos === oldPos - 1 || newPos === oldPos + 1 || 
-        newPos === oldPos - 5 || newPos === oldPos + 5));
