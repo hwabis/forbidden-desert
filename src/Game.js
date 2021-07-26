@@ -8,6 +8,9 @@ export const ForbiddenDesert = {
         move: (G, ctx, pos) => {
             G.players[ctx.currentPlayer].position = pos;
         },
+        dig: (G, ctx, pos) => {
+            G.tiles[pos].sandCount--;
+        }
     },
 
     turn: {
@@ -32,9 +35,14 @@ var setupTiles = () => {
         var tile = {
             isStorm: false,
             isRevealed: false,
+            sandCount: 0,
         }
         tiles.push(tile);
     }
     tiles[12].isStorm = true;
+    const sandTiles = [2, 6, 8, 10, 14, 16, 18, 22];
+    for (var i = 0; i < sandTiles.length; i++) {
+        tiles[sandTiles[i]].sandCount = 1;
+    }
     return tiles;
 }

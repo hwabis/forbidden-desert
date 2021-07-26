@@ -1,11 +1,31 @@
+table {
+    border-spacing: 10px;
+}
+
 td {
+    position: relative;
     border: 1px solid #555;
     border-radius: 5px;
-    width: 150px;
-    height: 150px;
+    width: 125px;
+    height: 125px;
+}
+
+#storm {
+    border: 0px solid #555;
 }
 
 .center {
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
+}
+
+.player-marker {
+    font-size: x-large;
+    text-align: center;
+}
+
+.sand-text {
+    position: absolute;
+    bottom: 0;
 }

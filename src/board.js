@@ -20,25 +20,23 @@ export class ForbiddenDesertBoard extends React.Component {
             var cells = [];
             for (var j = 0; j < 5; j++) {
                 const id = 5 * i + j;
-                var playerOnSquare = false;
-                var k = 0;
-                for (k; k < this.props.G.players.length; k++) {
+                var players = [];
+                for (var k = 0; k < this.props.G.players.length; k++) {
                     if (this.props.G.players[k].position === id) {
-                        playerOnSquare = true;
-                        //TODO: show multiple people on one square instead of just the first
-                        break;
+                        players.push(k);
                     }
                 }
-                if (playerOnSquare) {
+                if (this.props.G.tiles[id].isStorm){
                     cells.push(
-                        <td key={id} onClick={() => this.onClick(id)}>
-                            {k}
+                        <td key={id} id="storm">
                         </td>
                     );
                 }
                 else {
                     cells.push(
                         <td key={id} onClick={() => this.onClick(id)}>
+                            <div className="player-marker">{players}</div>
+                            <div className="sand-text">Sand: {this.props.G.tiles[id].sandCount}</div>
                         </td>
                     );
                 }
@@ -48,6 +46,15 @@ export class ForbiddenDesertBoard extends React.Component {
 
         return (
             <div>
+                <div className="center">
+                    You are player: {this.props.playerID}
+                </div>
+                <div className="center">
+                    Current player: {this.props.ctx.currentPlayer}
+                </div>
+                <div className="center">
+                    Moves left in turn: {4 - this.props.ctx.numMoves}
+                </div>
                 <table id="board" className="center">
                     <tbody>{tbody}</tbody>
                 </table>
