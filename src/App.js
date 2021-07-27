@@ -2,6 +2,7 @@ import React from "react";
 import { Client } from 'boardgame.io/react';
 import { ForbiddenDesert } from './Game';
 import { ForbiddenDesertBoard } from './board';
+import './App.css';
 
 class App extends React.Component {
   state = { numPlayers: null };
@@ -9,20 +10,25 @@ class App extends React.Component {
   render() {
     if (this.state.numPlayers === null) {
       return (
-        <div>
-          <p>Number of players:</p>
-          <button onClick={() => this.setState({ numPlayers: 2 })}>
-            2
-          </button>
-          <button onClick={() => this.setState({ numPlayers: 3 })}>
-            3
-          </button>
-          <button onClick={() => this.setState({ numPlayers: 4 })}>
-            4
-          </button>
-          <button onClick={() => this.setState({ numPlayers: 5 })}>
-            5
-          </button>
+        <div className="center">
+          <div id="title">
+            FORBIDDEN DESERT
+          </div>
+          <div id="header">
+            <p>Number of players:</p>
+            <button onClick={() => this.setState({ numPlayers: 2 })}>
+              2
+            </button>
+            <button onClick={() => this.setState({ numPlayers: 3 })}>
+              3
+            </button>
+            <button onClick={() => this.setState({ numPlayers: 4 })}>
+              4
+            </button>
+            <button onClick={() => this.setState({ numPlayers: 5 })}>
+              5
+            </button>
+          </div>
         </div>
       );
     }

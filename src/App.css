@@ -1,0 +1,26 @@
+body {
+    background-color: #FFEECC;
+    font-family: "Papyrus";
+    font-weight: 900;
+}
+
+button {
+    font-family: "Papyrus";
+    font-weight: 900;
+    font-size: 24px;
+    border-radius: 5px;
+    background-color: lightpink;
+}
+
+#title {
+    font-size: x-large;
+}
+
+#header {
+    font-size: large;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}

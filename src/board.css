@@ -4,14 +4,23 @@ table {
 
 td {
     position: relative;
-    border: 1px solid #555;
+    border: 2px solid #eddebb;
     border-radius: 5px;
     width: 125px;
     height: 125px;
+    background-size: 100% 100%;
 }
 
 #storm {
-    border: 0px solid #555;
+    border: 0px ;
+}
+
+.unrevealed {
+    background-image: url("img/back.png");
+}
+
+.header {
+    font-size: large;
 }
 
 .center {
@@ -20,18 +29,16 @@ td {
     text-align: center;
 }
 
-.player-marker {
-    font-size: x-large;
+.player {
+    font-size: xx-large;
     text-align: center;
 }
 
-.sand-black {
+.sand {
     position: absolute;
     bottom: 0;
 }
 
-.sand-red {
-    position: absolute;
-    bottom: 0;
+.red {
     color: red;
 }

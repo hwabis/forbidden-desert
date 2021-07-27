@@ -10,7 +10,7 @@ export class ForbiddenDesertBoard extends React.Component {
         if (this.isAdjacentTile(id) || this.isSameTile(id)) {
             if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
                 this.props.moves.dig(id);
-                this.setState({digging: false});
+                this.setState({ digging: false });
             }
             else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
                 this.props.moves.move(id);
@@ -45,25 +45,24 @@ export class ForbiddenDesertBoard extends React.Component {
                         }
                     }
                     //eventually push each player marker so their color represents their role
-                    tile.push(<div className="player-marker">{players}</div>);
+                    tile.push(<div className="player">{players}</div>);
                     if (this.props.G.tiles[id].sandCount !== 0) {
                         var sandIndicator = "";
                         for (var l = 0; l < this.props.G.tiles[id].sandCount; l++) {
-                            //we're gonna have a problem if sand ever goes above 18 lol
-                            sandIndicator = sandIndicator.concat("/");
-                            tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand-red" : "sand-black"}>
-                            Sand: {sandIndicator}</div>);
+                            sandIndicator = sandIndicator.concat("l");
                         }
+                        tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
+                            Sand: {sandIndicator}</div>);
                     }
-                    row.push(<td key={id} onClick={() => this.onClick(id)}>{tile}</td>);
+                    row.push(<td key={id} className="unrevealed" onClick={() => this.onClick(id)}>{tile}</td>);
                 }
             }
             tiles.push(<tr key={i}>{row}</tr>);
         }
 
         return (
-            <div>
-                <div className="center">
+            <div className="center">
+                <div className="header">
                     <div>
                         Player {this.props.ctx.currentPlayer}'s turn
                     </div>
@@ -71,11 +70,11 @@ export class ForbiddenDesertBoard extends React.Component {
                         Moves left in turn: {4 - this.props.ctx.numMoves}
                     </div>
                 </div>
-                <table id="board" className="center">
+                <table className="center">
                     <tbody>{tiles}</tbody>
                 </table>
-                <div className="center">
-                    <button onClick={() => { this.setState({digging: !this.state.digging}); }}>
+                <div>
+                    <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
                         Dig
                     </button>
                     <div>
