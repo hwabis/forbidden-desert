@@ -32,11 +32,24 @@ export const ForbiddenDesert = {
             },
             undoable: false,
             noLimit: true
-        }
+        },
+        //DEBUG ONLY
+        removeWater: (G, ctx, id) => {
+            G.players[id].water -= 1;
+        },
     },
 
     turn: {
         moveLimit: 4,
+    },
+
+    endIf: (G, ctx) => {
+        for (var i = 0; i < G.players.length; i++) {
+            if (G.players[i].water == 0){
+                return true;
+            }
+        }
+        return false;
     },
 };
 
@@ -47,8 +60,8 @@ var setupPlayers = (numPlayers) => {
             role: "",
             //TODO: REPLACE WITH HELICOPTER CRASH TILE POSITION
             position: 3,
-            water: 0,
-            maxWater: 0,
+            water: -1,
+            maxWater: -1,
         });
     }
     return players;
