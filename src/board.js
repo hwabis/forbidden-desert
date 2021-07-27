@@ -3,9 +3,14 @@ import './board.css';
 
 export class ForbiddenDesertBoard extends React.Component {
     state = {
+        assignID: 0,
         digging: false
     }
 
+    assignRoleTo(id, role) {
+        this.props.moves.setPlayerRole(id, role);
+        this.setState({ assignID: this.state.assignID + 1 });
+    }
     onClick(id) {
         if (this.isAdjacentTile(id) || this.isSameTile(id)) {
             if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
@@ -28,6 +33,88 @@ export class ForbiddenDesertBoard extends React.Component {
     }
 
     render() {
+        if (this.state.assignID < this.props.ctx.numPlayers) {
+            console.log(this.state.assignID);
+            return (
+                <div className="center">
+                    <div id="title">
+                        Role Selection
+                    </div>
+                    <div className="header">
+                        Choose role for Player {this.state.assignID}:
+                    </div>
+                    <p></p>
+                    <div>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "archeologist"); }}>
+                            Archeologist
+                        </button>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "climber"); }}>
+                            Climber
+                        </button>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "explorer"); }}>
+                            Explorer
+                        </button>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "meteorologist"); }}>
+                            Meteorologist
+                        </button>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "navigator"); }}>
+                            Navigator
+                        </button>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "water-carrier"); }}>
+                            Water Carrier
+                        </button>
+                    </div>
+                    <p></p>
+                    <div>
+                        <div>
+                            <p id="header">Archeologist</p>
+                            <ul>
+                                <li>Removes 2 sand when digging instead of 1.</li>
+                                <li>Water capacity: 3</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p id="header">Climber</p>
+                            <ul>
+                                <li>Is able to Carry, moving other players with Climber. (Cost: free)</li>
+                                <li>Can move over tiles with 2 or more sand.</li>
+                                <li>Allows all players on Climber's current tile to leave even with 2 or more sand.</li>
+                                <li>Water capacity: 3</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p id="header">Explorer</p>
+                            <ul>
+                                <li>Can move, dig, and use items diagonally.</li>
+                                <li>Water capacity: 4</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p id="header">Meteorologist</p>
+                            <ul>
+                                <li>Is able to Mitigate, drawing 1 less Storm at the end of the turn. (Cost: 1 action)</li>
+                                <li>Water capacity: 4</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p id="header">Navigator</p>
+                            <ul>
+                                <li>Is able to Direct, moving another player up to 3 tiles. Climber and Explorer keep their abilities. (Cost: 1 action)</li>
+                                <li>Water capacity: 4</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p id="header">Water Carrier</p>
+                            <ul>
+                                <li>Is able to Gather Water, taking 2 water from an excavated well. (Cost: 1 action)</li>
+                                <li>Is able to Give Water, giving 1 water to an adjacent player. (Cost: free)</li>
+                                <li>Water capacity: 5</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
         var tiles = [];
         for (var i = 0; i < 5; i++) {
             var row = [];
@@ -67,7 +154,7 @@ export class ForbiddenDesertBoard extends React.Component {
                         Player {this.props.ctx.currentPlayer}'s turn
                     </div>
                     <div>
-                        Moves left in turn: {4 - this.props.ctx.numMoves}
+                        Actions left in turn: {4 - this.props.ctx.numMoves}
                     </div>
                 </div>
                 <table className="center">

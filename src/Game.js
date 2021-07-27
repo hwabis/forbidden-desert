@@ -10,6 +10,14 @@ export const ForbiddenDesert = {
         },
         dig: (G, ctx, pos) => {
             G.tiles[pos].sandCount--;
+        },
+
+        //don't use anything below here
+
+        setPlayerRole: {
+            move: (G, ctx, id, role) => {G.players[id].role = role},
+            redact: true,
+            noLimit: true
         }
     },
 
@@ -22,6 +30,7 @@ var setupPlayers = (numPlayers) => {
     var players = [];
     for (var i = 0; i < numPlayers; i++) {
         players.push({
+            role: "", 
             //TODO: REPLACE WITH HELICOPTER CRASH TILE POSITION
             position: 3,
         });
