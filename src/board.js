@@ -8,7 +8,7 @@ export class ForbiddenDesertBoard extends React.Component {
     }
 
     assignRoleTo(id, role) {
-        this.props.moves.setPlayerRole(id, role);
+        this.props.moves.setPlayerInfo(id, role);
         this.setState({ assignID: this.state.assignID + 1 });
     }
     onClick(id) {
@@ -45,22 +45,22 @@ export class ForbiddenDesertBoard extends React.Component {
                     </div>
                     <p></p>
                     <div>
-                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "archeologist"); }}>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "Archeologist"); }}>
                             Archeologist
                         </button>
-                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "climber"); }}>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "Climber"); }}>
                             Climber
                         </button>
-                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "explorer"); }}>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "Explorer"); }}>
                             Explorer
                         </button>
-                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "meteorologist"); }}>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "Meteorologist"); }}>
                             Meteorologist
                         </button>
-                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "navigator"); }}>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "Navigator"); }}>
                             Navigator
                         </button>
-                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "water-carrier"); }}>
+                        <button onClick={() => { this.assignRoleTo(this.state.assignID, "Water Carrier"); }}>
                             Water Carrier
                         </button>
                     </div>
@@ -125,14 +125,13 @@ export class ForbiddenDesertBoard extends React.Component {
                     row.push(<td key={id} id="storm"></td>);
                 }
                 else {
-                    var players = [];
+                    var playersOnThisTile = [];
                     for (var k = 0; k < this.props.G.players.length; k++) {
                         if (this.props.G.players[k].position === id) {
-                            players.push(k);
+                            playersOnThisTile.push(k);
                         }
                     }
-                    //eventually push each player marker so their color represents their role
-                    tile.push(<div className="player">{players}</div>);
+                    tile.push(<div className="player">{playersOnThisTile}</div>);
                     if (this.props.G.tiles[id].sandCount !== 0) {
                         var sandIndicator = "";
                         for (var l = 0; l < this.props.G.tiles[id].sandCount; l++) {
@@ -147,32 +146,49 @@ export class ForbiddenDesertBoard extends React.Component {
             tiles.push(<tr key={i}>{row}</tr>);
         }
 
+        var playerInfoList = [];
+        for (var i = 0; i < this.props.ctx.numPlayers; i++) {
+            playerInfoList.push(
+                <div>
+                    {i} - {this.props.G.players[i].role} - {this.props.G.players[i].water} / {this.props.G.players[i].maxWater} water
+                </div>
+            );
+        }
+
         return (
-            <div className="center">
-                <div className="header">
-                    <div>
-                        Player {this.props.ctx.currentPlayer}'s turn
+            <div>
+                <div className="fl">
+                    <div className="header">
+                        <div>
+                            Player {this.props.ctx.currentPlayer}'s turn
+                        </div>
+                        <div>
+                            Actions left in turn: {4 - this.props.ctx.numMoves}
+                        </div>
                     </div>
+                    <table>
+                        <tbody>{tiles}</tbody>
+                    </table>
                     <div>
-                        Actions left in turn: {4 - this.props.ctx.numMoves}
+                        <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
+                            Dig
+                        </button>
+                        <div>
+                            {this.state.digging ? "Choose a tile to dig." : ""}
+                        </div>
+                        <button onClick={() => { this.props.undo(); }}>
+                            Undo
+                        </button>
+                        <button onClick={() => { this.props.moves.doNothing(); }}>
+                            Do Nothing
+                        </button>
                     </div>
                 </div>
-                <table className="center">
-                    <tbody>{tiles}</tbody>
-                </table>
-                <div>
-                    <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
-                        Dig
-                    </button>
+                <div className="fl">
                     <div>
-                        {this.state.digging ? "Choose a tile to dig." : ""}
+                        Players:
                     </div>
-                    <button onClick={() => { this.props.undo(); }}>
-                        Undo
-                    </button>
-                    <button onClick={() => { this.props.moves.doNothing(); }}>
-                        Do Nothing
-                    </button>
+                    {playerInfoList}
                 </div>
             </div>
         );

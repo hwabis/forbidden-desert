@@ -14,8 +14,22 @@ export const ForbiddenDesert = {
         doNothing: (G, ctx) => {
             ctx.events.endTurn();
         },
-        setPlayerRole: {
-            move: (G, ctx, id, role) => {G.players[id].role = role},
+        setPlayerInfo: {
+            move: (G, ctx, id, role) => {
+                G.players[id].role = role;
+                if (role === "Archeologist" || role === "Climber") {
+                    G.players[id].maxWater = 3;
+                    G.players[id].water = 3;                    
+                }
+                else if (role === "Explorer" || role === "Meteorologist" || role === "Navigator") {
+                    G.players[id].maxWater = 4;
+                    G.players[id].water = 4;
+                }
+                else {
+                    G.players[id].maxWater = 5;
+                    G.players[id].water = 5;
+                }
+            },
             undoable: false,
             noLimit: true
         }
@@ -24,15 +38,17 @@ export const ForbiddenDesert = {
     turn: {
         moveLimit: 4,
     },
-}; 
+};
 
 var setupPlayers = (numPlayers) => {
     var players = [];
     for (var i = 0; i < numPlayers; i++) {
         players.push({
-            role: "", 
+            role: "",
             //TODO: REPLACE WITH HELICOPTER CRASH TILE POSITION
             position: 3,
+            water: 0,
+            maxWater: 0,
         });
     }
     return players;
