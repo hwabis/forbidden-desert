@@ -10,9 +10,9 @@ export class ForbiddenDesertBoard extends React.Component {
         if (this.isAdjacentTile(id) || this.isSameTile(id)) {
             if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
                 this.props.moves.dig(id);
-                this.state.digging = false;
+                this.setState({digging: false});
             }
-            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2) {
+            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
                 this.props.moves.move(id);
             }
         }
@@ -46,12 +46,17 @@ export class ForbiddenDesertBoard extends React.Component {
                         </td>
                     );
                 }
-                else if (this.props.G.tiles[id].sandCount > 0) {
+                else if (this.props.G.tiles[id].sandCount !== 0) {
+                    var sandIndicator = "";
+                    for (var l = 0; l < this.props.G.tiles[id].sandCount; l++) {
+                        //we're gonna have a problem if sand ever goes above 18 lol
+                        sandIndicator = sandIndicator.concat("/");
+                    }
                     cells.push(
                         <td key={id} onClick={() => this.onClick(id)}>
                             <div className="player-marker">{players}</div>
                             <div className={this.props.G.tiles[id].sandCount > 1 ? "sand-red" : "sand-black"}>
-                                Sand: {this.props.G.tiles[id].sandCount}</div>
+                                Sand: {sandIndicator}</div>
                         </td>
                     );
                 }
@@ -70,10 +75,7 @@ export class ForbiddenDesertBoard extends React.Component {
             <div>
                 <div className="center">
                     <div>
-                        You are player: {this.props.playerID}
-                    </div>
-                    <div>
-                        Current player: {this.props.ctx.currentPlayer}
+                        Player {this.props.ctx.currentPlayer}'s turn
                     </div>
                     <div>
                         Moves left in turn: {4 - this.props.ctx.numMoves}

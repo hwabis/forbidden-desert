@@ -2,37 +2,42 @@ import React from "react";
 import { Client } from 'boardgame.io/react';
 import { ForbiddenDesert } from './Game';
 import { ForbiddenDesertBoard } from './board';
-import { SocketIO } from 'boardgame.io/multiplayer';
-
-const ForbiddenDesertClient = Client({
-  game: ForbiddenDesert,
-  board: ForbiddenDesertBoard,
-  multiplayer: SocketIO({ server: 'localhost:8000' }),
-});
 
 class App extends React.Component {
-  state = { playerID: null };
+  state = { numPlayers: null };
 
   render() {
-    //TODO: change to automatically assign playerID?
-    if (this.state.playerID === null) {
+    if (this.state.numPlayers === null) {
       return (
         <div>
-          <p>Play as</p>
-          <button onClick={() => this.setState({ playerID: "0" })}>
-            Player 0
+          <p>Number of players:</p>
+          <button onClick={() => this.setState({ numPlayers: 2 })}>
+            2
           </button>
-          <button onClick={() => this.setState({ playerID: "1" })}>
-            Player 1
+          <button onClick={() => this.setState({ numPlayers: 3 })}>
+            3
+          </button>
+          <button onClick={() => this.setState({ numPlayers: 4 })}>
+            4
+          </button>
+          <button onClick={() => this.setState({ numPlayers: 5 })}>
+            5
           </button>
         </div>
       );
     }
-    return(
-      <div>
-      <ForbiddenDesertClient playerID={this.state.playerID} />
-      </div>
-    );
+    else {
+      const ForbiddenDesertClient = Client({
+        game: ForbiddenDesert,
+        numPlayers: this.state.numPlayers,
+        board: ForbiddenDesertBoard,
+      });
+      return (
+        <div>
+          <ForbiddenDesertClient />
+        </div>
+      );
+    }
   }
 }
 
