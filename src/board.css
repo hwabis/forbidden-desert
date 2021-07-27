@@ -19,10 +19,6 @@ td {
     float: left;
 }
 
-.left-container {
-    margin-left: 125px;
-}
-
 .unrevealed {
     background-image: url("img/back.png");
 }
