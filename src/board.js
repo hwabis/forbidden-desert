@@ -150,7 +150,7 @@ export class ForbiddenDesertBoard extends React.Component {
         for (var i = 0; i < this.props.ctx.numPlayers; i++) {
             playerInfoList.push(
                 <div>
-                    {i} - {this.props.G.players[i].role} - {this.props.G.players[i].water} / {this.props.G.players[i].maxWater} water
+                    {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
                 </div>
             );
         }
@@ -158,7 +158,7 @@ export class ForbiddenDesertBoard extends React.Component {
         return (
             <div>
                 <div className="fl">
-                    <div className="header">
+                    <div className="header center">
                         <div>
                             Player {this.props.ctx.currentPlayer}'s turn
                         </div>
@@ -169,7 +169,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     <table>
                         <tbody>{tiles}</tbody>
                     </table>
-                    <div>
+                    <div className="center">
                         <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
                             Dig
                         </button>
