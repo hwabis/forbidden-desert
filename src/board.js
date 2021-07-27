@@ -76,7 +76,7 @@ export class ForbiddenDesertBoard extends React.Component {
                         <div>
                             <p id="header">Climber</p>
                             <ul>
-                                <li>Is able to Carry, moving other players with Climber. (Cost: free)</li>
+                                <li>Carry: moves other players along with Climber. (Cost: free)</li>
                                 <li>Can move over tiles with 2 or more sand.</li>
                                 <li>Allows all players on Climber's current tile to leave even with 2 or more sand.</li>
                                 <li>Water capacity: 3</li>
@@ -92,22 +92,22 @@ export class ForbiddenDesertBoard extends React.Component {
                         <div>
                             <p id="header">Meteorologist</p>
                             <ul>
-                                <li>Is able to Mitigate, drawing 1 less Storm at the end of the turn. (Cost: 1 action)</li>
+                                <li>Mitigate: draw 1 less Storm at the end of the turn. (Cost: 1 action)</li>
                                 <li>Water capacity: 4</li>
                             </ul>
                         </div>
                         <div>
                             <p id="header">Navigator</p>
                             <ul>
-                                <li>Is able to Direct, moving another player up to 3 tiles. Climber and Explorer keep their abilities. (Cost: 1 action)</li>
+                                <li>Direct: move another player up to 3 tiles. Climber and Explorer keep their abilities. (Cost: 1 action)</li>
                                 <li>Water capacity: 4</li>
                             </ul>
                         </div>
                         <div>
                             <p id="header">Water Carrier</p>
                             <ul>
-                                <li>Is able to Gather Water, taking 2 water from an excavated well. (Cost: 1 action)</li>
-                                <li>Is able to Give Water, giving 1 water to an adjacent player. (Cost: free)</li>
+                                <li>Gather Water: take 2 water from an excavated well. (Cost: 1 action)</li>
+                                <li>Give Water: give 1 water to an adjacent player. (Cost: free)</li>
                                 <li>Water capacity: 5</li>
                             </ul>
                         </div>

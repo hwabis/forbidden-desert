@@ -15,7 +15,7 @@ class App extends React.Component {
             FORBIDDEN DESERT
           </div>
           <div id="header">
-            <p>Number of players:</p>
+            <p>Select number of players:</p>
             <button onClick={() => this.setState({ numPlayers: 2 })}>
               2
             </button>
