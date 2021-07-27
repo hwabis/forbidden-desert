@@ -11,12 +11,12 @@ export const ForbiddenDesert = {
         dig: (G, ctx, pos) => {
             G.tiles[pos].sandCount--;
         },
-
-        //don't use anything below here
-
+        doNothing: (G, ctx) => {
+            ctx.events.endTurn();
+        },
         setPlayerRole: {
             move: (G, ctx, id, role) => {G.players[id].role = role},
-            redact: true,
+            undoable: false,
             noLimit: true
         }
     },
