@@ -28,47 +28,37 @@ export class ForbiddenDesertBoard extends React.Component {
     }
 
     render() {
-        var tbody = [];
+        var tiles = [];
         for (var i = 0; i < 5; i++) {
-            var cells = [];
+            var row = [];
             for (var j = 0; j < 5; j++) {
+                var tile = [];
                 const id = 5 * i + j;
-                var players = [];
-                for (var k = 0; k < this.props.G.players.length; k++) {
-                    if (this.props.G.players[k].position === id) {
-                        players.push(k);
-                    }
-                }
-
                 if (this.props.G.tiles[id].isStorm) {
-                    cells.push(
-                        <td key={id} id="storm">
-                        </td>
-                    );
-                }
-                else if (this.props.G.tiles[id].sandCount !== 0) {
-                    var sandIndicator = "";
-                    for (var l = 0; l < this.props.G.tiles[id].sandCount; l++) {
-                        //we're gonna have a problem if sand ever goes above 18 lol
-                        sandIndicator = sandIndicator.concat("/");
-                    }
-                    cells.push(
-                        <td key={id} onClick={() => this.onClick(id)}>
-                            <div className="player-marker">{players}</div>
-                            <div className={this.props.G.tiles[id].sandCount > 1 ? "sand-red" : "sand-black"}>
-                                Sand: {sandIndicator}</div>
-                        </td>
-                    );
+                    row.push(<td key={id} id="storm"></td>);
                 }
                 else {
-                    cells.push(
-                        <td key={id} onClick={() => this.onClick(id)}>
-                            <div className="player-marker">{players}</div>
-                        </td>
-                    );
+                    var players = [];
+                    for (var k = 0; k < this.props.G.players.length; k++) {
+                        if (this.props.G.players[k].position === id) {
+                            players.push(k);
+                        }
+                    }
+                    //eventually push each player marker so their color represents their role
+                    tile.push(<div className="player-marker">{players}</div>);
+                    if (this.props.G.tiles[id].sandCount !== 0) {
+                        var sandIndicator = "";
+                        for (var l = 0; l < this.props.G.tiles[id].sandCount; l++) {
+                            //we're gonna have a problem if sand ever goes above 18 lol
+                            sandIndicator = sandIndicator.concat("/");
+                            tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand-red" : "sand-black"}>
+                            Sand: {sandIndicator}</div>);
+                        }
+                    }
+                    row.push(<td key={id} onClick={() => this.onClick(id)}>{tile}</td>);
                 }
             }
-            tbody.push(<tr key={i}>{cells}</tr>);
+            tiles.push(<tr key={i}>{row}</tr>);
         }
 
         return (
@@ -82,7 +72,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     </div>
                 </div>
                 <table id="board" className="center">
-                    <tbody>{tbody}</tbody>
+                    <tbody>{tiles}</tbody>
                 </table>
                 <div className="center">
                     <button onClick={() => { this.setState({digging: !this.state.digging}); }}>
