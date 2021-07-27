@@ -14,6 +14,18 @@ class App extends React.Component {
           <div id="title">
             FORBIDDEN DESERT
           </div>
+          <div>
+            Based off of the original game designed by Matt Leacock.
+          </div>
+          <div>
+            <a href="https://www.gamewright.com/gamewright/pdfs/Rules/ForbiddenDesertTM-RULES.pdf">Official rules manual</a>
+          </div>
+          <div>
+            <a href="https://boardgamegeek.com/boardgame/136063/forbidden-desert">BoardGameGeek listing</a>
+          </div>
+          <div>
+            <a href="https://github.com/hwabis/forbidden-desert">Source code</a>
+          </div>
           <div id="header">
             <p>Select number of players:</p>
             <button onClick={() => this.setState({ numPlayers: 2 })}>

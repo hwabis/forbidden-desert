@@ -161,15 +161,15 @@ export class ForbiddenDesertBoard extends React.Component {
                     <tbody>{tiles}</tbody>
                 </table>
                 <div>
-                    <button onClick={() => { this.props.undo(); }}>
-                        Undo
-                    </button>
                     <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
                         Dig
                     </button>
                     <div>
                         {this.state.digging ? "Choose a tile to dig." : ""}
                     </div>
+                    <button onClick={() => { this.props.undo(); }}>
+                        Undo
+                    </button>
                     <button onClick={() => { this.props.moves.doNothing(); }}>
                         Do Nothing
                     </button>
