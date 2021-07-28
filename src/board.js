@@ -4,12 +4,17 @@ import './board.css';
 export class ForbiddenDesertBoard extends React.Component {
     state = {
         assignID: 0,
+        assignDifficulty: false,
         digging: false
     }
 
     assignRoleTo(id, role) {
         this.props.moves.setPlayerInfo(id, role);
         this.setState({ assignID: this.state.assignID + 1 });
+    }
+    assignDifficultyTo(diff) {
+        this.props.moves.setDifficulty(diff);
+        this.setState({ assignDifficulty: true })
     }
     onClickTile(id) {
         if (this.isAdjacentTile(id) || this.isSameTile(id)) {
@@ -128,6 +133,35 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+        if (this.state.assignDifficulty === false) {
+            //difficulty selection screen
+            return (
+                <div className="center">
+                    <div id="title">
+                        Difficulty Selection
+                    </div>
+                    <p></p>
+                    <div>
+                        <button onClick={() => { this.assignDifficultyTo(0); }}>
+                            Novice
+                        </button>
+                        <button onClick={() => { this.assignDifficultyTo(1); }}>
+                            Normal
+                        </button>
+                        <button onClick={() => { this.assignDifficultyTo(2); }}>
+                            Elite
+                        </button>
+                        <button onClick={() => { this.assignDifficultyTo(3); }}>
+                            Legendary
+                        </button>
+                    </div>
+                    <p></p>
+                    <div>
+                        (Difficulty sets the starting storm level.)
+                    </div>
+                </div>
+            );
+        }
         var tiles = [];
         for (var i = 0; i < 5; i++) {
             var row = [];
@@ -160,7 +194,7 @@ export class ForbiddenDesertBoard extends React.Component {
                             "unrevealed-water" : "unrevealed"} onClick={() => this.onClickTile(id)}>{tile}</td>);
                     }
                     else {
-                        row.push(<td key={id} className={this.props.G.tiles[id].type} 
+                        row.push(<td key={id} className={this.props.G.tiles[id].type}
                             onClick={() => this.onClickTile(id)}>{tile}</td>);
                     }
                 }
@@ -226,7 +260,8 @@ export class ForbiddenDesertBoard extends React.Component {
         rightbar.push(
             <div>
                 <p></p>
-                <div>Storm info:</div>
+                <div>Current storm level: {this.props.G.stormLevel}</div>
+                <p></p>
                 <div>
                     Draw 2 at level 0
                 </div>

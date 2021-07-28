@@ -6,6 +6,7 @@ export const ForbiddenDesert = {
     setup: (ctx) => ({
         players: setupPlayers(ctx.numPlayers),
         tiles: setupTiles(),
+        stormLevel: 0,
     }),
 
     moves: {
@@ -43,6 +44,13 @@ export const ForbiddenDesert = {
             undoable: false,
             noLimit: true
         },
+        setDifficulty: {
+            move: (G, ctx, diff) => {
+                G.stormLevel = diff;
+            },
+            undoable: false,
+            noLimit: true
+        },
         //DEBUG ONLY
         removeWater: {
             move: (G, ctx, id) => {
@@ -54,6 +62,47 @@ export const ForbiddenDesert = {
 
     turn: {
         moveLimit: 4,
+        onEnd: (G, ctx) => {
+            //eventually check storm level + ctx.numPlayers, and draw according to that
+
+            //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
+            const val = ctx.random.Die(31);
+            if (val <= 4) {
+                for (var i = 0; i < G.players.length; i++) {
+                    if (G.tiles[G.players[i].position].type !== "tunnel" && !G.tiles[G.players[i].position].isRevealed){
+                        G.players[i].water -= 1;
+                    }
+                }
+            }
+            else if (val <= 7) {
+                G.stormLevel += 1;
+            }
+            else {
+                //TODO: finish this ... 
+                var stormPos = 0;
+                for (stormPos; stormPos < G.tiles.length; stormPos++) {
+                    if (G.tiles[stormPos].type === "storm") {
+                        break;
+                    }
+                }
+                //change this to array later..
+                var affectedPos = stormPos + 1;
+                var tempStormTile = G.tiles[stormPos];
+                G.tiles[stormPos] = G.tiles[affectedPos];
+                G.tiles[affectedPos] = tempStormTile;
+
+                //move all affected players
+                var affectedPlayers = []
+                for (var i = 0; i < G.players.length; i++) {
+                    if (G.players[i].position === affectedPos) {
+                        affectedPlayers.push(i);
+                    }
+                }
+                for (var i = 0; i < affectedPlayers.length; i++) {
+                    G.players[affectedPlayers[i]].position -= 1;
+                }
+            }
+        }
     },
 
     endIf: (G, ctx) => {
