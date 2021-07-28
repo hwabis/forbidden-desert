@@ -34,7 +34,6 @@ export class ForbiddenDesertBoard extends React.Component {
 
     render() {
         if (this.state.assignID < this.props.ctx.numPlayers) {
-            console.log(this.state.assignID);
             return (
                 <div className="center">
                     <div id="title">
@@ -140,7 +139,8 @@ export class ForbiddenDesertBoard extends React.Component {
                         tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
                             Sand: {sandIndicator}</div>);
                     }
-                    row.push(<td key={id} className="unrevealed" onClick={() => this.onClick(id)}>{tile}</td>);
+                    row.push(<td key={id} className={this.props.G.tiles[id].isWell || this.props.G.tiles[id].isMirage ? 
+                        "unrevealed-water" : "unrevealed"} onClick={() => this.onClick(id)}>{tile}</td>);
                 }
             }
             tiles.push(<tr key={i}>{row}</tr>);

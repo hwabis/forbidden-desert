@@ -23,6 +23,10 @@ td {
     background-image: url("img/back.png");
 }
 
+.unrevealed-water {
+    background-image: url("img/back-water.png");
+}
+
 .header {
     font-size: large;
 }
