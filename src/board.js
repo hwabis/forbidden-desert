@@ -31,7 +31,8 @@ export class ForbiddenDesertBoard extends React.Component {
         }
     }
     excavate() {
-        if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === false) {
+        if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === false
+            && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount === 0) {
             //holy cow what a long sentence lol
             this.props.moves.excavate();
         }
