@@ -10,3 +10,4 @@ The official rules are [here](https://www.gamewright.com/gamewright/pdfs/Rules/F
 
 * Players can spawn on any tile, not just a regular equipment tile
 * Storm cards are not drawn from a deck, but randomly generated independently each turn
+* Running out of sand markers is not a lose condition
