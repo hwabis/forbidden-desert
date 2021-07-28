@@ -1,6 +1,6 @@
 export const ForbiddenDesert = {
     //tile: "isRevealed", "sandCount"
-    //tile types: "well", "mirage", "gear", "geartunnel", "clue", "launchpad", "storm"
+    //tile types: "well", "mirage", "gear", "tunnel", "clue", "launchpad", "storm"
     //tile: "part" and "pos" only for type "clue"
     //parts are "0", "1", "2", "3"; pos are "0" (vertical) and "1" (horizontal)
     setup: (ctx) => ({
@@ -109,7 +109,7 @@ var setupTiles = () => {
         tiles.push({
             isRevealed: false,
             sandCount: 0,
-            type: "geartunnel",
+            type: "tunnel",
         })
     }
     for (var i = 0; i < 4; i++) {

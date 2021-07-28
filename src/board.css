@@ -27,6 +27,30 @@ td {
     background-image: url("img/back-water.png");
 }
 
+.well {
+    background-image: url("img/well.png");
+}
+
+.tunnel {
+    background-image: url("img/tunnel.png");
+}
+
+.mirage {
+    background-image: url("img/mirage.png");
+}
+
+.gear {
+    background-image: url("img/gear.png");
+}
+
+.clue {
+
+}
+
+.launchpad {
+    background-image: url("img/launchpad.png");
+}
+
 .header {
     font-size: large;
 }
