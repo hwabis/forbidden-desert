@@ -23,6 +23,13 @@ export const ForbiddenDesert = {
             },
             undoable: false
         },
+        giveWater: {
+            move: (G, ctx, id) => {
+                G.players[ctx.currentPlayer].water -= 1;
+                G.players[id].water += 1;
+            },
+            noLimit: true
+        },
         doNothing: (G, ctx) => {
             ctx.events.endTurn();
         },
@@ -113,7 +120,7 @@ export const ForbiddenDesert = {
 
     endIf: (G, ctx) => {
         for (var i = 0; i < G.players.length; i++) {
-            if (G.players[i].water === 0) {
+            if (G.players[i].water === -1) {
                 return true;
             }
         }
@@ -131,8 +138,8 @@ var setupPlayers = (numPlayers) => {
         players.push({
             role: "",
             position: pos,
-            water: -1,
-            maxWater: -1,
+            water: 0,
+            maxWater: 0,
         });
     }
     return players;

@@ -5,7 +5,8 @@ export class ForbiddenDesertBoard extends React.Component {
     state = {
         assignID: 0,
         assignDifficulty: false,
-        digging: false
+        digging: false,
+        givingWater: false,
     }
 
     assignRoleTo(id, role) {
@@ -35,6 +36,15 @@ export class ForbiddenDesertBoard extends React.Component {
             && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount === 0) {
             //holy cow what a long sentence lol
             this.props.moves.excavate();
+        }
+    }
+    giveWaterTo(id) {
+        if (this.props.G.players[id].position === this.props.G.players[this.props.ctx.currentPlayer].position
+            && this.props.G.players[id].water < this.props.G.players[id].maxWater 
+            && this.props.G.players[this.props.ctx.currentPlayer].water > 0) {
+                console.log("WHAT" + id);
+            this.props.moves.giveWater(id);
+            this.setState({ givingWater: false });
         }
     }
     isAdjacentTile(id) {
@@ -215,11 +225,34 @@ export class ForbiddenDesertBoard extends React.Component {
                 <button onClick={() => { this.excavate(); }}>
                     Excavate
                 </button>
+                <button onClick={() => { this.setState({ givingWater: !this.state.givingWater }); }}>
+                    Give water to...
+                </button>
+            </div>
+        );
+        //give water to popup buttons
+        if (this.state.givingWater) {
+            for (var i = 0; i < this.props.G.players.length; i++) {
+                //this took me hours to fix.. if you don't assign i to a constant,
+                //and use i for giveWaterTo parameter, then the value is going 
+                //to be, like, different every time you call it. or something.
+                const index = i;
+                actionButtons.push(
+                    <div>
+                        <button onClick={() => { this.giveWaterTo(index); }}>
+                            Player {i}
+                        </button>
+                    </div>
+                );
+            }
+        }
+        actionButtons.push(
+            <div>
                 <button onClick={() => { this.props.undo(); }}>
                     Undo
                 </button>
                 <button onClick={() => { this.props.moves.doNothing(); }}>
-                    Do Nothing
+                    Do nothing
                 </button>
             </div>
         )
