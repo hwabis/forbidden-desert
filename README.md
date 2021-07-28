@@ -7,6 +7,6 @@ Based off of Matt Leacock's Forbidden Desert board game.
 
 Tile art source: various maps from https://maplestory.wiki/
 
-## Notes
+## Rule changes
 
-* Players will always spawn on a non-tunnel equipment tile
+* Players can spawn on any tile, not just a regular equipment tile
