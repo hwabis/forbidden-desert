@@ -9,3 +9,4 @@ Tile art source: various maps from https://maplestory.wiki/
 The official rules are [here](https://www.gamewright.com/gamewright/pdfs/Rules/ForbiddenDesertTM-RULES.pdf). This version has slight changes:
 
 * Players can spawn on any tile, not just a regular equipment tile
+* Storm cards are not drawn from a deck, but randomly generated independently each turn
