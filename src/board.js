@@ -127,7 +127,7 @@ export class ForbiddenDesertBoard extends React.Component {
             for (var j = 0; j < 5; j++) {
                 var tile = [];
                 const id = 5 * i + j;
-                if (this.props.G.tiles[id].isStorm) {
+                if (this.props.G.tiles[id].type === "storm") {
                     row.push(<td key={id} id="storm"></td>);
                 }
                 else {
@@ -146,7 +146,7 @@ export class ForbiddenDesertBoard extends React.Component {
                         tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
                             Sand: {sandIndicator}</div>);
                     }
-                    row.push(<td key={id} className={this.props.G.tiles[id].isWell || this.props.G.tiles[id].isMirage ?
+                    row.push(<td key={id} className={this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
                         "unrevealed-water" : "unrevealed"} onClick={() => this.onClick(id)}>{tile}</td>);
                 }
             }

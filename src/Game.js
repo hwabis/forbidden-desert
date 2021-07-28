@@ -1,4 +1,7 @@
 export const ForbiddenDesert = {
+    //tile types: "well", "mirage", "gear", "geartunnel", "clue", "launchpad", "storm"
+    //tile: "part" and "pos" only for type "clue"
+    //parts are "0", "1", "2", "3"; pos are "0" (vertical) and "1" (horizontal)
     setup: (ctx) => ({
         players: setupPlayers(ctx.numPlayers),
         tiles: setupTiles(),
@@ -34,8 +37,11 @@ export const ForbiddenDesert = {
             noLimit: true
         },
         //DEBUG ONLY
-        removeWater: (G, ctx, id) => {
-            G.players[id].water -= 1;
+        removeWater: {
+            move: (G, ctx, id) => {
+                G.players[id].water -= 1;
+            },
+            noLimit: true
         },
     },
 
@@ -45,7 +51,7 @@ export const ForbiddenDesert = {
 
     endIf: (G, ctx) => {
         for (var i = 0; i < G.players.length; i++) {
-            if (G.players[i].water == 0) {
+            if (G.players[i].water === 0) {
                 return true;
             }
         }
@@ -77,111 +83,57 @@ var setupTiles = () => {
         tiles.push({
             isRevealed: false,
             sandCount: 0,
-            isStorm: false,
-            isWell: true,
-            isMirage: false,
-            isGear: false,
-            isTunnel: false,
-            isClue: false,
-            part: -1,
-            type: -1,
-            isLaunchPad: false
+            type: "well",
         });
     }
     tiles.push({
         isRevealed: false,
         sandCount: 0,
-        isStorm: false,
-        isWell: false,
-        isMirage: true,
-        isGear: false,
-        isTunnel: false,
-        isClue: false,
-        part: -1,
-        type: -1,
-        isLaunchPad: false
+        type: "mirage",
     });
     for (var i = 0; i < 9; i++) {
         tiles.push({
             isRevealed: false,
             sandCount: 0,
-            isStorm: false,
-            isWell: false,
-            isMirage: false,
-            isGear: true,
-            isTunnel: false,
-            isClue: false,
-            part: -1,
-            type: -1,
-            isLaunchPad: false
+            type: "gear",
         });
     }
     for (var i = 0; i < 3; i++) {
         tiles.push({
             isRevealed: false,
             sandCount: 0,
-            isStorm: false,
-            isWell: false,
-            isMirage: false,
-            isGear: true,
-            isTunnel: true,
-            isClue: false,
-            part: -1,
-            type: -1,
-            isLaunchPad: false
+            type: "geartunnel",
         })
     }
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 2; j++) {
             //parts: 0, 1, 2, 3
-            //type: 0 --> vertical, 1 --> horizontal
+            //pos: 0 --> vertical, 1 --> horizontal
             tiles.push({
                 isRevealed: false,
                 sandCount: 0,
-                isStorm: false,
-                isWell: false,
-                isMirage: false,
-                isGear: false,
-                isTunnel: false,
-                isClue: true,
+                type: "clue",
                 part: i,
-                type: j,
-                isLaunchPad: false
+                pos: j,
             });
         }
     }
     tiles.push({
         isRevealed: false,
         sandCount: 0,
-        isStorm: false,
-        isWell: false,
-        isMirage: false,
-        isGear: false,
-        isTunnel: false,
-        isClue: true,
-        part: i,
-        type: j,
-        isLaunchPad: true
+        type: "launchpad",
     })
     shuffle(tiles);
     tiles.splice(12, 0, {
         isRevealed: false,
         sandCount: 0,
-        isStorm: true,
-        isWell: false,
-        isMirage: false,
-        isGear: false,
-        isTunnel: false,
-        isClue: false,
-        part: -1,
-        type: -1,
+        type: "storm",
     });
-    console.log(tiles.length);
 
     //setup sand
     const sandTiles = [2, 6, 8, 10, 14, 16, 18, 22];
     for (var i = 0; i < sandTiles.length; i++) {
-        tiles[sandTiles[i]].sandCount = 2;
+        tiles[sandTiles[i]].sandCount = 1;
     }
     return tiles;
 }
