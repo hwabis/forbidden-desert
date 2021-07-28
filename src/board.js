@@ -11,7 +11,7 @@ export class ForbiddenDesertBoard extends React.Component {
         this.props.moves.setPlayerInfo(id, role);
         this.setState({ assignID: this.state.assignID + 1 });
     }
-    onClick(id) {
+    onClickTile(id) {
         if (this.isAdjacentTile(id) || this.isSameTile(id)) {
             if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
                 this.props.moves.dig(id);
@@ -23,6 +23,12 @@ export class ForbiddenDesertBoard extends React.Component {
                 !this.isBuried()) {
                 this.props.moves.move(id);
             }
+        }
+    }
+    excavate() {
+        if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === false) {
+            //holy cow what a long sentence lol
+            this.props.moves.excavate();
         }
     }
     isAdjacentTile(id) {
@@ -132,12 +138,14 @@ export class ForbiddenDesertBoard extends React.Component {
                 }
                 else {
                     var playersOnThisTile = [];
+                    //render players on current tile
                     for (var k = 0; k < this.props.G.players.length; k++) {
                         if (this.props.G.players[k].position === id) {
                             playersOnThisTile.push(k);
                         }
                     }
                     tile.push(<div className="player">{playersOnThisTile}</div>);
+                    //render sandCount
                     if (this.props.G.tiles[id].sandCount !== 0) {
                         var sandIndicator = "";
                         for (var l = 0; l < this.props.G.tiles[id].sandCount; l++) {
@@ -146,8 +154,14 @@ export class ForbiddenDesertBoard extends React.Component {
                         tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
                             Sand: {sandIndicator}</div>);
                     }
-                    row.push(<td key={id} className={this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
-                        "unrevealed-water" : "unrevealed"} onClick={() => this.onClick(id)}>{tile}</td>);
+                    if (this.props.G.tiles[id].isRevealed === false) {
+                        row.push(<td key={id} className={this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
+                            "unrevealed-water" : "unrevealed"} onClick={() => this.onClickTile(id)}>{tile}</td>);
+                    }
+                    else {
+                        row.push(<td key={id} className={this.props.G.tiles[id].type} 
+                            onClick={() => this.onClickTile(id)}>{tile}</td>);
+                    }
                 }
             }
             tiles.push(<tr key={i}>{row}</tr>);
@@ -161,6 +175,27 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+
+        var actionButtons = [];
+        actionButtons.push(
+            <div>
+                <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
+                    Dig
+                </button>
+                <div>
+                    {this.state.digging ? "Choose a tile to dig." : ""}
+                </div>
+                <button onClick={() => { this.excavate(); }}>
+                    Excavate
+                </button>
+                <button onClick={() => { this.props.undo(); }}>
+                    Undo
+                </button>
+                <button onClick={() => { this.props.moves.doNothing(); }}>
+                    Do Nothing
+                </button>
+            </div>
+        )
 
         return (
             <div>
@@ -177,18 +212,7 @@ export class ForbiddenDesertBoard extends React.Component {
                         <tbody>{tiles}</tbody>
                     </table>
                     <div className="center">
-                        <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
-                            Dig
-                        </button>
-                        <div>
-                            {this.state.digging ? "Choose a tile to dig." : ""}
-                        </div>
-                        <button onClick={() => { this.props.undo(); }}>
-                            Undo
-                        </button>
-                        <button onClick={() => { this.props.moves.doNothing(); }}>
-                            Do Nothing
-                        </button>
+                        {actionButtons}
                     </div>
                 </div>
                 <div className="fl">

@@ -1,4 +1,5 @@
 export const ForbiddenDesert = {
+    //tile: "isRevealed", "sandCount"
     //tile types: "well", "mirage", "gear", "geartunnel", "clue", "launchpad", "storm"
     //tile: "part" and "pos" only for type "clue"
     //parts are "0", "1", "2", "3"; pos are "0" (vertical) and "1" (horizontal)
@@ -13,6 +14,12 @@ export const ForbiddenDesert = {
         },
         dig: (G, ctx, pos) => {
             G.tiles[pos].sandCount--;
+        },
+        excavate: {
+            move: (G, ctx) => {
+                G.tiles[G.players[ctx.currentPlayer].position].isRevealed = true;
+            },
+            undoable: false
         },
         doNothing: (G, ctx) => {
             ctx.events.endTurn();
