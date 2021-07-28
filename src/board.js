@@ -283,6 +283,20 @@ export class ForbiddenDesertBoard extends React.Component {
             </div>
         );
 
+        rightbar.push(
+            <div>
+                <p></p>
+                End of last turn:
+            </div>
+        )
+        for (var i = 0; i < this.props.G.lastDrawType.length; i++) {
+            rightbar.push(
+                <div>
+                    {this.props.G.lastDrawType[i]}
+                </div>
+            );
+        }
+
         return (
             <div>
                 <div className="fl">

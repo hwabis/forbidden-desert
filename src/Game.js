@@ -7,6 +7,7 @@ export const ForbiddenDesert = {
         players: setupPlayers(ctx.numPlayers),
         tiles: setupTiles(),
         stormLevel: 0,
+        lastDrawType: [],
     }),
 
     moves: {
@@ -63,19 +64,22 @@ export const ForbiddenDesert = {
     turn: {
         moveLimit: 4,
         onEnd: (G, ctx) => {
+            G.lastDrawType = [];
             //eventually check storm level + ctx.numPlayers, and draw according to that
 
             //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
             const val = ctx.random.Die(31);
             if (val <= 4) {
                 for (var i = 0; i < G.players.length; i++) {
-                    if (G.tiles[G.players[i].position].type !== "tunnel" && !G.tiles[G.players[i].position].isRevealed){
+                    if (!(G.tiles[G.players[i].position].type === "tunnel" && G.tiles[G.players[i].position].isRevealed)) {
                         G.players[i].water -= 1;
                     }
                 }
+                G.lastDrawType.push("Sun Beats Down");
             }
             else if (val <= 7) {
                 G.stormLevel += 1;
+                G.lastDrawType.push("Storm Picks Up")
             }
             else {
                 //TODO: finish this ... 
@@ -101,6 +105,8 @@ export const ForbiddenDesert = {
                 for (var i = 0; i < affectedPlayers.length; i++) {
                     G.players[affectedPlayers[i]].position -= 1;
                 }
+                //TODO: specify wind strength + type
+                G.lastDrawType.push("Wind");
             }
         }
     },
