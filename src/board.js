@@ -17,7 +17,10 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.props.moves.dig(id);
                 this.setState({ digging: false });
             }
-            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
+            else if (!this.isSameTile(id) &&
+                this.props.G.tiles[id].sandCount < 2 &&
+                !this.state.digging &&
+                !this.isBuried()) {
                 this.props.moves.move(id);
             }
         }
@@ -30,6 +33,10 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     isSameTile(id) {
         return (id === this.props.G.players[this.props.ctx.currentPlayer].position);
+    }
+    //returns whether current player is buried
+    isBuried() {
+        return this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount > 1;
     }
 
     render() {
@@ -139,7 +146,7 @@ export class ForbiddenDesertBoard extends React.Component {
                         tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
                             Sand: {sandIndicator}</div>);
                     }
-                    row.push(<td key={id} className={this.props.G.tiles[id].isWell || this.props.G.tiles[id].isMirage ? 
+                    row.push(<td key={id} className={this.props.G.tiles[id].isWell || this.props.G.tiles[id].isMirage ?
                         "unrevealed-water" : "unrevealed"} onClick={() => this.onClick(id)}>{tile}</td>);
                 }
             }

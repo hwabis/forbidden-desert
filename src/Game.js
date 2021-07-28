@@ -181,7 +181,7 @@ var setupTiles = () => {
     //setup sand
     const sandTiles = [2, 6, 8, 10, 14, 16, 18, 22];
     for (var i = 0; i < sandTiles.length; i++) {
-        tiles[sandTiles[i]].sandCount = 1;
+        tiles[sandTiles[i]].sandCount = 2;
     }
     return tiles;
 }
