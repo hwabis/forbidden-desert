@@ -47,6 +47,7 @@ export class ForbiddenDesertBoard extends React.Component {
 
     render() {
         if (this.state.assignID < this.props.ctx.numPlayers) {
+            //role selection screen
             return (
                 <div className="center">
                     <div id="title">
@@ -167,15 +168,6 @@ export class ForbiddenDesertBoard extends React.Component {
             tiles.push(<tr key={i}>{row}</tr>);
         }
 
-        var playerInfoList = [];
-        for (var i = 0; i < this.props.ctx.numPlayers; i++) {
-            playerInfoList.push(
-                <div>
-                    {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
-                </div>
-            );
-        }
-
         var actionButtons = [];
         actionButtons.push(
             <div>
@@ -197,6 +189,65 @@ export class ForbiddenDesertBoard extends React.Component {
             </div>
         )
 
+        var rightbar = [];
+        rightbar.push(<div>Players:</div>)
+        var playerInfoList = [];
+        for (var i = 0; i < this.props.ctx.numPlayers; i++) {
+            playerInfoList.push(
+                <div>
+                    {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
+                </div>
+            );
+        }
+        rightbar.push(playerInfoList);
+
+        var draw3, draw4, draw5, draw6, death;
+        if (this.props.ctx.numPlayers === 2) {
+            draw3 = "1 - 3";
+            draw4 = "4 - 7";
+            draw5 = "8 - 10";
+            draw6 = "11 - 12";
+            death = "13";
+        }
+        else if (this.props.ctx.numPlayers === 3 || this.props.ctx.numPlayers === 4) {
+            draw3 = "1 - 4";
+            draw4 = "5 - 8";
+            draw5 = "9 - 11";
+            draw6 = "12 - 13";
+            death = "14";
+        }
+        else if (this.props.ctx.numPlayers === 5) {
+            draw3 = "1 - 5";
+            draw4 = "6 - 9";
+            draw5 = "10 - 12";
+            draw6 = "13 - 14";
+            death = "15";
+        }
+        rightbar.push(
+            <div>
+                <p></p>
+                <div>Storm info:</div>
+                <div>
+                    Draw 2 at level 0
+                </div>
+                <div>
+                    Draw 3 at levels {draw3}
+                </div>
+                <div>
+                    Draw 4 at levels {draw4}
+                </div>
+                <div>
+                    Draw 5 at levels {draw5}
+                </div>
+                <div>
+                    Draw 6 at levels {draw6}
+                </div>
+                <div>
+                    Game over at level {death}
+                </div>
+            </div>
+        );
+
         return (
             <div>
                 <div className="fl">
@@ -216,10 +267,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     </div>
                 </div>
                 <div className="fl">
-                    <div>
-                        Players:
-                    </div>
-                    {playerInfoList}
+                    {rightbar}
                 </div>
             </div>
         );

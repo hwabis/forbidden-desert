@@ -69,6 +69,9 @@ export const ForbiddenDesert = {
 var setupPlayers = (numPlayers) => {
     var players = [];
     var pos = getRandomInt(25);
+    while (pos === 12) {
+        pos = getRandomInt(25);
+    }
     for (var i = 0; i < numPlayers; i++) {
         players.push({
             role: "",
