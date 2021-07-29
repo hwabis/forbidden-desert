@@ -23,12 +23,16 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.props.moves.dig(id);
                 this.setState({ digging: false });
             }
-            else if (!this.isSameTile(id) &&
-                this.props.G.tiles[id].sandCount < 2 &&
-                !this.state.digging &&
-                !this.isBuried()) {
+            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2 &&
+                !this.state.digging && !this.isBuried()) {
                 this.props.moves.move(id);
             }
+        }
+        //tunnel
+        else if (this.props.G.tiles[id].type === "tunnel" &&
+            this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel" &&
+            this.props.G.tiles[id].sandCount < 2 && !this.state.digging && !this.isBuried()) {
+            this.props.moves.move(id);
         }
     }
     excavate() {
