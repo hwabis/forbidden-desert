@@ -6,7 +6,7 @@ WIP:
 
 Play here: https://hwabis.github.io/forbidden-desert/ (storm currently disabled)
 
-Created with boardgame.io and react; based off of Matt Leacock's Forbidden Desert board game.
+Created with (boardgame.io)[https://boardgame.io/] and React; based off of Gamewright's Forbidden Desert board game.
 
 Tile art source: various maps from https://maplestory.wiki/
 
