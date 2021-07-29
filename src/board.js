@@ -46,6 +46,10 @@ export class ForbiddenDesertBoard extends React.Component {
             this.setState({ givingWater: false });
         }
     }
+    pickUpFinalPart() {
+        //no need to check condition; button won't show up if it's not met
+        this.props.moves.pickUpFinalPart();
+    }
     isAdjacentTile(id) {
         const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
         return (id >= 0 && id <= 24 &&
@@ -199,15 +203,16 @@ export class ForbiddenDesertBoard extends React.Component {
                         tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
                             {sandIndicator}</div>);
                     }
-                    //render finalPart if it has one
-                    if (this.props.G.tiles[id].hasOwnProperty("finalPart")) {
-                        tile.push(<div className="final-part">Part: {this.props.G.tiles[id].finalPart}</div>)
+                    //render finalParts if it has at least one
+                    if (this.props.G.tiles[id].finalParts.length > 0) {
+                        tile.push(<div className="final-part">Parts: {this.props.G.tiles[id].finalParts}</div>)
                     }
-                    //render backgrounds (set by className CSS)
+                    //render unrevealed backgrounds (set by className CSS)
                     if (this.props.G.tiles[id].isRevealed === false) {
                         row.push(<td key={id} className={this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
                             "unrevealed-water" : "unrevealed"} onClick={() => this.onClickTile(id)}>{tile}</td>);
                     }
+                    //render clue tile (assign the right className)
                     else if (this.props.G.tiles[id].type === "clue") {
                         const className = this.props.G.tiles[id].part + this.props.G.tiles[id].pos;
                         row.push(<td key={id} className={className}
@@ -255,6 +260,19 @@ export class ForbiddenDesertBoard extends React.Component {
                 );
             }
         }
+        //only show pickup part button when the tile of the current player position
+        //has at least 1 finalPart,
+        //and the tile is revealed
+        if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
+            this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].finalParts.length > 0) {
+            actionButtons.push(
+                <div>
+                    <button onClick={() => { this.pickUpFinalPart(); }}>
+                        Pick up part
+                    </button>
+                </div>
+            )
+        }
         actionButtons.push(
             <div>
                 <button onClick={() => { this.props.undo(); }}>
@@ -267,6 +285,7 @@ export class ForbiddenDesertBoard extends React.Component {
         )
 
         var rightbar = [];
+        //player info
         rightbar.push(<div>Players:</div>)
         var playerInfoList = [];
         for (var i = 0; i < this.props.ctx.numPlayers; i++) {
@@ -333,6 +352,7 @@ export class ForbiddenDesertBoard extends React.Component {
             </div>
         );
 
+        //storm deck last turn
         rightbar.push(
             <div>
                 <p></p>
@@ -346,6 +366,34 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+        //currently collected parts
+        var partList = [];
+        for (var i = 0; i < this.props.G.collectedParts.length; i++) {
+            var color;
+            if (this.props.G.collectedParts[i] === "A") {
+                color = "red";
+            }
+            else if (this.props.G.collectedParts[i] === "B") {
+                color = "green";
+            }
+            else if (this.props.G.collectedParts[i] === "C") {
+                color = "blue";
+            }
+            else if (this.props.G.collectedParts[i] === "D") {
+                color = "purple";
+            }
+            partList.push(
+                <div className={color}>
+                    {this.props.G.collectedParts[i]}
+                </div>
+            );
+        }
+        rightbar.push(
+            <div>
+                <p></p>
+                Collected parts (4 total): {partList}
+            </div>
+        );
 
         return (
             <div>

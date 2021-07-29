@@ -70,9 +70,13 @@ td {
     text-align: center;
 }
 
-.red {
-    color: red;
-}
+.red {color: red;}
+
+.green {color: #09f621;}
+
+.blue {color: #5385f9;}
+
+.purple {color: #C638C6;}
 
 .final-part {
     position: absolute;

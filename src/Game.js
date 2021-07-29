@@ -49,7 +49,7 @@ export const ForbiddenDesert = {
                             hid -= 1;
                         }
                         const index = hid + (vid % 5);
-                        G.tiles[index].finalPart = G.tiles[G.players[ctx.currentPlayer].position].part;
+                        G.tiles[index].finalParts.push(G.tiles[G.players[ctx.currentPlayer].position].part);
                     }
                 }
             },
@@ -61,6 +61,13 @@ export const ForbiddenDesert = {
                 G.players[id].water += 1;
             },
             noLimit: true
+        },
+        pickUpFinalPart: (G, ctx) => {
+            const tempRemovedPart = G.tiles[G.players[ctx.currentPlayer].position].finalParts[0];
+            //remove the first final part from tile
+            G.tiles[G.players[ctx.currentPlayer].position].finalParts.splice(0, 1);
+            //add to collected parts
+            G.collectedParts.push(tempRemovedPart);
         },
         doNothing: (G, ctx) => {
             ctx.events.endTurn();
@@ -341,18 +348,21 @@ var setupTiles = () => {
             isRevealed: false,
             sandCount: 0,
             type: "well",
+            finalParts: []
         });
     }
     tiles.push({
         isRevealed: false,
         sandCount: 0,
         type: "mirage",
+        finalParts: []
     });
     for (var i = 0; i < 9; i++) {
         tiles.push({
             isRevealed: false,
             sandCount: 0,
             type: "gear",
+            finalParts: []
         });
     }
     for (var i = 0; i < 3; i++) {
@@ -360,6 +370,7 @@ var setupTiles = () => {
             isRevealed: false,
             sandCount: 0,
             type: "tunnel",
+            finalParts: []
         })
     }
     for (var i = 0; i < 4; i++) {
@@ -380,6 +391,7 @@ var setupTiles = () => {
                 type: "clue",
                 part: part,
                 pos: pos,
+                finalParts: []
             });
         }
     }
@@ -387,12 +399,14 @@ var setupTiles = () => {
         isRevealed: false,
         sandCount: 0,
         type: "launchpad",
+        finalParts: []
     })
     shuffle(tiles);
     tiles.splice(12, 0, {
         isRevealed: false,
         sandCount: 0,
         type: "storm",
+        finalParts: []
     });
 
     //setup sand
