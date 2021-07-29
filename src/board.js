@@ -203,6 +203,11 @@ export class ForbiddenDesertBoard extends React.Component {
                         row.push(<td key={id} className={this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
                             "unrevealed-water" : "unrevealed"} onClick={() => this.onClickTile(id)}>{tile}</td>);
                     }
+                    else if (this.props.G.tiles[id].type === "clue") {
+                        const className = this.props.G.tiles[id].part + this.props.G.tiles[id].pos;
+                        row.push(<td key={id} className={className}
+                            onClick={() => this.onClickTile(id)}>{tile}</td>);
+                    }
                     else {
                         row.push(<td key={id} className={this.props.G.tiles[id].type}
                             onClick={() => this.onClickTile(id)}>{tile}</td>);

@@ -19,33 +19,26 @@ td {
     float: left;
 }
 
-.unrevealed {
-    background-image: url("img/back.png");
-}
+.unrevealed {background-image: url("img/back.png");}
 
-.unrevealed-water {
-    background-image: url("img/back-water.png");
-}
+.unrevealed-water {background-image: url("img/back-water.png");}
 
-.well {
-    background-image: url("img/well.png");
-}
+.well {background-image: url("img/well.png");}
 
-.tunnel {
-    background-image: url("img/tunnel.png");
-}
+.tunnel {background-image: url("img/tunnel.png");}
 
-.mirage {
-    background-image: url("img/mirage.png");
-}
+.mirage {background-image: url("img/mirage.png");}
 
-.gear {
-    background-image: url("img/gear.png");
-}
+.gear {background-image: url("img/gear.png");}
 
-.clue {
-
-}
+.Av {background-image: url("img/clues/a-h.png");}
+.Ah {background-image: url("img/clues/a-v.png");}
+.Bv {background-image: url("img/clues/b-h.png");}
+.Bh {background-image: url("img/clues/b-v.png");}
+.Cv {background-image: url("img/clues/c-h.png");}
+.Ch {background-image: url("img/clues/c-v.png");}
+.Dv {background-image: url("img/clues/d-h.png");}
+.Dh {background-image: url("img/clues/d-v.png");}
 
 .launchpad {
     background-image: url("img/launchpad.png");

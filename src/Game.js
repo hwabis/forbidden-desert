@@ -331,14 +331,22 @@ var setupTiles = () => {
     }
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 2; j++) {
-            //parts: 0, 1, 2, 3
+            //parts: A, B, C, D
             //pos: 0 --> vertical, 1 --> horizontal
+            var part;
+            var pos;
+            if (i === 0) part = "A";
+            else if (i === 1) part = "B";
+            else if (i === 2) part = "C";
+            else if (i === 3) part = "D";
+            if (j === 0) pos = "h";
+            else if (j === 1) pos = "v" 
             tiles.push({
                 isRevealed: false,
                 sandCount: 0,
                 type: "clue",
-                part: i,
-                pos: j,
+                part: part,
+                pos: pos,
             });
         }
     }
