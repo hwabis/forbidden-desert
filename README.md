@@ -4,7 +4,7 @@ WIP:
 * Equipment (from gear + tunnel tiles)
 * Display win/loss
 
-Play here: https://hwabis.github.io/forbidden-desert/
+Play here: https://hwabis.github.io/forbidden-desert/ (storm currently disabled)
 
 Created with boardgame.io and react; based off of Matt Leacock's Forbidden Desert board game.
 
