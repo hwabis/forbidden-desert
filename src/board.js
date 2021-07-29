@@ -197,7 +197,7 @@ export class ForbiddenDesertBoard extends React.Component {
                             sandIndicator = sandIndicator.concat("l");
                         }
                         tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
-                            Sand: {sandIndicator}</div>);
+                            {sandIndicator}</div>);
                     }
                     if (this.props.G.tiles[id].isRevealed === false) {
                         row.push(<td key={id} className={this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
