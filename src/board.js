@@ -183,7 +183,11 @@ export class ForbiddenDesertBoard extends React.Component {
                 var tile = [];
                 const id = 5 * i + j;
                 if (this.props.G.tiles[id].type === "storm") {
-                    row.push(<td key={id} id="storm"></td>);
+                    //render finalParts if it has at least one
+                    if (this.props.G.tiles[id].finalParts.length > 0) {
+                        tile.push(<div className="final-part">Parts: {this.props.G.tiles[id].finalParts}</div>)
+                    }
+                    row.push(<td className="storm">{tile}</td>);
                 }
                 else {
                     var playersOnThisTile = [];

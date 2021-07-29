@@ -49,7 +49,7 @@ export const ForbiddenDesert = {
                             hid -= 1;
                         }
                         const index = hid + (vid % 5);
-                        G.tiles[index].finalParts.push(G.tiles[G.players[ctx.currentPlayer].position].part);
+                        G.tiles[index].finalParts.push(partName);
                     }
                 }
             },
@@ -99,17 +99,17 @@ export const ForbiddenDesert = {
             noLimit: true
         },
         //DEBUG ONLY
-        removeWater: {
+        placeFinalPart: {
             move: (G, ctx, id) => {
-                G.players[id].water -= 1;
+                G.tiles[id].finalParts.push("Z");
             },
             noLimit: true
-        },
+        }
     },
 
     turn: {
         moveLimit: 4,
-        /*
+        
         onEnd: (G, ctx) => {
             G.lastDrawType = [];
             //check storm level + ctx.numPlayers, and draw according to that
@@ -159,7 +159,8 @@ export const ForbiddenDesert = {
                     numDraws = 6;
                 }
             }
-            for (var draw = 0; draw < numDraws; draw++) {
+            //draw < numDraws
+            for (var draw = 0; draw < 1 ; draw++) {
                 //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
                 var val = ctx.random.Die(31);
                 if (val <= 4) {
@@ -254,6 +255,15 @@ export const ForbiddenDesert = {
                     //execute movements
                     const tempStormTile = G.tiles[stormPos];
                     var prevPos = stormPos;
+                    //edge case: first give all of stormPos's finalParts to the first affectedPos tile
+                    if (affectedPos.length > 0) {
+                        for (var i = 0; i < G.tiles[stormPos].finalParts.length; i++) {
+                            G.tiles[affectedPos[0]].finalParts.push(G.tiles[stormPos].finalParts[i]);
+                        }
+                        //clear storm's finalParts
+                        G.tiles[stormPos].finalParts = [];
+                    }
+                    //...now execute
                     for (var i = 0; i < affectedPos.length; i++) {
                         G.tiles[prevPos] = G.tiles[affectedPos[i]];
                         prevPos = affectedPos[i];
@@ -302,7 +312,7 @@ export const ForbiddenDesert = {
                     G.lastDrawType.push("Wind: " + directionString + ", strength " + maxTilesAffected);
                 }
             }
-        }*/
+        }
     },
 
     endIf: (G, ctx) => {
