@@ -52,9 +52,17 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     isAdjacentTile(id) {
         const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
-        return (id >= 0 && id <= 24 &&
+        var check1 = id >= 0 && id <= 24 &&
             (id === currentPlayerPos - 1 || id === currentPlayerPos + 1 ||
-                id === currentPlayerPos - 5 || id === currentPlayerPos + 5));
+                id === currentPlayerPos - 5 || id === currentPlayerPos + 5);
+        if (id === currentPlayerPos - 1 || id === currentPlayerPos + 1) {
+            //check2 is to prevent moving across the entire board, e.g. between 4-5, 9-10, etc.
+            var check2 = (Math.floor(id / 5) === Math.floor(currentPlayerPos / 5));
+            return check2;
+        }
+        else {
+            return check1;
+        }
     }
     isSameTile(id) {
         return (id === this.props.G.players[this.props.ctx.currentPlayer].position);
