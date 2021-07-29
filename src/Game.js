@@ -160,6 +160,11 @@ export const ForbiddenDesert = {
                         }
                     }
                 }
+                //add 1 sand to affected tiles
+                for (var i = 0; i < affectedPos.length; i++) {
+                    G.tiles[affectedPos[i]].sandCount += 1;
+                }
+
                 //execute movements
                 const tempStormTile = G.tiles[stormPos];
                 var prevPos = stormPos;
