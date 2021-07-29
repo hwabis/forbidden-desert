@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/forbidden-desert/static/css/main.0f1a0b5e.chunk.css",
-    "main.js": "/forbidden-desert/static/js/main.100e7f4b.chunk.js",
-    "main.js.map": "/forbidden-desert/static/js/main.100e7f4b.chunk.js.map",
+    "main.css": "/forbidden-desert/static/css/main.4dd25865.chunk.css",
+    "main.js": "/forbidden-desert/static/js/main.d88c828c.chunk.js",
+    "main.js.map": "/forbidden-desert/static/js/main.d88c828c.chunk.js.map",
     "runtime-main.js": "/forbidden-desert/static/js/runtime-main.5ebc221e.js",
     "runtime-main.js.map": "/forbidden-desert/static/js/runtime-main.5ebc221e.js.map",
     "static/js/2.4235b6e5.chunk.js": "/forbidden-desert/static/js/2.4235b6e5.chunk.js",
     "static/js/2.4235b6e5.chunk.js.map": "/forbidden-desert/static/js/2.4235b6e5.chunk.js.map",
     "index.html": "/forbidden-desert/index.html",
-    "static/css/main.0f1a0b5e.chunk.css.map": "/forbidden-desert/static/css/main.0f1a0b5e.chunk.css.map",
+    "static/css/main.4dd25865.chunk.css.map": "/forbidden-desert/static/css/main.4dd25865.chunk.css.map",
     "static/js/2.4235b6e5.chunk.js.LICENSE.txt": "/forbidden-desert/static/js/2.4235b6e5.chunk.js.LICENSE.txt",
     "static/media/board.css": "/forbidden-desert/static/media/well.b20616e7.png"
   },
   "entrypoints": [
     "static/js/runtime-main.5ebc221e.js",
     "static/js/2.4235b6e5.chunk.js",
-    "static/css/main.0f1a0b5e.chunk.css",
-    "static/js/main.100e7f4b.chunk.js"
+    "static/css/main.4dd25865.chunk.css",
+    "static/js/main.d88c828c.chunk.js"
   ]
 }
