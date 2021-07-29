@@ -31,14 +31,14 @@ td {
 
 .gear {background-image: url("img/gear.png");}
 
-.Av {background-image: url("img/clues/a-h.png");}
-.Ah {background-image: url("img/clues/a-v.png");}
-.Bv {background-image: url("img/clues/b-h.png");}
-.Bh {background-image: url("img/clues/b-v.png");}
-.Cv {background-image: url("img/clues/c-h.png");}
-.Ch {background-image: url("img/clues/c-v.png");}
-.Dv {background-image: url("img/clues/d-h.png");}
-.Dh {background-image: url("img/clues/d-v.png");}
+.Ah {background-image: url("img/clues/a-h.png");}
+.Av {background-image: url("img/clues/a-v.png");}
+.Bh {background-image: url("img/clues/b-h.png");}
+.Bv {background-image: url("img/clues/b-v.png");}
+.Ch {background-image: url("img/clues/c-h.png");}
+.Cv {background-image: url("img/clues/c-v.png");}
+.Dh {background-image: url("img/clues/d-h.png");}
+.Dv {background-image: url("img/clues/d-v.png");}
 
 .launchpad {
     background-image: url("img/launchpad.png");
@@ -62,10 +62,28 @@ td {
 .sand {
     position: absolute;
     bottom: 0;
+    font-size: large;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
 }
 
 .red {
     color: red;
+}
+
+.final-part {
+    position: absolute;
+    top: 0;
+    font-size: x-large;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: pink;
 }
 
 ul {

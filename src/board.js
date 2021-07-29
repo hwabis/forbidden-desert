@@ -199,6 +199,11 @@ export class ForbiddenDesertBoard extends React.Component {
                         tile.push(<div className={this.props.G.tiles[id].sandCount > 1 ? "sand red" : "sand"}>
                             {sandIndicator}</div>);
                     }
+                    //render finalPart if it has one
+                    if (this.props.G.tiles[id].hasOwnProperty("finalPart")) {
+                        tile.push(<div className="final-part">Part: {this.props.G.tiles[id].finalPart}</div>)
+                    }
+                    //render backgrounds (set by className CSS)
                     if (this.props.G.tiles[id].isRevealed === false) {
                         row.push(<td key={id} className={this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
                             "unrevealed-water" : "unrevealed"} onClick={() => this.onClickTile(id)}>{tile}</td>);

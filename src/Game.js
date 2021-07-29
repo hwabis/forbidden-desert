@@ -8,6 +8,7 @@ export const ForbiddenDesert = {
         tiles: setupTiles(),
         stormLevel: 0,
         lastDrawType: [],
+        collectedParts: [],
     }),
 
     moves: {
@@ -20,6 +21,37 @@ export const ForbiddenDesert = {
         excavate: {
             move: (G, ctx) => {
                 G.tiles[G.players[ctx.currentPlayer].position].isRevealed = true;
+                if (G.tiles[G.players[ctx.currentPlayer].position].type === "clue") {
+                    //check if the other clue has also been revealed
+                    //if so, then generate finalPart on the appropriate tile
+                    var found = false;
+                    for (var i = 0; i < G.tiles.length; i++) {
+                        if (G.tiles[i].isRevealed && G.tiles[i].type === "clue" &&
+                            i !== G.players[ctx.currentPlayer].position &&
+                            G.tiles[i].part === G.tiles[G.players[ctx.currentPlayer].position].part) {
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        var hid;
+                        var vid;
+                        var partName = G.tiles[G.players[ctx.currentPlayer].position].part;
+                        for (var i = 0; i < G.tiles.length; i++) {
+                            if (G.tiles[i].part === partName && G.tiles[i].pos === "h") {
+                                hid = i;
+                            }
+                            if (G.tiles[i].part === partName && G.tiles[i].pos === "v") {
+                                vid = i;
+                            }
+                        }
+                        //index = (hid rounded down to the nearest multiple of 5) + (vid % 5)
+                        while ((hid % 5) !== 0 && hid >= 0) {
+                            hid -= 1;
+                        }
+                        const index = hid + (vid % 5);
+                        G.tiles[index].finalPart = G.tiles[G.players[ctx.currentPlayer].position].part;
+                    }
+                }
             },
             undoable: false
         },
@@ -70,6 +102,7 @@ export const ForbiddenDesert = {
 
     turn: {
         moveLimit: 4,
+        /*
         onEnd: (G, ctx) => {
             G.lastDrawType = [];
             //check storm level + ctx.numPlayers, and draw according to that
@@ -262,7 +295,7 @@ export const ForbiddenDesert = {
                     G.lastDrawType.push("Wind: " + directionString + ", strength " + maxTilesAffected);
                 }
             }
-        }
+        }*/
     },
 
     endIf: (G, ctx) => {
@@ -340,7 +373,7 @@ var setupTiles = () => {
             else if (i === 2) part = "C";
             else if (i === 3) part = "D";
             if (j === 0) pos = "h";
-            else if (j === 1) pos = "v" 
+            else if (j === 1) pos = "v"
             tiles.push({
                 isRevealed: false,
                 sandCount: 0,
