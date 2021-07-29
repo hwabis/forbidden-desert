@@ -40,9 +40,8 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     giveWaterTo(id) {
         if (this.props.G.players[id].position === this.props.G.players[this.props.ctx.currentPlayer].position
-            && this.props.G.players[id].water < this.props.G.players[id].maxWater 
+            && this.props.G.players[id].water < this.props.G.players[id].maxWater
             && this.props.G.players[this.props.ctx.currentPlayer].water > 0) {
-                console.log("WHAT" + id);
             this.props.moves.giveWater(id);
             this.setState({ givingWater: false });
         }
@@ -62,8 +61,8 @@ export class ForbiddenDesertBoard extends React.Component {
     }
 
     render() {
+        //role selection screen
         if (this.state.assignID < this.props.ctx.numPlayers) {
-            //role selection screen
             return (
                 <div className="center">
                     <div id="title">
@@ -144,8 +143,8 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+        //difficulty selection screen
         if (this.state.assignDifficulty === false) {
-            //difficulty selection screen
             return (
                 <div className="center">
                     <div id="title">
@@ -296,6 +295,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 <p></p>
                 <div>Current storm level: {this.props.G.stormLevel}</div>
                 <p></p>
+                <div>Info:</div>
                 <div>
                     Draw 2 at level 0
                 </div>
@@ -314,6 +314,12 @@ export class ForbiddenDesertBoard extends React.Component {
                 <div>
                     Game over at level {death}
                 </div>
+                <div>
+                    Probability of Sun Beats Down: 12.9%
+                </div>
+                <div>
+                    Probability of Storm Picks Up: 9.7%
+                </div>
             </div>
         );
 
@@ -322,7 +328,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 <p></p>
                 End of last turn:
             </div>
-        )
+        );
         for (var i = 0; i < this.props.G.lastDrawType.length; i++) {
             rightbar.push(
                 <div>
