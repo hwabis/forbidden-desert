@@ -20,22 +20,33 @@ export const ForbiddenDesert = {
         },
         excavate: {
             move: (G, ctx) => {
-                G.tiles[G.players[ctx.currentPlayer].position].isRevealed = true;
-                if (G.tiles[G.players[ctx.currentPlayer].position].type === "clue") {
+                const currPos = G.players[ctx.currentPlayer].position;
+                G.tiles[currPos].isRevealed = true;
+                if (G.tiles[currPos].type === "well") {
+                    //everyone on currPos gets two water
+                    for (var i = 0; i < G.players.length; i++) {
+                        if (G.players[i].position === currPos) {
+                            G.players[i].water += 2;
+                        }
+                        if (G.players[i].water > G.players[i].maxWater) {
+                            G.players[i].water = G.players[i].maxWater;
+                        }
+                    }
+                }
+                else if (G.tiles[currPos].type === "clue") {
                     //check if the other clue has also been revealed
                     //if so, then generate finalPart on the appropriate tile
                     var found = false;
                     for (var i = 0; i < G.tiles.length; i++) {
                         if (G.tiles[i].isRevealed && G.tiles[i].type === "clue" &&
-                            i !== G.players[ctx.currentPlayer].position &&
-                            G.tiles[i].part === G.tiles[G.players[ctx.currentPlayer].position].part) {
+                            i !== currPos && G.tiles[i].part === G.tiles[currPos].part) {
                             found = true;
                         }
                     }
                     if (found) {
                         var hid;
                         var vid;
-                        var partName = G.tiles[G.players[ctx.currentPlayer].position].part;
+                        var partName = G.tiles[currPos].part;
                         for (var i = 0; i < G.tiles.length; i++) {
                             if (G.tiles[i].part === partName && G.tiles[i].pos === "h") {
                                 hid = i;
@@ -99,6 +110,12 @@ export const ForbiddenDesert = {
             noLimit: true
         },
         //DEBUG ONLY
+        removeWater: {
+            move: (G, ctx, id) => {
+                G.players[id].water -= 1;
+            },
+            noLimit: true
+        },
         placeFinalPart: {
             move: (G, ctx, id) => {
                 G.tiles[id].finalParts.push("Z");
@@ -109,7 +126,7 @@ export const ForbiddenDesert = {
 
     turn: {
         moveLimit: 4,
-        
+        /*
         onEnd: (G, ctx) => {
             G.lastDrawType = [];
             //check storm level + ctx.numPlayers, and draw according to that
@@ -159,8 +176,7 @@ export const ForbiddenDesert = {
                     numDraws = 6;
                 }
             }
-            //draw < numDraws
-            for (var draw = 0; draw < 1 ; draw++) {
+            for (var draw = 0; draw < numDraws; draw++) {
                 //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
                 var val = ctx.random.Die(31);
                 if (val <= 4) {
@@ -312,7 +328,7 @@ export const ForbiddenDesert = {
                     G.lastDrawType.push("Wind: " + directionString + ", strength " + maxTilesAffected);
                 }
             }
-        }
+        }*/
     },
 
     endIf: (G, ctx) => {
