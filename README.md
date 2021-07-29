@@ -1,7 +1,7 @@
 # forbidden-desert
 hiatus until aug 17 lololol
 
-(WIP!!!) - Play here: https://hwabis.github.io/forbidden-desert/
+Play here: https://hwabis.github.io/forbidden-desert/
 
 Created with boardgame.io and react; based off of Matt Leacock's Forbidden Desert board game.
 
