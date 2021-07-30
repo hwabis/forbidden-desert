@@ -55,7 +55,7 @@ td {
 }
 
 .player {
-    font-size: xx-large;
+    font-size: xxx-large;
     text-align: center;
 }
 
@@ -101,4 +101,8 @@ ul {
 
 .diggable {
     border: 2px #654321 solid;
+}
+
+.movable {
+    border: 2px #5385f9 solid;
 }

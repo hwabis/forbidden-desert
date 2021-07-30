@@ -11,16 +11,6 @@ export class ForbiddenDesertBoard extends React.Component {
         waterErrorMsg: '',
     }
 
-    //for idToStateClass purposes, not onClickTile
-    tileIsDiggable(id) {
-        if (this.isBuried()) {
-            return this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0;
-        }
-        else {
-            return (this.isAdjacentTile(id) || this.isSameTile(id)) && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
-        }
-    }
-
     assignRoleTo(id, role) {
         this.props.moves.setPlayerInfo(id, role);
         this.setState({ assignID: this.state.assignID + 1 });
@@ -88,6 +78,27 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     isSameTile(id) {
         return (id === this.props.G.players[this.props.ctx.currentPlayer].position);
+    }
+
+    //for idToStateClass purposes, not onClickTile
+    tileIsMovable(id) {
+        if (this.isBuried()) {
+            return false;
+        }
+        else {
+            return this.isAdjacentTile(id) && !this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2
+            && !this.state.digging && !this.isBuried();
+        }
+    }
+    //for idToStateClass purposes, not onClickTile
+    tileIsDiggable(id) {
+        if (this.isBuried()) {
+            return this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0;
+            //last condition here should always be true lol
+        }
+        else {
+            return (this.isAdjacentTile(id) || this.isSameTile(id)) && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
+        }
     }
     //returns whether current player is buried
     isBuried() {
@@ -202,17 +213,22 @@ export class ForbiddenDesertBoard extends React.Component {
         }
 
         //adds class to render borders on appropriate tiles when this.state.digging
+        //or when moving (!this.state.digging)
         let idToStateClass =
             new Array(25).fill(" ")
-                .map((currentClass, tileId, _) => {
-                    if (this.state.digging && this.tileIsDiggable(tileId)) {
+                .map((currentClass, tileID, _) => {
+                    if (this.state.digging && this.tileIsDiggable(tileID)) {
                         return `${currentClass} diggable` // Add the `diggable` class to this
                     } else {
                         return `${currentClass}`; // Do not add any more classes
                     }
                 }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
-                .map((currentClass, tileId, _) => {
-                    return currentClass // This does nothing, delete this `map` call when you want because it's just for demo purposes
+                .map((currentClass, tileID, _) => {
+                    if (!this.state.digging && this.tileIsMovable(tileID)) {
+                        return `${currentClass} movable`
+                    } else {
+                        return `${currentClass}`;
+                    }
                 }) // May be problematic if you somehow add multiple classes that have conflicting properties
 
         var tiles = [];
