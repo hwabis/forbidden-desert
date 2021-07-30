@@ -7,7 +7,8 @@ export class ForbiddenDesertBoard extends React.Component {
         assignDifficulty: false,
         digging: false,
         givingWater: false,
-        waterErrorMsg: false,
+        excavateErrorMsg: '',
+        waterErrorMsg: '',
     }
 
     //for idToStateClass purposes, not onClickTile
@@ -53,11 +54,7 @@ export class ForbiddenDesertBoard extends React.Component {
         }
     }
     excavate() {
-        if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === false
-            && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount === 0) {
-            //holy cow what a long sentence lol
-            this.props.moves.excavate();
-        }
+        this.props.moves.excavate();
     }
     giveWaterTo(id) {
         this.props.moves.giveWater(id);
@@ -282,9 +279,30 @@ export class ForbiddenDesertBoard extends React.Component {
                 <div>
                     {this.state.digging ? "Choose a tile to dig." : ""}
                 </div>
-                <button onClick={() => { this.excavate(); }}>
+                <button onClick={() => {
+                    if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === true) {
+                        this.setState({ excavateErrorMsg: "This tile is already revealed!" })
+                        setTimeout(() => this.setState({ excavateErrorMsg: '' }), 3000);
+                    }
+                    else if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount !== 0) {
+                        this.setState({ excavateErrorMsg: "Remove all sand on this tile before excavating!" })
+                        setTimeout(() => this.setState({ excavateErrorMsg: '' }), 3000);
+                    }
+                    else {
+                        this.excavate();
+                    }
+                }}>
                     Excavate
                 </button>
+            </div>
+        );
+        actionButtons.push(
+            <div>
+                {this.state.excavateErrorMsg}
+            </div>
+        )
+        actionButtons.push(
+            <div>
                 <button onClick={() => { this.setState({ givingWater: !this.state.givingWater }); }}>
                     Give water to...
                 </button>
@@ -311,7 +329,7 @@ export class ForbiddenDesertBoard extends React.Component {
                                     setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
                                 }
                                 else if (this.props.G.players[index].water === this.props.G.players[index].maxWater) {
-                                    this.setState({givingWater: false, waterErrorMsg: "Target has full water!"});
+                                    this.setState({ givingWater: false, waterErrorMsg: "Target has full water!" });
                                     setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
                                 }
                                 else {
