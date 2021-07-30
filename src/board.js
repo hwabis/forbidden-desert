@@ -157,7 +157,7 @@ export class ForbiddenDesertBoard extends React.Component {
                         <div>
                             <p id="header">Navigator (🍼4)</p>
                             <ul>
-                                <li>Direct: move another player up to 3 tiles. Climber and Explorer keep their abilities. (Cost: 1 action)</li>
+                                <li>Navigate: move another player up to 3 tiles. Climber and Explorer keep their abilities. (Cost: 1 action)</li>
                             </ul>
                         </div>
                         <div>
@@ -405,58 +405,11 @@ export class ForbiddenDesertBoard extends React.Component {
         }
         rightbar.push(playerInfoList);
 
-        var draw3, draw4, draw5, draw6, death;
-        if (this.props.ctx.numPlayers === 2) {
-            draw3 = "1 - 3";
-            draw4 = "4 - 7";
-            draw5 = "8 - 10";
-            draw6 = "11 - 12";
-            death = "13";
-        }
-        else if (this.props.ctx.numPlayers === 3 || this.props.ctx.numPlayers === 4) {
-            draw3 = "1 - 4";
-            draw4 = "5 - 8";
-            draw5 = "9 - 11";
-            draw6 = "12 - 13";
-            death = "14";
-        }
-        else if (this.props.ctx.numPlayers === 5) {
-            draw3 = "1 - 5";
-            draw4 = "6 - 9";
-            draw5 = "10 - 12";
-            draw6 = "13 - 14";
-            death = "15";
-        }
         rightbar.push(
             <div>
                 <p></p>
                 <div>Current storm level: {this.props.G.stormLevel}</div>
                 <p></p>
-                <div>Info:</div>
-                <div>
-                    Draw 2 at level 0
-                </div>
-                <div>
-                    Draw 3 at levels {draw3}
-                </div>
-                <div>
-                    Draw 4 at levels {draw4}
-                </div>
-                <div>
-                    Draw 5 at levels {draw5}
-                </div>
-                <div>
-                    Draw 6 at levels {draw6}
-                </div>
-                <div>
-                    Game over at level {death}
-                </div>
-                <div>
-                    Probability of Sun Beats Down: 12.9%
-                </div>
-                <div>
-                    Probability of Storm Picks Up: 9.7%
-                </div>
             </div>
         );
 
@@ -496,12 +449,94 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+        if (this.props.G.collectedParts.length === 0) {
+            rightbar.push(
+                <div>
+                    <p></p>
+                    Collected parts (4 total): none
+                </div>
+            );
+        }
+        else {
+            rightbar.push(
+                <div>
+                    <p></p>
+                    Collected parts (4 total): {partList}
+                </div>
+            );
+        }
+
+        var draw3, draw4, draw5, draw6, death;
+        if (this.props.ctx.numPlayers === 2) {
+            draw3 = "1 - 3";
+            draw4 = "4 - 7";
+            draw5 = "8 - 10";
+            draw6 = "11 - 12";
+            death = "13";
+        }
+        else if (this.props.ctx.numPlayers === 3 || this.props.ctx.numPlayers === 4) {
+            draw3 = "1 - 4";
+            draw4 = "5 - 8";
+            draw5 = "9 - 11";
+            draw6 = "12 - 13";
+            death = "14";
+        }
+        else if (this.props.ctx.numPlayers === 5) {
+            draw3 = "1 - 5";
+            draw4 = "6 - 9";
+            draw5 = "10 - 12";
+            draw6 = "13 - 14";
+            death = "15";
+        }
         rightbar.push(
-            <div>
+            <div className="small">
                 <p></p>
-                Collected parts (4 total): {partList}
+                <div>
+                    Draw 2 at storm level 0
+                </div>
+                <div>
+                    Draw 3 at levels {draw3}
+                </div>
+                <div>
+                    Draw 4 at levels {draw4}
+                </div>
+                <div>
+                    Draw 5 at levels {draw5}
+                </div>
+                <div>
+                    Draw 6 at levels {draw6}
+                </div>
+                <div>
+                    Game over at level {death}
+                </div>
+                <p></p>
+                <div>
+                    Chance of Sun Beats Down: 12.9%
+                </div>
+                <div>
+                    Chance of Storm Picks Up: 9.7%
+                </div>
+                <p></p>
+                <div>
+                    Archeologist: removes 2 sand when digging
+                </div>
+                <div>
+                    Climber: move over any tile; allows everyone on current tile to move. Ability: Carry (free)
+                </div>
+                <div>
+                    Explorer: move, dig, and use items diagonally
+                </div>
+                <div>
+                    Meteorologist: Ability: Mitigate (cost: 1 action)
+                </div>
+                <div>
+                    Navigator: Ability: Navigate (cost: 1 action)
+                </div>
+                <div>
+                    Water Carrier: give water to adjacent players. Ability: Collect 2 Water from well (free)
+                </div>
             </div>
-        );
+        )
 
         return (
             <div>

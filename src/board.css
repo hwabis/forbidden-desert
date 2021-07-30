@@ -78,6 +78,11 @@ td {
 
 .purple {color: #C638C6;}
 
+.small {
+    font-size: small;
+    color: gray;
+}
+
 .final-part {
     position: absolute;
     top: 0;

@@ -167,16 +167,13 @@ export const ForbiddenDesert = {
                             }
                         }
                         G.lastDrawType.push("Sun Beats Down");
-                        console.log("WHAT");
                     }
                     else if (val <= 7) {
                         G.stormLevel += 1;
                         G.lastDrawType.push("Storm Picks Up")
-                        console.log("storm");
                     }
                     else {
                         var stormPos = 0;
-                        console.log("whoosh");
                         for (stormPos; stormPos < G.tiles.length; stormPos++) {
                             if (G.tiles[stormPos].type === "storm") {
                                 break;
