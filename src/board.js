@@ -8,7 +8,7 @@ export class ForbiddenDesertBoard extends React.Component {
         digging: false,
         givingWater: false,
     }
-    
+
     tileIsDiggable(id) {
         return (this.isAdjacentTile(id) || this.isSameTile(id)) && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
     }
@@ -89,22 +89,6 @@ export class ForbiddenDesertBoard extends React.Component {
     }
 
     render() {
-        // Feel free to remove these comments if they're unnecessary XD
-        // I tried to make a generic framework that is still compatible with your program without destroying everything
-        let idToStateClass = 
-            new Array(25).fill(" ")
-            .map((currentClass, tileId, _) => {
-                if (this.state.digging && this.tileIsDiggable(tileId)) {
-                    return `${currentClass} diggable` // Add the `diggable` class to this
-                } else {
-                    return `${currentClass}`; // Do not add any more classes
-                }
-            }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
-            .map((currentClass, tileId, _) => {
-                return currentClass // This does nothing, delete this `map` call when you want because it's just for demo purposes
-            }) // May be problematic if you somehow add multiple classes that have conflicting properties
-        // CTRL-F "idToStateClass" for usage, I just added it to the <td> elements because they looked like tiles
-
         //role selection screen
         if (this.state.assignID < this.props.ctx.numPlayers) {
             return (
@@ -216,6 +200,21 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+        
+        //adds class to render borders on appropriate tiles when this.state.digging
+        let idToStateClass =
+            new Array(25).fill(" ")
+                .map((currentClass, tileId, _) => {
+                    if (this.state.digging && this.tileIsDiggable(tileId)) {
+                        return `${currentClass} diggable` // Add the `diggable` class to this
+                    } else {
+                        return `${currentClass}`; // Do not add any more classes
+                    }
+                }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
+                .map((currentClass, tileId, _) => {
+                    return currentClass // This does nothing, delete this `map` call when you want because it's just for demo purposes
+                }) // May be problematic if you somehow add multiple classes that have conflicting properties
+
         var tiles = [];
         for (var i = 0; i < 5; i++) {
             var row = [];
