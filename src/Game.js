@@ -1,8 +1,6 @@
 export const ForbiddenDesert = {
-    //tile: "isRevealed", "sandCount"
-    //tile types: "well", "mirage", "gear", "tunnel", "clue", "launchpad", "storm"
-    //tile: "part" and "pos" only for type "clue"
-    //parts are "0", "1", "2", "3"; pos are "0" (vertical) and "1" (horizontal)
+    //there's a bug where sometimes (particularly when people are at 0 water),
+    //onEnd happens twice. i can't figure out the cause, but turnEnded should fix it
     setup: (ctx) => ({
         players: setupPlayers(ctx.numPlayers),
         tiles: setupTiles(),
@@ -10,6 +8,7 @@ export const ForbiddenDesert = {
         numDraws: 0,
         lastDrawType: [],
         collectedParts: [],
+        turnEnded: false,
     }),
 
     moves: {
@@ -150,207 +149,216 @@ export const ForbiddenDesert = {
 
     turn: {
         moveLimit: 4,
+        onBegin: (G, ctx) => {
+            G.turnEnded = false;
+        },
         onEnd: (G, ctx) => {
-            G.lastDrawType = [];
-            //numDraws should be set from end of last turn
-            //(we set it at the end for meteorologist to be able to decrement it during turn)
-            for (var draw = 0; draw < G.numDraws; draw++) {
-                //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
-                var val = ctx.random.Die(31);
-                if (val <= 4) {
-                    for (var i = 0; i < G.players.length; i++) {
-                        if (!(G.tiles[G.players[i].position].type === "tunnel" && G.tiles[G.players[i].position].isRevealed)) {
-                            G.players[i].water -= 1;
+            if (!G.turnEnded) {
+                G.lastDrawType = [];
+                //numDraws should be set from end of last turn
+                //(we set it at the end for meteorologist to be able to decrement it during turn)
+                for (var draw = 0; draw < G.numDraws; draw++) {
+                    //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
+                    var val = ctx.random.Die(31);
+                    if (val <= 4) {
+                        for (var i = 0; i < G.players.length; i++) {
+                            if (!(G.tiles[G.players[i].position].type === "tunnel" && G.tiles[G.players[i].position].isRevealed)) {
+                                G.players[i].water -= 1;
+                            }
                         }
+                        G.lastDrawType.push("Sun Beats Down");
+                        console.log("WHAT");
                     }
-                    G.lastDrawType.push("Sun Beats Down");
-                }
-                else if (val <= 7) {
-                    G.stormLevel += 1;
-                    G.lastDrawType.push("Storm Picks Up")
-                }
-                else {
-                    var stormPos = 0;
-                    for (stormPos; stormPos < G.tiles.length; stormPos++) {
-                        if (G.tiles[stormPos].type === "storm") {
-                            break;
-                        }
-                    }
-                    //1 = up, 2 = left, 3 = down, 4 = right
-                    var windDirection = ctx.random.Die(4);
-                    //1-3 = 1, 4-5 = 2, 6 = 3
-                    var windStrength = ctx.random.Die(6);
-                    var maxTilesAffected;
-                    if (windStrength <= 3) {
-                        maxTilesAffected = 1;
-                    }
-                    else if (windStrength <= 5) {
-                        maxTilesAffected = 2;
+                    else if (val <= 7) {
+                        G.stormLevel += 1;
+                        G.lastDrawType.push("Storm Picks Up")
+                        console.log("storm");
                     }
                     else {
-                        maxTilesAffected = 3;
-                    }
-                    //identify positions of tiles that are moved
-                    var affectedPos = [];
-                    var candidatePos = stormPos;
-                    if (windDirection === 1) {
-                        while (affectedPos.length < maxTilesAffected) {
-                            candidatePos += 5;
-                            if (candidatePos >= 0 && candidatePos <= 24) {
-                                affectedPos.push(candidatePos);
-                            }
-                            else {
+                        var stormPos = 0;
+                        console.log("whoosh");
+                        for (stormPos; stormPos < G.tiles.length; stormPos++) {
+                            if (G.tiles[stormPos].type === "storm") {
                                 break;
                             }
                         }
-                    }
-                    else if (windDirection === 2) {
-                        while (affectedPos.length < maxTilesAffected) {
-                            candidatePos += 1;
-                            //check whether on the same row
-                            if (candidatePos >= 0 && candidatePos <= 24 &&
-                                Math.floor(candidatePos / 5) === Math.floor(stormPos / 5)) {
-                                affectedPos.push(candidatePos);
-                            }
-                            else {
-                                break;
-                            }
+                        //1 = up, 2 = left, 3 = down, 4 = right
+                        var windDirection = ctx.random.Die(4);
+                        //1-3 = 1, 4-5 = 2, 6 = 3
+                        var windStrength = ctx.random.Die(6);
+                        var maxTilesAffected;
+                        if (windStrength <= 3) {
+                            maxTilesAffected = 1;
                         }
-                    }
-                    else if (windDirection === 3) {
-                        while (affectedPos.length < maxTilesAffected) {
-                            candidatePos -= 5;
-                            if (candidatePos >= 0 && candidatePos <= 24) {
-                                affectedPos.push(candidatePos);
-                            }
-                            else {
-                                break;
-                            }
+                        else if (windStrength <= 5) {
+                            maxTilesAffected = 2;
                         }
-                    }
-                    else if (windDirection === 4) {
-                        while (affectedPos.length < maxTilesAffected) {
-                            candidatePos -= 1;
-                            //check whether on the same row
-                            if (candidatePos >= 0 && candidatePos <= 24 &&
-                                Math.floor(candidatePos / 5) === Math.floor(stormPos / 5)) {
-                                affectedPos.push(candidatePos);
-                            }
-                            else {
-                                break;
-                            }
+                        else {
+                            maxTilesAffected = 3;
                         }
-                    }
-                    //add 1 sand to affected tiles
-                    for (var i = 0; i < affectedPos.length; i++) {
-                        G.tiles[affectedPos[i]].sandCount += 1;
-                    }
-
-                    //execute movements
-                    const tempStormTile = G.tiles[stormPos];
-                    var prevPos = stormPos;
-                    //edge case: first give all of stormPos's finalParts to the first affectedPos tile
-                    if (affectedPos.length > 0) {
-                        for (var i = 0; i < G.tiles[stormPos].finalParts.length; i++) {
-                            G.tiles[affectedPos[0]].finalParts.push(G.tiles[stormPos].finalParts[i]);
-                        }
-                        //clear storm's finalParts
-                        G.tiles[stormPos].finalParts = [];
-                    }
-                    //...now execute
-                    for (var i = 0; i < affectedPos.length; i++) {
-                        G.tiles[prevPos] = G.tiles[affectedPos[i]];
-                        prevPos = affectedPos[i];
-                    }
-                    if (affectedPos.length !== 0) {
-                        G.tiles[affectedPos[affectedPos.length - 1]] = tempStormTile;
-                    }
-
-                    //move all affected players
-                    var affectedPlayers = [];
-                    for (var i = 0; i < G.players.length; i++) {
-                        for (var j = 0; j < affectedPos.length; j++) {
-                            if (G.players[i].position === affectedPos[j]) {
-                                affectedPlayers.push(i);
-                            }
-                        }
-                    }
-                    for (var i = 0; i < affectedPlayers.length; i++) {
+                        //identify positions of tiles that are moved
+                        var affectedPos = [];
+                        var candidatePos = stormPos;
                         if (windDirection === 1) {
-                            G.players[affectedPlayers[i]].position -= 5;
+                            while (affectedPos.length < maxTilesAffected) {
+                                candidatePos += 5;
+                                if (candidatePos >= 0 && candidatePos <= 24) {
+                                    affectedPos.push(candidatePos);
+                                }
+                                else {
+                                    break;
+                                }
+                            }
                         }
                         else if (windDirection === 2) {
-                            G.players[affectedPlayers[i]].position -= 1;
+                            while (affectedPos.length < maxTilesAffected) {
+                                candidatePos += 1;
+                                //check whether on the same row
+                                if (candidatePos >= 0 && candidatePos <= 24 &&
+                                    Math.floor(candidatePos / 5) === Math.floor(stormPos / 5)) {
+                                    affectedPos.push(candidatePos);
+                                }
+                                else {
+                                    break;
+                                }
+                            }
                         }
                         else if (windDirection === 3) {
-                            G.players[affectedPlayers[i]].position += 5;
+                            while (affectedPos.length < maxTilesAffected) {
+                                candidatePos -= 5;
+                                if (candidatePos >= 0 && candidatePos <= 24) {
+                                    affectedPos.push(candidatePos);
+                                }
+                                else {
+                                    break;
+                                }
+                            }
                         }
                         else if (windDirection === 4) {
-                            G.players[affectedPlayers[i]].position += 1;
+                            while (affectedPos.length < maxTilesAffected) {
+                                candidatePos -= 1;
+                                //check whether on the same row
+                                if (candidatePos >= 0 && candidatePos <= 24 &&
+                                    Math.floor(candidatePos / 5) === Math.floor(stormPos / 5)) {
+                                    affectedPos.push(candidatePos);
+                                }
+                                else {
+                                    break;
+                                }
+                            }
                         }
-                    }
+                        //add 1 sand to affected tiles
+                        for (var i = 0; i < affectedPos.length; i++) {
+                            G.tiles[affectedPos[i]].sandCount += 1;
+                        }
 
-                    var directionString;
-                    if (windDirection === 1) {
-                        directionString = "up";
+                        //execute movements
+                        const tempStormTile = G.tiles[stormPos];
+                        var prevPos = stormPos;
+                        //edge case: first give all of stormPos's finalParts to the first affectedPos tile
+                        if (affectedPos.length > 0) {
+                            for (var i = 0; i < G.tiles[stormPos].finalParts.length; i++) {
+                                G.tiles[affectedPos[0]].finalParts.push(G.tiles[stormPos].finalParts[i]);
+                            }
+                            //clear storm's finalParts
+                            G.tiles[stormPos].finalParts = [];
+                        }
+                        //...now execute
+                        for (var i = 0; i < affectedPos.length; i++) {
+                            G.tiles[prevPos] = G.tiles[affectedPos[i]];
+                            prevPos = affectedPos[i];
+                        }
+                        if (affectedPos.length !== 0) {
+                            G.tiles[affectedPos[affectedPos.length - 1]] = tempStormTile;
+                        }
+
+                        //move all affected players
+                        var affectedPlayers = [];
+                        for (var i = 0; i < G.players.length; i++) {
+                            for (var j = 0; j < affectedPos.length; j++) {
+                                if (G.players[i].position === affectedPos[j]) {
+                                    affectedPlayers.push(i);
+                                }
+                            }
+                        }
+                        for (var i = 0; i < affectedPlayers.length; i++) {
+                            if (windDirection === 1) {
+                                G.players[affectedPlayers[i]].position -= 5;
+                            }
+                            else if (windDirection === 2) {
+                                G.players[affectedPlayers[i]].position -= 1;
+                            }
+                            else if (windDirection === 3) {
+                                G.players[affectedPlayers[i]].position += 5;
+                            }
+                            else if (windDirection === 4) {
+                                G.players[affectedPlayers[i]].position += 1;
+                            }
+                        }
+
+                        var directionString;
+                        if (windDirection === 1) {
+                            directionString = "up";
+                        }
+                        else if (windDirection === 2) {
+                            directionString = "left";
+                        }
+                        else if (windDirection === 3) {
+                            directionString = "down";
+                        }
+                        else if (windDirection === 4) {
+                            directionString = "right";
+                        }
+                        G.lastDrawType.push("Wind: " + directionString + ", strength " + maxTilesAffected);
                     }
-                    else if (windDirection === 2) {
-                        directionString = "left";
+                }
+                //check storm level + ctx.numPlayers, and draw according to that
+                if (G.stormLevel === 0) {
+                    G.numDraws = 2;
+                }
+                else if (ctx.numPlayers === 2) {
+                    if (G.stormLevel <= 3) {
+                        G.numDraws = 3;
                     }
-                    else if (windDirection === 3) {
-                        directionString = "down";
+                    else if (G.stormLevel <= 7) {
+                        G.numDraws = 4;
                     }
-                    else if (windDirection === 4) {
-                        directionString = "right";
+                    else if (G.stormLevel <= 10) {
+                        G.numDraws = 5;
                     }
-                    G.lastDrawType.push("Wind: " + directionString + ", strength " + maxTilesAffected);
+                    else {
+                        G.numDraws = 6;
+                    }
                 }
-            }
-            //check storm level + ctx.numPlayers, and draw according to that
-            if (G.stormLevel === 0) {
-                G.numDraws = 2;
-            }
-            else if (ctx.numPlayers === 2) {
-                if (G.stormLevel <= 3) {
-                    G.numDraws = 3;
+                else if (ctx.numPlayers === 3 || ctx.numPlayers === 4) {
+                    if (G.stormLevel <= 4) {
+                        G.numDraws = 3;
+                    }
+                    else if (G.stormLevel <= 8) {
+                        G.numDraws = 4;
+                    }
+                    else if (G.stormLevel <= 11) {
+                        G.numDraws = 5;
+                    }
+                    else {
+                        G.numDraws = 6;
+                    }
                 }
-                else if (G.stormLevel <= 7) {
-                    G.numDraws = 4;
+                else if (ctx.numPlayers === 5) {
+                    if (G.stormLevel <= 5) {
+                        G.numDraws = 3;
+                    }
+                    else if (G.stormLevel <= 9) {
+                        G.numDraws = 4;
+                    }
+                    else if (G.stormLevel <= 12) {
+                        G.numDraws = 5;
+                    }
+                    else {
+                        G.numDraws = 6;
+                    }
                 }
-                else if (G.stormLevel <= 10) {
-                    G.numDraws = 5;
-                }
-                else {
-                    G.numDraws = 6;
-                }
-            }
-            else if (ctx.numPlayers === 3 || ctx.numPlayers === 4) {
-                if (G.stormLevel <= 4) {
-                    G.numDraws = 3;
-                }
-                else if (G.stormLevel <= 8) {
-                    G.numDraws = 4;
-                }
-                else if (G.stormLevel <= 11) {
-                    G.numDraws = 5;
-                }
-                else {
-                    G.numDraws = 6;
-                }
-            }
-            else if (ctx.numPlayers === 5) {
-                if (G.stormLevel <= 5) {
-                    G.numDraws = 3;
-                }
-                else if (G.stormLevel <= 9) {
-                    G.numDraws = 4;
-                }
-                else if (G.stormLevel <= 12) {
-                    G.numDraws = 5;
-                }
-                else {
-                    G.numDraws = 6;
-                }
+                G.turnEnded = true;
             }
         }
     },
