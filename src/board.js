@@ -271,9 +271,18 @@ export class ForbiddenDesertBoard extends React.Component {
         }
 
         var actionButtons = [];
+        if (this.isBuried()) {
+            actionButtons.push(
+                <div>
+                    You are buried!
+                </div>
+            )
+        }
         actionButtons.push(
             <div>
-                {this.state.digging ? "Choose a tile to dig." : ""}
+                <div>
+                    {this.state.digging ? "Choose a tile to dig." : ""}
+                </div>
                 <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
                     Dig
                 </button>
