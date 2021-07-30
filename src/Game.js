@@ -7,6 +7,7 @@ export const ForbiddenDesert = {
         players: setupPlayers(ctx.numPlayers),
         tiles: setupTiles(),
         stormLevel: 0,
+        numDraws: 0,
         lastDrawType: [],
         collectedParts: [],
     }),
@@ -16,7 +17,15 @@ export const ForbiddenDesert = {
             G.players[ctx.currentPlayer].position = pos;
         },
         dig: (G, ctx, pos) => {
-            G.tiles[pos].sandCount--;
+            if (G.players[ctx.currentPlayer].role === "Archeologist") {
+                G.tiles[pos].sandCount -= 2;
+                if (G.tiles[pos].sandCount < 0) {
+                    G.tiles[pos].sandCount = 0;
+                }
+            }
+            else {
+                G.tiles[pos].sandCount--;
+            }
         },
         excavate: {
             move: (G, ctx) => {
@@ -80,6 +89,15 @@ export const ForbiddenDesert = {
             //add to collected parts
             G.collectedParts.push(tempRemovedPart);
         },
+        mitigate: (G, ctx) => {
+            G.numDraws -= 1;
+        },
+        collectWater: (G, ctx) => {
+            G.players[ctx.currentPlayer].water += 2;
+            if (G.players[ctx.currentPlayer].water > G.players[ctx.currentPlayer].maxWater) {
+                G.players[ctx.currentPlayer].water = G.players[ctx.currentPlayer].maxWater;
+            }
+        },
         doNothing: (G, ctx) => {
             ctx.events.endTurn();
         },
@@ -105,6 +123,12 @@ export const ForbiddenDesert = {
         setDifficulty: {
             move: (G, ctx, diff) => {
                 G.stormLevel = diff;
+                if (diff === 0) {
+                    G.numDraws = 2;
+                }
+                else {
+                    G.numDraws = 3;
+                }
             },
             undoable: false,
             noLimit: true
@@ -126,57 +150,11 @@ export const ForbiddenDesert = {
 
     turn: {
         moveLimit: 4,
-        /*
         onEnd: (G, ctx) => {
             G.lastDrawType = [];
-            //check storm level + ctx.numPlayers, and draw according to that
-            var numDraws;
-            if (G.stormLevel === 0) {
-                numDraws = 2;
-            }
-            else if (ctx.numPlayers === 2) {
-                if (G.stormLevel <= 3) {
-                    numDraws = 3;
-                }
-                else if (G.stormLevel <= 7) {
-                    numDraws = 4;
-                }
-                else if (G.stormLevel <= 10) {
-                    numDraws = 5;
-                }
-                else {
-                    numDraws = 6;
-                }
-            }
-            else if (ctx.numPlayers === 3 || ctx.numPlayers === 4) {
-                if (G.stormLevel <= 4) {
-                    numDraws = 3;
-                }
-                else if (G.stormLevel <= 8) {
-                    numDraws = 4;
-                }
-                else if (G.stormLevel <= 11) {
-                    numDraws = 5;
-                }
-                else {
-                    numDraws = 6;
-                }
-            }
-            else if (ctx.numPlayers === 5) {
-                if (G.stormLevel <= 5) {
-                    numDraws = 3;
-                }
-                else if (G.stormLevel <= 9) {
-                    numDraws = 4;
-                }
-                else if (G.stormLevel <= 12) {
-                    numDraws = 5;
-                }
-                else {
-                    numDraws = 6;
-                }
-            }
-            for (var draw = 0; draw < numDraws; draw++) {
+            //numDraws should be set from end of last turn
+            //(we set it at the end for meteorologist to be able to decrement it during turn)
+            for (var draw = 0; draw < G.numDraws; draw++) {
                 //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
                 var val = ctx.random.Die(31);
                 if (val <= 4) {
@@ -328,7 +306,53 @@ export const ForbiddenDesert = {
                     G.lastDrawType.push("Wind: " + directionString + ", strength " + maxTilesAffected);
                 }
             }
-        }*/
+            //check storm level + ctx.numPlayers, and draw according to that
+            if (G.stormLevel === 0) {
+                G.numDraws = 2;
+            }
+            else if (ctx.numPlayers === 2) {
+                if (G.stormLevel <= 3) {
+                    G.numDraws = 3;
+                }
+                else if (G.stormLevel <= 7) {
+                    G.numDraws = 4;
+                }
+                else if (G.stormLevel <= 10) {
+                    G.numDraws = 5;
+                }
+                else {
+                    G.numDraws = 6;
+                }
+            }
+            else if (ctx.numPlayers === 3 || ctx.numPlayers === 4) {
+                if (G.stormLevel <= 4) {
+                    G.numDraws = 3;
+                }
+                else if (G.stormLevel <= 8) {
+                    G.numDraws = 4;
+                }
+                else if (G.stormLevel <= 11) {
+                    G.numDraws = 5;
+                }
+                else {
+                    G.numDraws = 6;
+                }
+            }
+            else if (ctx.numPlayers === 5) {
+                if (G.stormLevel <= 5) {
+                    G.numDraws = 3;
+                }
+                else if (G.stormLevel <= 9) {
+                    G.numDraws = 4;
+                }
+                else if (G.stormLevel <= 12) {
+                    G.numDraws = 5;
+                }
+                else {
+                    G.numDraws = 6;
+                }
+            }
+        }
     },
 
     endIf: (G, ctx) => {

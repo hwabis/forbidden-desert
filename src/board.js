@@ -43,7 +43,10 @@ export class ForbiddenDesertBoard extends React.Component {
         }
     }
     giveWaterTo(id) {
-        if (this.props.G.players[id].position === this.props.G.players[this.props.ctx.currentPlayer].position
+        if (
+            (this.isSameTile(this.props.G.players[id].position) ||
+                (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier" &&
+                    this.isAdjacentTile(this.props.G.players[id].position)))
             && this.props.G.players[id].water < this.props.G.players[id].maxWater
             && this.props.G.players[this.props.ctx.currentPlayer].water > 0) {
             this.props.moves.giveWater(id);
@@ -53,6 +56,11 @@ export class ForbiddenDesertBoard extends React.Component {
     pickUpFinalPart() {
         //no need to check condition; button won't show up if it's not met
         this.props.moves.pickUpFinalPart();
+    }
+    mitigate() {
+        if (this.props.G.numDraws > 0) {
+            this.props.moves.mitigate();
+        }
     }
     isAdjacentTile(id) {
         const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
@@ -275,6 +283,16 @@ export class ForbiddenDesertBoard extends React.Component {
                     </div>
                 );
             }
+        }
+        //Mitigate for meteorologist only
+        if (this.props.G.players[this.props.ctx.currentPlayer].role === "Meteorologist") {
+            actionButtons.push(
+                <div>
+                    <button onClick={() => { this.mitigate(); }}>
+                        Mitigate
+                    </button>
+                </div>
+            )
         }
         //only show pickup part button when the tile of the current player position
         //has at least 1 finalPart,
