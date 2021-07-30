@@ -7,6 +7,7 @@ export class ForbiddenDesertBoard extends React.Component {
         assignDifficulty: false,
         digging: false,
         givingWater: false,
+        waterErrorMsg: false,
     }
 
     //for idToStateClass purposes, not onClickTile
@@ -59,15 +60,8 @@ export class ForbiddenDesertBoard extends React.Component {
         }
     }
     giveWaterTo(id) {
-        if (
-            (this.isSameTile(this.props.G.players[id].position) ||
-                (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier" &&
-                    this.isAdjacentTile(this.props.G.players[id].position)))
-            && this.props.G.players[id].water < this.props.G.players[id].maxWater
-            && this.props.G.players[this.props.ctx.currentPlayer].water > 0) {
-            this.props.moves.giveWater(id);
-            this.setState({ givingWater: false });
-        }
+        this.props.moves.giveWater(id);
+        this.setState({ givingWater: false });
     }
     pickUpFinalPart() {
         //no need to check condition; button won't show up if it's not met
@@ -298,20 +292,54 @@ export class ForbiddenDesertBoard extends React.Component {
         );
         //give water to popup buttons
         if (this.state.givingWater) {
+            var someoneFound = false;
             for (var i = 0; i < this.props.G.players.length; i++) {
                 //this took me hours to fix.. if you don't assign i to a constant,
                 //and use i for giveWaterTo parameter, then the value is going 
                 //to be, like, different every time you call it. or something.
                 const index = i;
-                actionButtons.push(
-                    <div>
-                        <button onClick={() => { this.giveWaterTo(index); }}>
-                            Player {i}
-                        </button>
-                    </div>
-                );
+                var errorMsg = '';
+                if (index != this.props.ctx.currentPlayer
+                    && (this.isSameTile(this.props.G.players[index].position)
+                        || (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier" &&
+                            this.isAdjacentTile(this.props.G.players[index].position)))) {
+                    actionButtons.push(
+                        <div>
+                            <button onClick={() => {
+                                if (this.props.G.players[this.props.ctx.currentPlayer].water === 0) {
+                                    this.setState({ givingWater: false, waterErrorMsg: "You don't have enough water!" });
+                                    setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
+                                }
+                                else if (this.props.G.players[index].water === this.props.G.players[index].maxWater) {
+                                    this.setState({givingWater: false, waterErrorMsg: "Target has full water!"});
+                                    setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
+                                }
+                                else {
+                                    this.giveWaterTo(index);
+                                }
+                            }}>
+                                Player {index}
+                            </button>
+                        </div>
+                    );
+                    someoneFound = true;
+                }
+            }
+            if (!someoneFound) {
+                if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier") {
+                    this.setState({ givingWater: false, waterErrorMsg: "No players to give water to! (They must be on the same or an adjacent tile.)" });
+                }
+                else {
+                    this.setState({ givingWater: false, waterErrorMsg: "No players to give water to! (They must be on the same tile.)" });
+                }
+                setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
             }
         }
+        actionButtons.push(
+            <div>
+                {this.state.waterErrorMsg}
+            </div>
+        )
         //Mitigate for meteorologist only
         if (this.props.G.players[this.props.ctx.currentPlayer].role === "Meteorologist") {
             actionButtons.push(
