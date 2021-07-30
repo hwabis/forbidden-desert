@@ -78,6 +78,9 @@ export class ForbiddenDesertBoard extends React.Component {
             this.props.moves.mitigate();
         }
     }
+    collectWater() {
+        this.props.moves.collectWater();
+    }
     isAdjacentTile(id) {
         const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
         var check1 = id >= 0 && id <= 24 &&
@@ -135,48 +138,42 @@ export class ForbiddenDesertBoard extends React.Component {
                     <p></p>
                     <div>
                         <div>
-                            <p id="header">Archeologist</p>
+                            <p id="header">Archeologist (🍼3)</p>
                             <ul>
                                 <li>Removes 2 sand when digging instead of 1.</li>
-                                <li>Water capacity: 3</li>
                             </ul>
                         </div>
                         <div>
-                            <p id="header">Climber</p>
+                            <p id="header">Climber (🍼3)</p>
                             <ul>
                                 <li>Carry: moves other players along with Climber. (Cost: free)</li>
                                 <li>Can move over tiles with 2 or more sand.</li>
                                 <li>Allows all players on Climber's current tile to leave even with 2 or more sand.</li>
-                                <li>Water capacity: 3</li>
                             </ul>
                         </div>
                         <div>
-                            <p id="header">Explorer</p>
+                            <p id="header">Explorer (🍼4)</p>
                             <ul>
                                 <li>Can move, dig, and use items diagonally.</li>
-                                <li>Water capacity: 4</li>
                             </ul>
                         </div>
                         <div>
-                            <p id="header">Meteorologist</p>
+                            <p id="header">Meteorologist (🍼4)</p>
                             <ul>
                                 <li>Mitigate: draw 1 less Storm at the end of the turn. (Cost: 1 action)</li>
-                                <li>Water capacity: 4</li>
                             </ul>
                         </div>
                         <div>
-                            <p id="header">Navigator</p>
+                            <p id="header">Navigator (🍼4)</p>
                             <ul>
                                 <li>Direct: move another player up to 3 tiles. Climber and Explorer keep their abilities. (Cost: 1 action)</li>
-                                <li>Water capacity: 4</li>
                             </ul>
                         </div>
                         <div>
-                            <p id="header">Water Carrier</p>
+                            <p id="header">Water Carrier (🍼5)</p>
                             <ul>
-                                <li>Gather Water: take 2 water from an excavated well. (Cost: 1 action)</li>
-                                <li>Give Water: give 1 water to an adjacent player. (Cost: free)</li>
-                                <li>Water capacity: 5</li>
+                                <li>Collect Water: take 2 water from an excavated well. (Cost: 1 action)</li>
+                                <li>Can give water to adjacent players (for free).</li>
                             </ul>
                         </div>
                     </div>
@@ -325,9 +322,21 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             )
         }
+        //collectWater for water carrier only
+        if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier"
+            && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "well"
+            && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
+            && this.props.G.players[this.props.ctx.currentPlayer].water < this.props.G.players[this.props.ctx.currentPlayer].maxWater) {
+            actionButtons.push(
+                <div>
+                    <button onClick={() => { this.collectWater(); }}>
+                        Collect water
+                    </button>
+                </div>
+            )
+        }
         //only show pickup part button when the tile of the current player position
-        //has at least 1 finalPart,
-        //and the tile is revealed
+        //has at least 1 finalPart, and the tile is revealed
         if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
             this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].finalParts.length > 0) {
             actionButtons.push(
