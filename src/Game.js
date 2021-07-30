@@ -357,7 +357,7 @@ export const ForbiddenDesert = {
 
     endIf: (G, ctx) => {
         for (var i = 0; i < G.players.length; i++) {
-            if (G.players[i].water === -1) {
+            if (G.players[i].water < 0) {
                 return true;
             }
         }
