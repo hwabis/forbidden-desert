@@ -93,3 +93,7 @@ td {
 ul {
     list-style-type: none;
 }
+
+.diggable {
+    border: 2px #654321 solid;
+}
