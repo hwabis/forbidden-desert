@@ -16,3 +16,4 @@ The official rules are [here](https://www.gamewright.com/gamewright/pdfs/Rules/F
 * Players can spawn on any tile, not just a regular equipment tile.
 * Storm cards are not drawn from a deck, but randomly generated independently each turn. (Equipment is still drawn from a deck. Meteorologists can't peak at the next storm cards)
 * Running out of sand markers is not a lose condition.
+* You may have duplicate roles across different players.
