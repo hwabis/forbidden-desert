@@ -9,8 +9,14 @@ export class ForbiddenDesertBoard extends React.Component {
         givingWater: false,
     }
 
+    //for idToStateClass purposes, not onClickTile
     tileIsDiggable(id) {
-        return (this.isAdjacentTile(id) || this.isSameTile(id)) && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
+        if (this.isBuried()) {
+            return this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0;
+        }
+        else {
+            return (this.isAdjacentTile(id) || this.isSameTile(id)) && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
+        }
     }
 
     assignRoleTo(id, role) {
@@ -21,21 +27,27 @@ export class ForbiddenDesertBoard extends React.Component {
         this.props.moves.setDifficulty(diff);
         this.setState({ assignDifficulty: true })
     }
+    //move, or dig if digging
     onClickTile(id) {
-        if (this.isAdjacentTile(id) || this.isSameTile(id)) {
+        if (this.isBuried()) {
+            if (this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0) {
+                this.props.moves.dig(id);
+                this.setState({ digging: false });
+            }
+        }
+        else if (this.isAdjacentTile(id) || this.isSameTile(id)) {
             if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
                 this.props.moves.dig(id);
                 this.setState({ digging: false });
             }
-            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2 &&
-                !this.state.digging && !this.isBuried()) {
+            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
                 this.props.moves.move(id);
             }
         }
-        //tunnel
+        //move through tunnel
         else if (this.props.G.tiles[id].type === "tunnel" &&
             this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel" &&
-            this.props.G.tiles[id].sandCount < 2 && !this.state.digging && !this.isBuried()) {
+            this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
             this.props.moves.move(id);
         }
     }
@@ -200,7 +212,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
-        
+
         //adds class to render borders on appropriate tiles when this.state.digging
         let idToStateClass =
             new Array(25).fill(" ")
