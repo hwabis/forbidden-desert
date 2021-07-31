@@ -1,6 +1,6 @@
 # forbidden-desert
 WIP:
-* Player role abilities
+* Roles: climber, navigator
 * Equipment (from gear + tunnel tiles)
 * Display win/loss
 
