@@ -37,8 +37,9 @@ export class ForbiddenDesertBoard extends React.Component {
             }
         }
         //move through tunnel
-        else if (this.props.G.tiles[id].type === "tunnel" &&
+        else if (this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed &&
             this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel" &&
+            this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
             this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
             this.props.moves.move(id);
         }
@@ -86,8 +87,12 @@ export class ForbiddenDesertBoard extends React.Component {
             return false;
         }
         else {
-            return this.isAdjacentTile(id) && !this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2
-            && !this.state.digging && !this.isBuried();
+            return (this.isAdjacentTile(id) ||
+                (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel"
+                    && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
+                    && this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed))
+                && !this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2
+                && !this.state.digging && !this.isBuried();
         }
     }
     //for idToStateClass purposes, not onClickTile
