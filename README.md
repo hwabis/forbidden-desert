@@ -1,10 +1,10 @@
 # forbidden-desert
 WIP:
-* Player role abilities
+* Roles: climber, navigator
 * Equipment (from gear + tunnel tiles)
 * Display win/loss
 
-Play here: https://hwabis.github.io/forbidden-desert/ (storm currently disabled)
+Play here: https://hwabis.github.io/forbidden-desert/
 
 Created with [boardgame.io](https://boardgame.io/) and React; based off of Gamewright's Forbidden Desert board game.
 
