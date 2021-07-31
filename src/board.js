@@ -19,15 +19,17 @@ export class ForbiddenDesertBoard extends React.Component {
         this.props.moves.setDifficulty(diff);
         this.setState({ assignDifficulty: true })
     }
-    //move, or dig if digging
+    //move, or dig if this.state.digging
     onClickTile(id) {
         if (this.isBuried()) {
+            //you can only dig when buried
             if (this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0) {
                 this.props.moves.dig(id);
                 this.setState({ digging: false });
             }
         }
-        else if (this.isAdjacentTile(id) || this.isSameTile(id)) {
+        else if (this.isAdjacentTile(id) || this.isSameTile(id) ||
+            (this.isDiagonalTile(id) && this.props.G.players[this.props.ctx.currentPlayer].role === "Explorer")) {
             if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
                 this.props.moves.dig(id);
                 this.setState({ digging: false });
@@ -80,6 +82,15 @@ export class ForbiddenDesertBoard extends React.Component {
     isSameTile(id) {
         return (id === this.props.G.players[this.props.ctx.currentPlayer].position);
     }
+    isDiagonalTile(id) {
+        const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
+        var check1 = id >= 0 && id <= 24 &&
+            (id === currentPlayerPos - 6 || id === currentPlayerPos - 4 ||
+                id === currentPlayerPos + 4 || id === currentPlayerPos + 6);
+        //check2 is to make sure id is exactly one row away from the current tile
+        var check2 = Math.abs(Math.floor(id / 5) - Math.floor(currentPlayerPos / 5)) === 1;
+        return check1 && check2;
+    }
 
     //for idToStateClass purposes, not onClickTile
     tileIsMovable(id) {
@@ -87,8 +98,9 @@ export class ForbiddenDesertBoard extends React.Component {
             return false;
         }
         else {
-            return (this.isAdjacentTile(id) ||
-                (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel"
+            return (this.isAdjacentTile(id)
+                || (this.props.G.players[this.props.ctx.currentPlayer].role === "Explorer" && this.isDiagonalTile(id))
+                || (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel"
                     && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
                     && this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed))
                 && !this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2
@@ -102,7 +114,9 @@ export class ForbiddenDesertBoard extends React.Component {
             //last condition here should always be true lol
         }
         else {
-            return (this.isAdjacentTile(id) || this.isSameTile(id)) && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
+            return (this.isAdjacentTile(id) || this.isSameTile(id)
+                || (this.props.G.players[this.props.ctx.currentPlayer].role === "Explorer" && this.isDiagonalTile(id)))
+                && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
         }
     }
     //returns whether current player is buried
