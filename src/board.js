@@ -34,7 +34,9 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.props.moves.dig(id);
                 this.setState({ digging: false });
             }
-            else if (!this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
+            else if (!this.isSameTile(id) &&
+                (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[this.props.ctx.currentPlayer].role === "Climber")
+                && !this.state.digging) {
                 this.props.moves.move(id);
             }
         }
@@ -103,7 +105,8 @@ export class ForbiddenDesertBoard extends React.Component {
                 || (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel"
                     && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
                     && this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed))
-                && !this.isSameTile(id) && this.props.G.tiles[id].sandCount < 2
+                && !this.isSameTile(id) 
+                && (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[this.props.ctx.currentPlayer].role === "Climber")
                 && !this.state.digging && !this.isBuried();
         }
     }
@@ -121,7 +124,15 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     //returns whether current player is buried
     isBuried() {
-        return this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount > 1;
+        //check if current tile has a climber on it;
+        //iterate through all players, and check if a climber's position is current position
+        const currPos = this.props.G.players[this.props.ctx.currentPlayer].position;
+        for (var i = 0; i < this.props.G.players.length; i++) {
+            if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].position === currPos) {
+                return false;
+            }
+        }
+        return this.props.G.tiles[currPos].sandCount > 1;
     }
 
     render() {

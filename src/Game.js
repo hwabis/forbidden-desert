@@ -144,6 +144,12 @@ export const ForbiddenDesert = {
                 G.tiles[id].finalParts.push("Z");
             },
             noLimit: true
+        },
+        addSand: {
+            move: (G, ctx, id) => {
+                G.tiles[id].sandCount += 1;
+            },
+            noLimit: true
         }
     },
 
