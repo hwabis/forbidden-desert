@@ -158,8 +158,9 @@ export const ForbiddenDesert = {
                 //numDraws should be set from end of last turn
                 //(we set it at the end for meteorologist to be able to decrement it during turn)
                 for (var draw = 0; draw < G.numDraws; draw++) {
-                    //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-31 wind
-                    var val = ctx.random.Die(31);
+                    //val: 1-4=sunBeatsDown, 5-7=stormPicksUp, 8-40 wind
+                    //it should be 8-31 but we reduce probably of sunBeatsDown and stormPicksUp (see README for explanation)
+                    var val = ctx.random.Die(40);
                     if (val <= 4) {
                         for (var i = 0; i < G.players.length; i++) {
                             if (!(G.tiles[G.players[i].position].type === "tunnel" && G.tiles[G.players[i].position].isRevealed)) {
