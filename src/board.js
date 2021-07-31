@@ -566,10 +566,10 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <p></p>
                 <div>
-                    Chance of Sun Beats Down: 10.0%
+                    Chance of Sun Beats Down (individual draw): 10.0%
                 </div>
                 <div>
-                    Chance of Storm Picks Up: 7.5%
+                    Chance of Storm Picks Up (individual draw): 7.5%
                 </div>
                 <p></p>
                 <div>
