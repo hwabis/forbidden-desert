@@ -105,7 +105,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 || (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel"
                     && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
                     && this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed))
-                && !this.isSameTile(id) 
+                && !this.isSameTile(id)
                 && (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[this.props.ctx.currentPlayer].role === "Climber")
                 && !this.state.digging && !this.isBuried();
         }
