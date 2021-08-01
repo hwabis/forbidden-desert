@@ -18,6 +18,10 @@ export const ForbiddenDesert = {
     moves: {
         move: (G, ctx, pos) => {
             G.players[ctx.currentPlayer].position = pos;
+            //climber
+            if (G.players[ctx.currentPlayer].carryingPlayer !== -1) {
+                G.players[G.players[ctx.currentPlayer].carryingPlayer].position = pos;
+            }
         },
         dig: (G, ctx, pos) => {
             if (G.players[ctx.currentPlayer].role === "Archeologist") {
@@ -101,6 +105,19 @@ export const ForbiddenDesert = {
                 G.players[ctx.currentPlayer].water = G.players[ctx.currentPlayer].maxWater;
             }
         },
+        //climber
+        carry: {
+            move: (G, ctx, id) => {
+                G.players[ctx.currentPlayer].carryingPlayer = id;
+            },
+            noLimit: true
+        },
+        drop: {
+            move: (G, ctx) => {
+                G.players[ctx.currentPlayer].carryingPlayer = -1;
+            },
+            noLimit: true
+        },
         doNothing: (G, ctx) => {
             ctx.events.endTurn();
         },
@@ -164,6 +181,9 @@ export const ForbiddenDesert = {
         },
         onEnd: (G, ctx) => {
             if (!G.turnEnded) {
+                //climber drops all players
+                G.players[ctx.currentPlayer].carryingPlayer = -1;
+                
                 G.lastDrawType = [];
                 //numDraws should be set from end of last turn
                 //(we set it at the end for meteorologist to be able to decrement it during turn)
@@ -420,6 +440,7 @@ var setupPlayers = (numPlayers) => {
             position: pos,
             water: 0,
             maxWater: 0,
+            carryingPlayer: -1,
         });
     }
     return players;

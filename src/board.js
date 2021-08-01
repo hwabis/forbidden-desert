@@ -7,13 +7,15 @@ export class ForbiddenDesertBoard extends React.Component {
         assignDifficulty: false,
         digging: false,
         givingWater: false,
+        chooseCarry: false,
         excavateErrorMsg: '',
         waterErrorMsg: '',
         mitigateErrorMsg: '',
+        carryErrorMsg: '',
     }
 
-    assignRoleTo(id, role) {
-        this.props.moves.setPlayerInfo(id, role);
+    assignRoleTo(playerID, role) {
+        this.props.moves.setPlayerInfo(playerID, role);
         this.setState({ assignID: this.state.assignID + 1 });
     }
     assignDifficultyTo(diff) {
@@ -50,11 +52,31 @@ export class ForbiddenDesertBoard extends React.Component {
         }
     }
     excavate() {
-        this.props.moves.excavate();
+        if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === true) {
+            this.setState({ excavateErrorMsg: "This tile is already revealed!" })
+            setTimeout(() => this.setState({ excavateErrorMsg: '' }), 3000);
+        }
+        else if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount !== 0) {
+            this.setState({ excavateErrorMsg: "Remove all sand on this tile before excavating!" })
+            setTimeout(() => this.setState({ excavateErrorMsg: '' }), 3000);
+        }
+        else {
+            this.props.moves.excavate();
+        }
     }
-    giveWaterTo(id) {
-        this.props.moves.giveWater(id);
-        this.setState({ givingWater: false });
+    giveWaterTo(playerID) {
+        if (this.props.G.players[this.props.ctx.currentPlayer].water === 0) {
+            this.setState({ givingWater: false, waterErrorMsg: "You don't have enough water!" });
+            setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
+        }
+        else if (this.props.G.players[playerID].water === this.props.G.players[playerID].maxWater) {
+            this.setState({ givingWater: false, waterErrorMsg: "Target has full water!" });
+            setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
+        }
+        else {
+            this.props.moves.giveWater(playerID);
+            this.setState({ givingWater: false });
+        }
     }
     pickUpFinalPart() {
         //no need to check condition; button won't show up if it's not met
@@ -71,6 +93,9 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     collectWater() {
         this.props.moves.collectWater();
+    }
+    carry(playerID) {
+        this.props.moves.carry(playerID);
     }
     isAdjacentTile(id) {
         const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
@@ -183,7 +208,7 @@ export class ForbiddenDesertBoard extends React.Component {
                         <div>
                             <p id="header">Climber (🍼3)</p>
                             <ul>
-                                <li>Carry: moves other players along with Climber. (Cost: free)</li>
+                                <li>Carry: moves 1 other player along with Climber. (Cost: free)</li>
                                 <li>Can move over tiles with 2 or more sand.</li>
                                 <li>Allows all players on Climber's current tile to leave even with 2 or more sand.</li>
                             </ul>
@@ -331,27 +356,15 @@ export class ForbiddenDesertBoard extends React.Component {
         }
         actionButtons.push(
             <div>
-                <div>
-                    {this.state.digging ? "Choose a tile to dig." : ""}
-                </div>
                 <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
                     Dig
                 </button>
-                <button onClick={() => {
-                    if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === true) {
-                        this.setState({ excavateErrorMsg: "This tile is already revealed!" })
-                        setTimeout(() => this.setState({ excavateErrorMsg: '' }), 3000);
-                    }
-                    else if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount !== 0) {
-                        this.setState({ excavateErrorMsg: "Remove all sand on this tile before excavating!" })
-                        setTimeout(() => this.setState({ excavateErrorMsg: '' }), 3000);
-                    }
-                    else {
-                        this.excavate();
-                    }
-                }}>
+                <button onClick={() => { this.excavate(); }}>
                     Excavate
                 </button>
+                <div>
+                    {this.state.digging ? "Choose a tile to dig." : ""}
+                </div>
             </div>
         );
         actionButtons.push(
@@ -372,31 +385,19 @@ export class ForbiddenDesertBoard extends React.Component {
                 //and use i for giveWaterTo parameter, then the value is going 
                 //to be, like, different every time you call it. or something.
                 const index = i;
-                var errorMsg = '';
                 if (index != this.props.ctx.currentPlayer
                     && (this.isSameTile(this.props.G.players[index].position)
                         || (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier" &&
                             this.isAdjacentTile(this.props.G.players[index].position)))) {
                     actionButtons.push(
-                        <button onClick={() => {
-                            if (this.props.G.players[this.props.ctx.currentPlayer].water === 0) {
-                                this.setState({ givingWater: false, waterErrorMsg: "You don't have enough water!" });
-                                setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
-                            }
-                            else if (this.props.G.players[index].water === this.props.G.players[index].maxWater) {
-                                this.setState({ givingWater: false, waterErrorMsg: "Target has full water!" });
-                                setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
-                            }
-                            else {
-                                this.giveWaterTo(index);
-                            }
-                        }}>
+                        <button onClick={() => { this.giveWaterTo(index); }}>
                             Player {index}
                         </button>
                     );
                     someoneFound = true;
                 }
             }
+            //spawned no buttons?
             if (!someoneFound) {
                 if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier") {
                     this.setState({ givingWater: false, waterErrorMsg: "No players to give water to! (They must be on the same or an adjacent tile.)" });
@@ -436,6 +437,44 @@ export class ForbiddenDesertBoard extends React.Component {
                 </button>
             )
         }
+        //carry for climber only
+        if (this.props.G.players[this.props.ctx.currentPlayer].role === "Climber") {
+            actionButtons.push(
+                <button onClick={() => { this.setState({ chooseCarry: !this.state.chooseCarry }) }}>
+                    Carry:
+                </button>
+            )
+            if (this.state.chooseCarry) {
+                //find if there are any players on current tile
+                var playersFound = false;
+                for (var i = 0; i < this.props.G.players.length; i++) {
+                    const index = i;
+                    if (index != this.props.ctx.currentPlayer &&
+                        this.isSameTile(this.props.G.players[index].position)) {
+                        actionButtons.push(
+                            <button onClick={() => { this.carry(index); }}>
+                                Player {index}
+                            </button>
+                        );
+                        playersFound = true;
+                    }
+                }
+                //first check if the turn is over, then just set error msg to '', because you're gonna drop them
+                if (this.props.ctx.numMoves === 4) {
+                    this.setState({ chooseCarry: false, carryErrorMsg: "" });
+                }
+                //spawned no buttons?
+                else if (!playersFound) {
+                    this.setState({ chooseCarry: false, carryErrorMsg: "Nobody to carry! (They must be on the same tile.)" });
+                    setTimeout(() => this.setState({ carryErrorMsg: '' }), 3000);
+                }
+            }
+        }
+        actionButtons.push(
+            <div>
+                {this.state.carryErrorMsg}
+            </div>
+        )
         //only show pickup part button when the tile of the current player position
         //has at least 1 finalPart, and the tile is revealed
         if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
@@ -462,11 +501,21 @@ export class ForbiddenDesertBoard extends React.Component {
         rightbar.push(<div>Players:</div>)
         var playerInfoList = [];
         for (var i = 0; i < this.props.ctx.numPlayers; i++) {
-            playerInfoList.push(
-                <div>
-                    {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
-                </div>
-            );
+            if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].carryingPlayer !== -1) {
+                playerInfoList.push(
+                    <div>
+                        {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
+                        - Carrying Player {this.props.G.players[i].carryingPlayer}
+                    </div>
+                );
+            }
+            else {
+                playerInfoList.push(
+                    <div>
+                        {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
+                    </div>
+                );
+            }
         }
         rightbar.push(playerInfoList);
 
@@ -497,11 +546,11 @@ export class ForbiddenDesertBoard extends React.Component {
             <div>
                 <p></p>
                 <div>
-                    Chance of Sun Beats Down at end of turn:&nbsp;
+                    Chance of 1+ Sun Beats Down at end of turn:&nbsp;
                     {((1 - (1 - this.props.G.sunBeatsDownProb / 100) ** (this.props.G.numDraws)) * 100).toFixed(2)}%
                 </div>
                 <div>
-                    Chance of Storm Picks Up at end of turn:&nbsp;
+                    Chance of 1+ Storm Picks Up at end of turn:&nbsp;
                     {((1 - (1 - this.props.G.stormPicksUpProb / 100) ** (this.props.G.numDraws)) * 100).toFixed(2)}%
                 </div>
             </div>
