@@ -8,27 +8,22 @@ import statistics
 # 2. storm probability should be about 9.7% (3/31),
 #   and sun beats down probability should be about 12.9% (4/31)
 
-linprob = 1  # everything in percents
-expprob = 0.1
+prob = 1  # in percent
 totalcount = 0
 currcount = 1
 counts = []
 numtrials = 1000000
 for i in range(numtrials):
-    if (random.random() < (linprob+expprob)/100):
+    if (random.random() < (prob)/100):
         counts.append(currcount)
         currcount = 1
-        linprob = 1
-        expprob = 0.1
+        prob = 1
         totalcount += 1
     else:
-        # for storm: (gives ~9.75% total prob)
-        #linprob += 0.5
-        #expprob *= 1.65
-        # for sun: (gives ~12.7% total prob)
-        linprob += 1
-        expprob *= 2.05
-
+        # for storm: (gives ~8.2% total prob)
+        prob += 1
+        # for sun: (gives ~11.1% total prob)
+        #prob += 2
         currcount += 1
 
 print("Total prob: " + str(totalcount / numtrials))
@@ -37,4 +32,4 @@ plt.hist(counts, bins=100)
 plt.title("Frequency of # of draws until fail")
 plt.show()
 
-# these are some BEAUTIFUL graphs
+# nvm beautiful graphs doesn't mean beautiful game lol

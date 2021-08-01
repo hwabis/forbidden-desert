@@ -9,10 +9,8 @@ export const ForbiddenDesert = {
         lastDrawType: [],
         collectedParts: [],
         //for storm probability stuff (see sim.py)
-        stormPicksUpLin: 0.5,
-        stormPicksUpExp: 0.1,
-        sunBeatsDownLin: 0.5,
-        sunBeatsDownExp: 0.1,
+        stormPicksUpProb: 1,
+        sunBeatsDownProb: 1,
         //for turn onEnd
         turnEnded: false,
     }),
@@ -165,34 +163,30 @@ export const ForbiddenDesert = {
             G.turnEnded = false;
         },
         onEnd: (G, ctx) => {
-            console.log(G.stormPicksUpLin + G.stormPicksUpExp);
-            console.log(G.sunBeatsDownLin + G.sunBeatsDownExp);
             if (!G.turnEnded) {
                 G.lastDrawType = [];
                 //numDraws should be set from end of last turn
                 //(we set it at the end for meteorologist to be able to decrement it during turn)
                 for (var draw = 0; draw < G.numDraws; draw++) {
-                    var val = ctx.random.Die(10000) / 100; //don't just use random(100), or else it will have no decimal places
-                    if (val <= (G.stormPicksUpLin + G.stormPicksUpExp) || val <= (G.sunBeatsDownLin + G.sunBeatsDownExp)) {
+                    var val = ctx.random.Die(100);
+                    if (val <= (G.stormPicksUpProb) || val <= (G.sunBeatsDownProb)) {
                         var bothQualify = false;
                         var doStormPicksUp = false;
                         //if both qualify...
-                        if (val <= Math.min((G.stormPicksUpLin + G.stormPicksUpExp), (G.sunBeatsDownLin + G.sunBeatsDownExp))) {
+                        if (val <= Math.min((G.stormPicksuPProb), (G.sunBeatsDownProb))) {
                             bothQualify = true;
                             //...prioritize the one with higher probability.
-                            if ((G.stormPicksUpLin + G.stormPicksUpExp) > (G.sunBeatsDownLin + G.sunBeatsDownExp)) {
+                            if ((G.stormPicksUpProb) > (G.sunBeatsDownProb)) {
                                 doStormPicksUp = true;
                             }
                         }
-                        if ((!bothQualify && val <= (G.stormPicksUpLin + G.stormPicksUpExp)) || (bothQualify && doStormPicksUp)) {
+                        if ((!bothQualify && val <= (G.stormPicksUpProb)) || (bothQualify && doStormPicksUp)) {
                             G.stormLevel += 1;
                             G.lastDrawType.push("Storm Picks Up");
                             //reset stormPicksUp probability
-                            G.stormPicksUpLin = 1;
-                            G.stormPicksUpExp = 0.1;
+                            G.stormPicksUpProb = 1;
                             //increment sunBeatsDown
-                            G.sunBeatsDownLin += 1;
-                            G.sunBeatsDownExp *= 2.05;
+                            G.sunBeatsDownProb += 2;
                         }
                         else {
                             for (var i = 0; i < G.players.length; i++) {
@@ -202,19 +196,15 @@ export const ForbiddenDesert = {
                             }
                             G.lastDrawType.push("Sun Beats Down");
                             //reset sunBeatsDown
-                            G.sunBeatsDownLin = 1;
-                            G.sunBeatsDownExp = 0.1;
+                            G.sunBeatsDownProb = 1;
                             //increment stormPicksUp
-                            G.stormPicksUpLin += 0.5;
-                            G.stormPicksUpExp *= 1.65;
+                            G.stormPicksUpProb += 1;
                         }
                     }
                     else {
                         //increment both
-                        G.stormPicksUpLin += 0.5;
-                        G.stormPicksUpExp *= 1.65;
-                        G.sunBeatsDownLin += 1;
-                        G.sunBeatsDownExp *= 2.05;
+                        G.stormPicksUpProb += 1;
+                        G.sunBeatsDownProb += 2;
 
                         var stormPos = 0;
                         for (stormPos; stormPos < G.tiles.length; stormPos++) {

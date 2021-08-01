@@ -9,6 +9,7 @@ export class ForbiddenDesertBoard extends React.Component {
         givingWater: false,
         excavateErrorMsg: '',
         waterErrorMsg: '',
+        mitigateErrorMsg: '',
     }
 
     assignRoleTo(id, role) {
@@ -62,6 +63,10 @@ export class ForbiddenDesertBoard extends React.Component {
     mitigate() {
         if (this.props.G.numDraws > 0) {
             this.props.moves.mitigate();
+        }
+        else {
+            this.setState({mitigateErrorMsg: "All storm cards already mitigated!"})
+            setTimeout(() => this.setState({ mitigateErrorMsg: '' }), 3000);
         }
     }
     collectWater() {
@@ -415,6 +420,11 @@ export class ForbiddenDesertBoard extends React.Component {
                 </button>
             )
         }
+        actionButtons.push(
+            <div>
+                {this.state.mitigateErrorMsg}
+            </div>
+        )
         //collectWater for water carrier only
         if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier"
             && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "well"
@@ -567,11 +577,11 @@ export class ForbiddenDesertBoard extends React.Component {
                 <p></p>
                 <div>
                     Chance of Sun Beats Down at end of turn:&nbsp; 
-                    {((1 - (1 - (this.props.G.sunBeatsDownLin + this.props.G.sunBeatsDownExp)/100)**(this.props.G.numDraws))*100).toFixed(2)}%
+                    {((1 - (1 - this.props.G.sunBeatsDownProb/100)**(this.props.G.numDraws))*100).toFixed(2)}%
                 </div>
                 <div>
                     Chance of Storm Picks Up at end of turn:&nbsp;
-                    {((1 - (1 - (this.props.G.stormPicksUpLin + this.props.G.stormPicksUpExp)/100)**(this.props.G.numDraws))*100).toFixed(2)}%
+                    {((1 - (1 - this.props.G.stormPicksUpProb/100)**(this.props.G.numDraws))*100).toFixed(2)}%
                 </div>
                 <p></p>
                 <div>
