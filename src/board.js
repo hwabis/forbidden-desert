@@ -369,10 +369,10 @@ export class ForbiddenDesertBoard extends React.Component {
         actionButtons.push(
             <div>
                 <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
-                    Dig
+                    Dig (1)
                 </button>
                 <button onClick={() => { this.excavate(); }}>
-                    Excavate
+                    Excavate (1)
                 </button>
                 <div>
                     {this.state.digging ? "Choose a tile to dig." : ""}
@@ -386,7 +386,7 @@ export class ForbiddenDesertBoard extends React.Component {
         )
         actionButtons.push(
             <button onClick={() => { this.setState({ givingWater: !this.state.givingWater }); }}>
-                Give water to:
+                Give water to (0):
             </button>
         );
         //give water to popup buttons
@@ -429,7 +429,7 @@ export class ForbiddenDesertBoard extends React.Component {
         if (this.props.G.players[this.props.ctx.currentPlayer].role === "Meteorologist") {
             actionButtons.push(
                 <button onClick={() => { this.mitigate(); }}>
-                    Mitigate
+                    Mitigate (1)
                 </button>
             )
         }
@@ -445,7 +445,7 @@ export class ForbiddenDesertBoard extends React.Component {
             && this.props.G.players[this.props.ctx.currentPlayer].water < this.props.G.players[this.props.ctx.currentPlayer].maxWater) {
             actionButtons.push(
                 <button onClick={() => { this.collectWater(); }}>
-                    Collect water
+                    Collect +2 water (1)
                 </button>
             )
         }
@@ -454,10 +454,10 @@ export class ForbiddenDesertBoard extends React.Component {
             actionButtons.push(
                 <div>
                     <button onClick={() => { this.setState({ chooseCarry: !this.state.chooseCarry }) }}>
-                        Carry:
+                        Carry (0):
                     </button>
                     <button onClick={() => { this.drop(); }}>
-                        Drop
+                        Drop (0)
                     </button>
                 </div>
             )
@@ -500,7 +500,7 @@ export class ForbiddenDesertBoard extends React.Component {
             this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].finalParts.length > 0) {
             actionButtons.push(
                 <button onClick={() => { this.pickUpFinalPart(); }}>
-                    Pick up part
+                    Pick up part (1)
                 </button>
             )
         }
@@ -661,19 +661,19 @@ export class ForbiddenDesertBoard extends React.Component {
                     Archeologist: removes 2 sand when digging
                 </div>
                 <div>
-                    Climber: move over any tile; allows everyone on current tile to move. Ability: Carry (free)
+                    Climber: can move over any tile; allows everyone on current tile to move. Carry (0): bring another player
                 </div>
                 <div>
-                    Explorer: move, dig, and use items diagonally
+                    Explorer: can move, dig, and use items diagonally
                 </div>
                 <div>
-                    Meteorologist: Ability: Mitigate (cost: 1 action)
+                    Meteorologist: Mitigate (1): draw 1 less storm card at end of turn
                 </div>
                 <div>
-                    Navigator: Ability: Navigate (cost: 1 action)
+                    Navigator: Navigate (1): aaaaaaaaaaaaaa
                 </div>
                 <div>
-                    Water Carrier: give water to adjacent players. Ability: Collect 2 Water from well (free)
+                    Water Carrier: can give water to adjacent players. Collect Water (0): collect 2 water from a well
                 </div>
             </div>
         )
