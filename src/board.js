@@ -289,14 +289,14 @@ export class ForbiddenDesertBoard extends React.Component {
         let idToStateClass =
             new Array(25).fill(" ")
                 .map((currentClass, tileID, _) => {
-                    if (this.state.digging && this.tileIsDiggable(tileID)) {
+                    if (this.state.digging && this.tileIsDiggable(tileID) && this.props.G.numMoves < 4) {
                         return `${currentClass} diggable` // Add the `diggable` class to this
                     } else {
                         return `${currentClass}`; // Do not add any more classes
                     }
                 }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
                 .map((currentClass, tileID, _) => {
-                    if (!this.state.digging && this.tileIsMovable(tileID)) {
+                    if (!this.state.digging && this.tileIsMovable(tileID) && this.props.G.numMoves < 4) {
                         return `${currentClass} movable`
                     } else {
                         return `${currentClass}`;
@@ -509,8 +509,8 @@ export class ForbiddenDesertBoard extends React.Component {
                 <button onClick={() => { this.props.undo(); }}>
                     Undo
                 </button>
-                <button onClick={() => { this.props.moves.doNothing(); }}>
-                    Do nothing
+                <button onClick={() => { this.props.events.endTurn(); }}>
+                    End turn
                 </button>
             </div>
         )
@@ -686,7 +686,7 @@ export class ForbiddenDesertBoard extends React.Component {
                             Player {this.props.ctx.currentPlayer}'s turn
                         </div>
                         <div>
-                            Actions left in turn: {4 - this.props.ctx.numMoves}
+                            Actions left in turn: {4 - this.props.G.numMoves}
                         </div>
                     </div>
                     <table>

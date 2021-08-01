@@ -13,116 +13,128 @@ export const ForbiddenDesert = {
         sunBeatsDownProb: 1,
         //for turn onEnd
         turnEnded: false,
+        //use this instead of ctx.numMoves
+        numMoves: 0,
     }),
 
     moves: {
         move: (G, ctx, pos) => {
-            G.players[ctx.currentPlayer].position = pos;
-            //climber
-            if (G.players[ctx.currentPlayer].carryingPlayer !== -1) {
-                G.players[G.players[ctx.currentPlayer].carryingPlayer].position = pos;
+            if (G.numMoves < 4) {
+                G.players[ctx.currentPlayer].position = pos;
+                //climber
+                if (G.players[ctx.currentPlayer].carryingPlayer !== -1) {
+                    G.players[G.players[ctx.currentPlayer].carryingPlayer].position = pos;
+                }
+                G.numMoves += 1;
             }
         },
         dig: (G, ctx, pos) => {
-            if (G.players[ctx.currentPlayer].role === "Archeologist") {
-                G.tiles[pos].sandCount -= 2;
-                if (G.tiles[pos].sandCount < 0) {
-                    G.tiles[pos].sandCount = 0;
+            if (G.numMoves < 4) {
+                if (G.players[ctx.currentPlayer].role === "Archeologist") {
+                    G.tiles[pos].sandCount -= 2;
+                    if (G.tiles[pos].sandCount < 0) {
+                        G.tiles[pos].sandCount = 0;
+                    }
                 }
-            }
-            else {
-                G.tiles[pos].sandCount--;
+                else {
+                    G.tiles[pos].sandCount--;
+                }
+                G.numMoves += 1;
             }
         },
         excavate: {
             move: (G, ctx) => {
-                const currPos = G.players[ctx.currentPlayer].position;
-                G.tiles[currPos].isRevealed = true;
-                if (G.tiles[currPos].type === "well") {
-                    //everyone on currPos gets two water
-                    for (var i = 0; i < G.players.length; i++) {
-                        if (G.players[i].position === currPos) {
-                            G.players[i].water += 2;
-                        }
-                        if (G.players[i].water > G.players[i].maxWater) {
-                            G.players[i].water = G.players[i].maxWater;
-                        }
-                    }
-                }
-                else if (G.tiles[currPos].type === "clue") {
-                    //check if the other clue has also been revealed
-                    //if so, then generate finalPart on the appropriate tile
-                    var found = false;
-                    for (var i = 0; i < G.tiles.length; i++) {
-                        if (G.tiles[i].isRevealed && G.tiles[i].type === "clue" &&
-                            i !== currPos && G.tiles[i].part === G.tiles[currPos].part) {
-                            found = true;
+                if (G.numMoves < 4) {
+                    const currPos = G.players[ctx.currentPlayer].position;
+                    G.tiles[currPos].isRevealed = true;
+                    if (G.tiles[currPos].type === "well") {
+                        //everyone on currPos gets two water
+                        for (var i = 0; i < G.players.length; i++) {
+                            if (G.players[i].position === currPos) {
+                                G.players[i].water += 2;
+                            }
+                            if (G.players[i].water > G.players[i].maxWater) {
+                                G.players[i].water = G.players[i].maxWater;
+                            }
                         }
                     }
-                    if (found) {
-                        var hid;
-                        var vid;
-                        var partName = G.tiles[currPos].part;
+                    else if (G.tiles[currPos].type === "clue") {
+                        //check if the other clue has also been revealed
+                        //if so, then generate finalPart on the appropriate tile
+                        var found = false;
                         for (var i = 0; i < G.tiles.length; i++) {
-                            if (G.tiles[i].part === partName && G.tiles[i].pos === "h") {
-                                hid = i;
-                            }
-                            if (G.tiles[i].part === partName && G.tiles[i].pos === "v") {
-                                vid = i;
+                            if (G.tiles[i].isRevealed && G.tiles[i].type === "clue" &&
+                                i !== currPos && G.tiles[i].part === G.tiles[currPos].part) {
+                                found = true;
                             }
                         }
-                        //index = (hid rounded down to the nearest multiple of 5) + (vid % 5)
-                        while ((hid % 5) !== 0 && hid >= 0) {
-                            hid -= 1;
+                        if (found) {
+                            var hid;
+                            var vid;
+                            var partName = G.tiles[currPos].part;
+                            for (var i = 0; i < G.tiles.length; i++) {
+                                if (G.tiles[i].part === partName && G.tiles[i].pos === "h") {
+                                    hid = i;
+                                }
+                                if (G.tiles[i].part === partName && G.tiles[i].pos === "v") {
+                                    vid = i;
+                                }
+                            }
+                            //index = (hid rounded down to the nearest multiple of 5) + (vid % 5)
+                            while ((hid % 5) !== 0 && hid >= 0) {
+                                hid -= 1;
+                            }
+                            const index = hid + (vid % 5);
+                            G.tiles[index].finalParts.push(partName);
                         }
-                        const index = hid + (vid % 5);
-                        G.tiles[index].finalParts.push(partName);
                     }
+                    G.numMoves += 1;
                 }
             },
             undoable: false
         },
-        giveWater: {
-            move: (G, ctx, id) => {
-                G.players[ctx.currentPlayer].water -= 1;
-                G.players[id].water += 1;
-            },
-            noLimit: true
+        giveWater: (G, ctx, id) => {
+            //free action
+            G.players[ctx.currentPlayer].water -= 1;
+            G.players[id].water += 1;
         },
         pickUpFinalPart: (G, ctx) => {
-            const tempRemovedPart = G.tiles[G.players[ctx.currentPlayer].position].finalParts[0];
-            //remove the first final part from tile
-            G.tiles[G.players[ctx.currentPlayer].position].finalParts.splice(0, 1);
-            //add to collected parts
-            G.collectedParts.push(tempRemovedPart);
+            if (G.numMoves < 4) {
+                const tempRemovedPart = G.tiles[G.players[ctx.currentPlayer].position].finalParts[0];
+                //remove the first final part from tile
+                G.tiles[G.players[ctx.currentPlayer].position].finalParts.splice(0, 1);
+                //add to collected parts
+                G.collectedParts.push(tempRemovedPart);
+                G.numMoves += 1;
+            }
         },
         mitigate: (G, ctx) => {
-            G.numDraws -= 1;
+            if (G.numMoves < 4) {
+                G.numDraws -= 1;
+                G.numMoves += 1;
+            }
         },
         collectWater: (G, ctx) => {
-            G.players[ctx.currentPlayer].water += 2;
-            if (G.players[ctx.currentPlayer].water > G.players[ctx.currentPlayer].maxWater) {
-                G.players[ctx.currentPlayer].water = G.players[ctx.currentPlayer].maxWater;
+            if (G.numMoves < 4) {
+                G.players[ctx.currentPlayer].water += 2;
+                if (G.players[ctx.currentPlayer].water > G.players[ctx.currentPlayer].maxWater) {
+                    G.players[ctx.currentPlayer].water = G.players[ctx.currentPlayer].maxWater;
+                }
+                G.numMoves += 1;
             }
         },
         //climber
-        carry: {
-            move: (G, ctx, id) => {
-                G.players[ctx.currentPlayer].carryingPlayer = id;
-            },
-            noLimit: true
+        carry: (G, ctx, id) => {
+            //free move
+            G.players[ctx.currentPlayer].carryingPlayer = id;
         },
-        drop: {
-            move: (G, ctx) => {
-                G.players[ctx.currentPlayer].carryingPlayer = -1;
-            },
-            noLimit: true
-        },
-        doNothing: (G, ctx) => {
-            ctx.events.endTurn();
+        drop: (G, ctx) => {
+            //free move
+            G.players[ctx.currentPlayer].carryingPlayer = -1;
         },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
+                //free move (lol)
                 G.players[id].role = role;
                 if (role === "Archeologist" || role === "Climber") {
                     G.players[id].maxWater = 3;
@@ -138,10 +150,10 @@ export const ForbiddenDesert = {
                 }
             },
             undoable: false,
-            noLimit: true
         },
         setDifficulty: {
             move: (G, ctx, diff) => {
+                //free move (lol)
                 G.stormLevel = diff;
                 if (diff === 0) {
                     G.numDraws = 2;
@@ -151,37 +163,27 @@ export const ForbiddenDesert = {
                 }
             },
             undoable: false,
-            noLimit: true
         },
         //DEBUG ONLY
-        removeWater: {
-            move: (G, ctx, id) => {
-                G.players[id].water -= 1;
-            },
-            noLimit: true
+        removeWater: (G, ctx, id) => {
+            G.players[id].water -= 1;
         },
-        placeFinalPart: {
-            move: (G, ctx, id) => {
-                G.tiles[id].finalParts.push("Z");
-            },
-            noLimit: true
+        placeFinalPart: (G, ctx, id) => {
+            G.tiles[id].finalParts.push("Z");
         },
-        addSand: {
-            move: (G, ctx, id) => {
-                G.tiles[id].sandCount += 1;
-            },
-            noLimit: true
-        }
+        addSand: (G, ctx, id) => {
+            G.tiles[id].sandCount += 1;
+        },
     },
 
     turn: {
-        moveLimit: 4,
         onBegin: (G, ctx) => {
+            G.numMoves = 0;
             G.turnEnded = false;
         },
         onEnd: (G, ctx) => {
             if (!G.turnEnded) {
-                //climber drop
+                //climber automatically drop
                 G.players[ctx.currentPlayer].carryingPlayer = -1;
 
                 G.lastDrawType = [];
