@@ -181,9 +181,9 @@ export const ForbiddenDesert = {
         },
         onEnd: (G, ctx) => {
             if (!G.turnEnded) {
-                //climber drops all players
+                //climber drop
                 G.players[ctx.currentPlayer].carryingPlayer = -1;
-                
+
                 G.lastDrawType = [];
                 //numDraws should be set from end of last turn
                 //(we set it at the end for meteorologist to be able to decrement it during turn)

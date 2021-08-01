@@ -12,6 +12,7 @@ export class ForbiddenDesertBoard extends React.Component {
         waterErrorMsg: '',
         mitigateErrorMsg: '',
         carryErrorMsg: '',
+        dropErrorMsg: '',
     }
 
     assignRoleTo(playerID, role) {
@@ -95,7 +96,18 @@ export class ForbiddenDesertBoard extends React.Component {
         this.props.moves.collectWater();
     }
     carry(playerID) {
+        this.setState({ chooseCarry: false, carrying: true });
         this.props.moves.carry(playerID);
+    }
+    drop() {
+        this.setState({ chooseCarry: false, carrying: false });
+        if (this.props.G.players[this.props.ctx.currentPlayer].carryingPlayer === -1) {
+            this.setState({ dropErrorMsg: "Nobody to drop! Carry first." });
+            setTimeout(() => this.setState({ dropErrorMsg: '' }), 3000);
+        }
+        else {
+            this.props.moves.drop();
+        }
     }
     isAdjacentTile(id) {
         const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
@@ -440,10 +452,16 @@ export class ForbiddenDesertBoard extends React.Component {
         //carry for climber only
         if (this.props.G.players[this.props.ctx.currentPlayer].role === "Climber") {
             actionButtons.push(
-                <button onClick={() => { this.setState({ chooseCarry: !this.state.chooseCarry }) }}>
-                    Carry:
-                </button>
+                <div>
+                    <button onClick={() => { this.setState({ chooseCarry: !this.state.chooseCarry }) }}>
+                        Carry:
+                    </button>
+                    <button onClick={() => { this.drop(); }}>
+                        Drop
+                    </button>
+                </div>
             )
+            //spawn choose player buttons
             if (this.state.chooseCarry) {
                 //find if there are any players on current tile
                 var playersFound = false;
@@ -459,12 +477,8 @@ export class ForbiddenDesertBoard extends React.Component {
                         playersFound = true;
                     }
                 }
-                //first check if the turn is over, then just set error msg to '', because you're gonna drop them
-                if (this.props.ctx.numMoves === 4) {
-                    this.setState({ chooseCarry: false, carryErrorMsg: "" });
-                }
                 //spawned no buttons?
-                else if (!playersFound) {
+                if (!playersFound) {
                     this.setState({ chooseCarry: false, carryErrorMsg: "Nobody to carry! (They must be on the same tile.)" });
                     setTimeout(() => this.setState({ carryErrorMsg: '' }), 3000);
                 }
@@ -473,6 +487,11 @@ export class ForbiddenDesertBoard extends React.Component {
         actionButtons.push(
             <div>
                 {this.state.carryErrorMsg}
+            </div>
+        )
+        actionButtons.push(
+            <div>
+                {this.state.dropErrorMsg}
             </div>
         )
         //only show pickup part button when the tile of the current player position
