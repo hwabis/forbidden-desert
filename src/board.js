@@ -670,10 +670,10 @@ export class ForbiddenDesertBoard extends React.Component {
                     Meteorologist: Mitigate (1): draw 1 less storm card at end of turn
                 </div>
                 <div>
-                    Navigator: Navigate (1): aaaaaaaaaaaaaa
+                    Navigator: Navigate (1): move any other player up to 3 tiles; Climber and Explorer keep their abilities
                 </div>
                 <div>
-                    Water Carrier: can give water to adjacent players. Collect Water (0): collect 2 water from a well
+                    Water Carrier: can give water to adjacent players. Collect Water (1): collect 2 water from a well
                 </div>
             </div>
         )
