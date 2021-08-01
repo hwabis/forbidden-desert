@@ -65,7 +65,7 @@ export class ForbiddenDesertBoard extends React.Component {
             this.props.moves.mitigate();
         }
         else {
-            this.setState({mitigateErrorMsg: "All storm cards already mitigated!"})
+            this.setState({ mitigateErrorMsg: "All storm cards already mitigated!" })
             setTimeout(() => this.setState({ mitigateErrorMsg: '' }), 3000);
         }
     }
@@ -492,6 +492,20 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+        //probabilities
+        rightbar.push(
+            <div>
+                <p></p>
+                <div>
+                    Chance of Sun Beats Down at end of turn:&nbsp;
+                    {((1 - (1 - this.props.G.sunBeatsDownProb / 100) ** (this.props.G.numDraws)) * 100).toFixed(2)}%
+                </div>
+                <div>
+                    Chance of Storm Picks Up at end of turn:&nbsp;
+                    {((1 - (1 - this.props.G.stormPicksUpProb / 100) ** (this.props.G.numDraws)) * 100).toFixed(2)}%
+                </div>
+            </div>
+        );
         //currently collected parts
         var partList = [];
         for (var i = 0; i < this.props.G.collectedParts.length; i++) {
@@ -573,15 +587,6 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <div>
                     Game over at level {death}
-                </div>
-                <p></p>
-                <div>
-                    Chance of Sun Beats Down at end of turn:&nbsp; 
-                    {((1 - (1 - this.props.G.sunBeatsDownProb/100)**(this.props.G.numDraws))*100).toFixed(2)}%
-                </div>
-                <div>
-                    Chance of Storm Picks Up at end of turn:&nbsp;
-                    {((1 - (1 - this.props.G.stormPicksUpProb/100)**(this.props.G.numDraws))*100).toFixed(2)}%
                 </div>
                 <p></p>
                 <div>
