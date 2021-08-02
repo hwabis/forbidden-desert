@@ -1,3 +1,5 @@
+import { INVALID_MOVE } from "boardgame.io/core";
+
 export const ForbiddenDesert = {
     //there's a bug where sometimes (particularly when people are at 0 water),
     //onEnd happens twice. i can't figure out the cause, but turnEnded should fix it
@@ -215,7 +217,7 @@ export const ForbiddenDesert = {
                     stopNavigating: (G, ctx, pos) => {
                         //climber automatically drop
                         G.players[ctx.currentPlayer].carryingPlayer = -1;
-                        G.isnavigating = false;
+                        G.isNavigating = false;
                         G.navigatingNumMoves = 0;
                         ctx.events.endStage();
                     }

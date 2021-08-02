@@ -25,6 +25,9 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     //move, or dig if this.state.digging
     onClickTile(id) {
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+
         if (this.isBuried()) {
             //you can only dig when buried
             if (this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0) {
@@ -33,21 +36,21 @@ export class ForbiddenDesertBoard extends React.Component {
             }
         }
         else if (this.isAdjacentTile(id) || this.isSameTile(id) ||
-            (this.isDiagonalTile(id) && this.props.G.players[this.props.ctx.currentPlayer].role === "Explorer")) {
+            (this.isDiagonalTile(id) && this.props.G.players[currentPlayerID].role === "Explorer")) {
             if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
                 this.props.moves.dig(id);
                 this.setState({ digging: false });
             }
             else if (!this.isSameTile(id) &&
-                (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[this.props.ctx.currentPlayer].role === "Climber")
+                (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[currentPlayerID].role === "Climber")
                 && !this.state.digging) {
                 this.props.moves.move(id);
             }
         }
         //move through tunnel
         else if (this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed &&
-            this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel" &&
-            this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
+            this.props.G.tiles[this.props.G.players[currentPlayerID].position].type === "tunnel" &&
+            this.props.G.tiles[this.props.G.players[currentPlayerID].position].isRevealed &&
             this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
             this.props.moves.move(id);
         }
@@ -110,7 +113,10 @@ export class ForbiddenDesertBoard extends React.Component {
         }
     }
     isAdjacentTile(id) {
-        const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+
+        const currentPlayerPos = this.props.G.players[currentPlayerID].position;
         var check1 = id >= 0 && id <= 24 &&
             (id === currentPlayerPos - 1 || id === currentPlayerPos + 1 ||
                 id === currentPlayerPos - 5 || id === currentPlayerPos + 5);
@@ -124,10 +130,16 @@ export class ForbiddenDesertBoard extends React.Component {
         }
     }
     isSameTile(id) {
-        return (id === this.props.G.players[this.props.ctx.currentPlayer].position);
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+
+        return (id === this.props.G.players[currentPlayerID].position);
     }
     isDiagonalTile(id) {
-        const currentPlayerPos = this.props.G.players[this.props.ctx.currentPlayer].position;
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+
+        const currentPlayerPos = this.props.G.players[currentPlayerID].position;
         var check1 = id >= 0 && id <= 24 &&
             (id === currentPlayerPos - 6 || id === currentPlayerPos - 4 ||
                 id === currentPlayerPos + 4 || id === currentPlayerPos + 6);
@@ -142,17 +154,20 @@ export class ForbiddenDesertBoard extends React.Component {
 
     //for idToStateClass purposes, not onClickTile
     tileIsMovable(id) {
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+
         if (this.isBuried()) {
             return false;
         }
         else {
             return (this.isAdjacentTile(id)
-                || (this.props.G.players[this.props.ctx.currentPlayer].role === "Explorer" && this.isDiagonalTile(id))
-                || (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "tunnel"
-                    && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
+                || (this.props.G.players[currentPlayerID].role === "Explorer" && this.isDiagonalTile(id))
+                || (this.props.G.tiles[this.props.G.players[currentPlayerID].position].type === "tunnel"
+                    && this.props.G.tiles[this.props.G.players[currentPlayerID].position].isRevealed
                     && this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed))
                 && !this.isSameTile(id)
-                && (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[this.props.ctx.currentPlayer].role === "Climber")
+                && (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[currentPlayerID].role === "Climber")
                 && !this.state.digging && !this.isBuried();
         }
     }
@@ -170,9 +185,12 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     //returns whether current player is buried
     isBuried() {
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+
         //check if current tile has a climber on it;
         //iterate through all players, and check if a climber's position is current position
-        const currPos = this.props.G.players[this.props.ctx.currentPlayer].position;
+        const currPos = this.props.G.players[currentPlayerID].position;
         for (var i = 0; i < this.props.G.players.length; i++) {
             if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].position === currPos) {
                 return false;
