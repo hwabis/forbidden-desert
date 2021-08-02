@@ -135,6 +135,10 @@ export class ForbiddenDesertBoard extends React.Component {
         var check2 = Math.abs(Math.floor(id / 5) - Math.floor(currentPlayerPos / 5)) === 1;
         return check1 && check2;
     }
+    endTurn() {
+        this.setState({ digging: false });
+        this.props.events.endTurn();
+    }
 
     //for idToStateClass purposes, not onClickTile
     tileIsMovable(id) {
@@ -509,7 +513,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 <button onClick={() => { this.props.undo(); }}>
                     Undo
                 </button>
-                <button onClick={() => { this.props.events.endTurn(); }}>
+                <button onClick={() => { this.endTurn(); }}>
                     End turn
                 </button>
             </div>

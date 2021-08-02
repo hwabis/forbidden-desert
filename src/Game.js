@@ -15,6 +15,10 @@ export const ForbiddenDesert = {
         turnEnded: false,
         //use this instead of ctx.numMoves
         numMoves: 0,
+        //navigator
+        isNavigating: false,
+        navigatingID: -1,
+        navigatingNumMoves: 0,
     }),
 
     moves: {
@@ -132,6 +136,15 @@ export const ForbiddenDesert = {
             //free move
             G.players[ctx.currentPlayer].carryingPlayer = -1;
         },
+        //navigator
+        navigate: (G, ctx, id) => {
+            if (G.numMoves < 4) {
+                G.isNavigating = true;
+                G.navigatingID = id;
+                ctx.events.setStage("navigating");
+                G.numMoves += 1;
+            }
+        },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
                 //free move (lol)
@@ -177,6 +190,38 @@ export const ForbiddenDesert = {
     },
 
     turn: {
+        stages: {
+            navigating: {
+                moves: {
+                    move: (G, ctx, pos) => {
+                        if (G.navigatingNumMoves < 3) {
+                            G.players[G.navigatingID].position = pos;
+                            //climber
+                            if (G.players[G.navigatingID].carryingPlayer !== -1) {
+                                G.players[G.players[G.navigatingID].carryingPlayer].position = pos;
+                            }
+                            G.navigatingNumMoves += 1;
+                        }
+                    },
+                    //climber only
+                    carry: (G, ctx, id) => {
+                        //free move
+                        G.players[G.navigatingID].carryingPlayer = id;
+                    },
+                    drop: (G, ctx) => {
+                        //free move
+                        G.players[G.navigatingID].carryingPlayer = -1;
+                    },
+                    stopNavigating: (G, ctx, pos) => {
+                        //climber automatically drop
+                        G.players[ctx.currentPlayer].carryingPlayer = -1;
+                        G.isnavigating = false;
+                        G.navigatingNumMoves = 0;
+                        ctx.events.endStage();
+                    }
+                },
+            }
+        },
         onBegin: (G, ctx) => {
             G.numMoves = 0;
             G.turnEnded = false;
