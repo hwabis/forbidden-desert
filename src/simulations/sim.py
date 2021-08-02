@@ -3,10 +3,9 @@ import numpy as np
 import random
 import statistics
 
-# goals:
-# 1. left-skewed graphs, so you don't keep drawing for too much
-# 2. storm probability should be about 9.7% (3/31),
-#   and sun beats down probability should be about 12.9% (4/31)
+# goal:
+# storm probability should be about 9.7% (3/31),
+# and sun beats down probability should be about 12.9% (4/31)
 
 prob = 1  # in percent
 totalcount = 0
