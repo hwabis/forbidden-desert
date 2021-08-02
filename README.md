@@ -1,7 +1,8 @@
 # forbidden-desert
 WIP:
-* Roles: climber, navigator
 * Equipment (from gear + tunnel tiles)
+  * Giving/using items on other players' turns
+* Giving water on other players' turns
 * Display win/loss
 
 Play here: https://hwabis.github.io/forbidden-desert/
