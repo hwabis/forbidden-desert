@@ -137,7 +137,7 @@ export const ForbiddenDesert = {
         drop: (G, ctx) => {
             //free move
             var currentPlayerID;
-            this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+            G.isNavigating ? currentPlayerID = G.navigatingID : currentPlayerID = ctx.currentPlayer;
             
             G.players[currentPlayerID].carryingPlayer = -1;
         },
