@@ -21,13 +21,13 @@ class App extends React.Component {
             Based off the original game designed by Gamewright.
           </div>
           <div>
-            <a href="https://www.gamewright.com/gamewright/pdfs/Rules/ForbiddenDesertTM-RULES.pdf">Official rules manual</a>
+            <a href="https://www.gamewright.com/gamewright/pdfs/Rules/ForbiddenDesertTM-RULES.pdf" target="_blank">Official rules manual</a>
           </div>
           <div>
-            <a href="https://boardgamegeek.com/boardgame/136063/forbidden-desert">BoardGameGeek listing</a>
+            <a href="https://boardgamegeek.com/boardgame/136063/forbidden-desert" target="_blank">BoardGameGeek listing</a>
           </div>
           <div>
-            <a href="https://github.com/hwabis/forbidden-desert">Source code</a>
+            <a href="https://github.com/hwabis/forbidden-desert" target="_blank">Source code</a>
           </div>
           <div id="header">
             <p>Select number of players:</p>
