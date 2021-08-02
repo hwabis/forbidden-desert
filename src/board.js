@@ -8,6 +8,7 @@ export class ForbiddenDesertBoard extends React.Component {
         digging: false,
         givingWater: false,
         chooseCarry: false,
+        chooseNavigate: false,
         excavateErrorMsg: '',
         waterErrorMsg: '',
         mitigateErrorMsg: '',
@@ -94,6 +95,10 @@ export class ForbiddenDesertBoard extends React.Component {
             this.setState({ mitigateErrorMsg: "All storm cards already mitigated!" })
             setTimeout(() => this.setState({ mitigateErrorMsg: '' }), 3000);
         }
+    }
+    navigate(id) {
+        this.setState({ chooseNavigate: false })
+        this.props.moves.navigate(id);
     }
     collectWater() {
         this.props.moves.collectWater();
@@ -551,6 +556,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 {this.state.dropErrorMsg}
             </div>
         )
+
         //only show pickup part button when the tile of the current player position
         //has at least 1 finalPart, and the tile is revealed
         if (!this.props.G.isNavigating) {
@@ -561,6 +567,30 @@ export class ForbiddenDesertBoard extends React.Component {
                         Pick up part (1)
                     </button>
                 )
+            }
+        }
+
+        //navigator only
+        if (!this.props.G.isNavigating) {
+            if (this.props.G.players[this.props.ctx.currentPlayer].role === "Navigator") {
+                actionButtons.push(
+                    <button onClick={() => { this.setState({ chooseNavigate: !this.state.chooseNavigate }) }}>
+                        Navigate (1):
+                    </button>
+                );
+            }
+            //spawn choose player buttons
+            if (this.state.chooseNavigate) {
+                for (var i = 0; i < this.props.G.players.length; i++) {
+                    const index = i;
+                    if (index != this.props.ctx.currentPlayer) {
+                        actionButtons.push(
+                            <button onClick={() => { this.navigate(index); }}>
+                                Player {index}
+                            </button>
+                        );
+                    }
+                }
             }
         }
 
