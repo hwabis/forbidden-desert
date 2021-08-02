@@ -428,10 +428,10 @@ export class ForbiddenDesertBoard extends React.Component {
         if (!this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
+                    <button accesskey="d" onClick={() => { this.setState({ digging: !this.state.digging }); }}>
                         Dig (1)
                     </button>
-                    <button onClick={() => { this.excavate(); }}>
+                    <button accesskey="x" onClick={() => { this.excavate(); }}>
                         Excavate (1)
                     </button>
                     <div>
@@ -597,10 +597,10 @@ export class ForbiddenDesertBoard extends React.Component {
         if (this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button onClick={() => { this.props.undo(); }}>
+                    <button accesskey="z" onClick={() => { this.props.undo(); }}>
                         Undo
                     </button>
-                    <button onClick={() => { this.props.moves.stopNavigating() }}>
+                    <button accesskey="e" onClick={() => { this.props.moves.stopNavigating() }}>
                         End navigation
                     </button>
                 </div>
@@ -609,10 +609,10 @@ export class ForbiddenDesertBoard extends React.Component {
         else {
             actionButtons.push(
                 <div>
-                    <button onClick={() => { this.props.undo(); }}>
+                    <button accesskey="z" onClick={() => { this.props.undo(); }}>
                         Undo
                     </button>
-                    <button onClick={() => { this.endTurn(); }}>
+                    <button accesskey="e" onClick={() => { this.endTurn(); }}>
                         End turn
                     </button>
                 </div>
@@ -779,6 +779,12 @@ export class ForbiddenDesertBoard extends React.Component {
                 <div>
                     Water Carrier: can give water to adjacent players. Collect Water (1): collect 2 water from a well
                 </div>
+                <p></p>
+                <div>Hotkeys:</div>
+                <div>Dig: alt + d</div>
+                <div>Excavate: alt + x</div>
+                <div>Undo: alt + z</div>
+                <div>End turn / navigation: alt + e</div>
             </div>
         )
 
