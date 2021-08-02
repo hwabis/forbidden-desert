@@ -103,8 +103,11 @@ export class ForbiddenDesertBoard extends React.Component {
         this.props.moves.carry(playerID);
     }
     drop() {
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+
         this.setState({ chooseCarry: false, carrying: false });
-        if (this.props.G.players[this.props.ctx.currentPlayer].carryingPlayer === -1) {
+        if (this.props.G.players[currentPlayerID].carryingPlayer === -1) {
             this.setState({ dropErrorMsg: "Nobody to drop! Carry first." });
             setTimeout(() => this.setState({ dropErrorMsg: '' }), 3000);
         }
@@ -305,6 +308,8 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             );
         }
+        var currentPlayerID;
+        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
 
         //adds class to render borders on appropriate tiles when this.state.digging
         //or when moving (!this.state.digging)
@@ -318,7 +323,8 @@ export class ForbiddenDesertBoard extends React.Component {
                     }
                 }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
                 .map((currentClass, tileID, _) => {
-                    if (!this.state.digging && this.tileIsMovable(tileID) && this.props.G.numMoves < 4) {
+                    if (!this.state.digging && this.tileIsMovable(tileID)
+                        && ((!this.props.G.isNavigating && this.props.G.numMoves < 4) || (this.props.G.isNavigating && this.props.G.navigatingNumMoves < 3))) {
                         return `${currentClass} movable`
                     } else {
                         return `${currentClass}`;
@@ -380,6 +386,32 @@ export class ForbiddenDesertBoard extends React.Component {
             tiles.push(<tr key={i}>{row}</tr>);
         }
 
+        var header = [];
+        if (this.props.G.isNavigating) {
+            header.push(
+                <div>
+                    <div>
+                        Player {this.props.ctx.currentPlayer} navigating Player {this.props.G.navigatingID}
+                    </div>
+                    <div>
+                        Actions left in navigation: {3 - this.props.G.navigatingNumMoves}, Actions left in turn: {4 - this.props.G.numMoves}
+                    </div>
+                </div>
+            );
+        }
+        else {
+            header.push(
+                <div>
+                    <div>
+                        Player {this.props.ctx.currentPlayer}'s turn
+                    </div>
+                    <div>
+                        Actions left in turn: {4 - this.props.G.numMoves}
+                    </div>
+                </div>
+            );
+        }
+
         var actionButtons = [];
         if (this.isBuried()) {
             actionButtons.push(
@@ -388,91 +420,94 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
             )
         }
-        actionButtons.push(
-            <div>
-                <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
-                    Dig (1)
-                </button>
-                <button onClick={() => { this.excavate(); }}>
-                    Excavate (1)
-                </button>
+        if (!this.props.G.isNavigating) {
+            actionButtons.push(
                 <div>
-                    {this.state.digging ? "Choose a tile to dig." : ""}
+                    <button onClick={() => { this.setState({ digging: !this.state.digging }); }}>
+                        Dig (1)
+                    </button>
+                    <button onClick={() => { this.excavate(); }}>
+                        Excavate (1)
+                    </button>
+                    <div>
+                        {this.state.digging ? "Choose a tile to dig." : ""}
+                    </div>
                 </div>
-            </div>
-        );
-        actionButtons.push(
-            <div>
-                {this.state.excavateErrorMsg}
-            </div>
-        )
-        actionButtons.push(
-            <button onClick={() => { this.setState({ givingWater: !this.state.givingWater }); }}>
-                Give water to (0):
-            </button>
-        );
-        //give water to popup buttons
-        if (this.state.givingWater) {
-            var someoneFound = false;
-            for (var i = 0; i < this.props.G.players.length; i++) {
-                //this took me hours to fix.. if you don't assign i to a constant,
-                //and use i for giveWaterTo parameter, then the value is going 
-                //to be, like, different every time you call it. or something.
-                const index = i;
-                if (index != this.props.ctx.currentPlayer
-                    && (this.isSameTile(this.props.G.players[index].position)
-                        || (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier" &&
-                            this.isAdjacentTile(this.props.G.players[index].position)))) {
-                    actionButtons.push(
-                        <button onClick={() => { this.giveWaterTo(index); }}>
-                            Player {index}
-                        </button>
-                    );
-                    someoneFound = true;
+            );
+            actionButtons.push(
+                <div>
+                    {this.state.excavateErrorMsg}
+                </div>
+            )
+            actionButtons.push(
+                <button onClick={() => { this.setState({ givingWater: !this.state.givingWater }); }}>
+                    Give water to (0):
+                </button>
+            );
+            //give water to popup buttons
+            if (this.state.givingWater) {
+                var someoneFound = false;
+                for (var i = 0; i < this.props.G.players.length; i++) {
+                    //this took me hours to fix.. if you don't assign i to a constant,
+                    //and use i for giveWaterTo parameter, then the value is going 
+                    //to be, like, different every time you call it. or something.
+                    const index = i;
+                    if (index != this.props.ctx.currentPlayer
+                        && (this.isSameTile(this.props.G.players[index].position)
+                            || (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier" &&
+                                this.isAdjacentTile(this.props.G.players[index].position)))) {
+                        actionButtons.push(
+                            <button onClick={() => { this.giveWaterTo(index); }}>
+                                Player {index}
+                            </button>
+                        );
+                        someoneFound = true;
+                    }
+                }
+                //spawned no buttons?
+                if (!someoneFound) {
+                    if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier") {
+                        this.setState({ givingWater: false, waterErrorMsg: "No players to give water to! (They must be on the same or an adjacent tile.)" });
+                    }
+                    else {
+                        this.setState({ givingWater: false, waterErrorMsg: "No players to give water to! (They must be on the same tile.)" });
+                    }
+                    setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
                 }
             }
-            //spawned no buttons?
-            if (!someoneFound) {
-                if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier") {
-                    this.setState({ givingWater: false, waterErrorMsg: "No players to give water to! (They must be on the same or an adjacent tile.)" });
-                }
-                else {
-                    this.setState({ givingWater: false, waterErrorMsg: "No players to give water to! (They must be on the same tile.)" });
-                }
-                setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
+            actionButtons.push(
+                <div>
+                    {this.state.waterErrorMsg}
+                </div>
+            )
+            //Mitigate for meteorologist only
+            if (this.props.G.players[this.props.ctx.currentPlayer].role === "Meteorologist") {
+                actionButtons.push(
+                    <button onClick={() => { this.mitigate(); }}>
+                        Mitigate (1)
+                    </button>
+                )
+            }
+            actionButtons.push(
+                <div>
+                    {this.state.mitigateErrorMsg}
+                </div>
+            )
+            //collectWater for water carrier only
+            if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier"
+                && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "well"
+                && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
+                && this.props.G.players[this.props.ctx.currentPlayer].water < this.props.G.players[this.props.ctx.currentPlayer].maxWater) {
+                actionButtons.push(
+                    <button onClick={() => { this.collectWater(); }}>
+                        Collect +2 water (1)
+                    </button>
+                )
             }
         }
-        actionButtons.push(
-            <div>
-                {this.state.waterErrorMsg}
-            </div>
-        )
-        //Mitigate for meteorologist only
-        if (this.props.G.players[this.props.ctx.currentPlayer].role === "Meteorologist") {
-            actionButtons.push(
-                <button onClick={() => { this.mitigate(); }}>
-                    Mitigate (1)
-                </button>
-            )
-        }
-        actionButtons.push(
-            <div>
-                {this.state.mitigateErrorMsg}
-            </div>
-        )
-        //collectWater for water carrier only
-        if (this.props.G.players[this.props.ctx.currentPlayer].role === "Water Carrier"
-            && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].type === "well"
-            && this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed
-            && this.props.G.players[this.props.ctx.currentPlayer].water < this.props.G.players[this.props.ctx.currentPlayer].maxWater) {
-            actionButtons.push(
-                <button onClick={() => { this.collectWater(); }}>
-                    Collect +2 water (1)
-                </button>
-            )
-        }
+
         //carry for climber only
-        if (this.props.G.players[this.props.ctx.currentPlayer].role === "Climber") {
+        if (this.props.G.players[currentPlayerID].role === "Climber") {
             actionButtons.push(
                 <div>
                     <button onClick={() => { this.setState({ chooseCarry: !this.state.chooseCarry }) }}>
@@ -489,7 +524,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 var playersFound = false;
                 for (var i = 0; i < this.props.G.players.length; i++) {
                     const index = i;
-                    if (index != this.props.ctx.currentPlayer &&
+                    if (index != currentPlayerID &&
                         this.isSameTile(this.props.G.players[index].position)) {
                         actionButtons.push(
                             <button onClick={() => { this.carry(index); }}>
@@ -518,24 +553,41 @@ export class ForbiddenDesertBoard extends React.Component {
         )
         //only show pickup part button when the tile of the current player position
         //has at least 1 finalPart, and the tile is revealed
-        if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
-            this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].finalParts.length > 0) {
+        if (!this.props.G.isNavigating) {
+            if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
+                this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].finalParts.length > 0) {
+                actionButtons.push(
+                    <button onClick={() => { this.pickUpFinalPart(); }}>
+                        Pick up part (1)
+                    </button>
+                )
+            }
+        }
+
+        if (this.props.G.isNavigating) {
             actionButtons.push(
-                <button onClick={() => { this.pickUpFinalPart(); }}>
-                    Pick up part (1)
-                </button>
+                <div>
+                    <button onClick={() => { this.props.undo(); }}>
+                        Undo
+                    </button>
+                    <button onClick={() => { this.props.moves.stopNavigating() }}>
+                        End navigation
+                    </button>
+                </div>
             )
         }
-        actionButtons.push(
-            <div>
-                <button onClick={() => { this.props.undo(); }}>
-                    Undo
-                </button>
-                <button onClick={() => { this.endTurn(); }}>
-                    End turn
-                </button>
-            </div>
-        )
+        else {
+            actionButtons.push(
+                <div>
+                    <button onClick={() => { this.props.undo(); }}>
+                        Undo
+                    </button>
+                    <button onClick={() => { this.endTurn(); }}>
+                        End turn
+                    </button>
+                </div>
+            )
+        }
 
         var rightbar = [];
         //player info
@@ -704,12 +756,7 @@ export class ForbiddenDesertBoard extends React.Component {
             <div>
                 <div className="fl">
                     <div className="header center">
-                        <div>
-                            Player {this.props.ctx.currentPlayer}'s turn
-                        </div>
-                        <div>
-                            Actions left in turn: {4 - this.props.G.numMoves}
-                        </div>
+                        {header}
                     </div>
                     <table>
                         <tbody>{tiles}</tbody>

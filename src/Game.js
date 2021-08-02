@@ -136,7 +136,10 @@ export const ForbiddenDesert = {
         },
         drop: (G, ctx) => {
             //free move
-            G.players[ctx.currentPlayer].carryingPlayer = -1;
+            var currentPlayerID;
+            this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+            
+            G.players[currentPlayerID].carryingPlayer = -1;
         },
         //navigator
         navigate: (G, ctx, id) => {
@@ -216,7 +219,7 @@ export const ForbiddenDesert = {
                     },
                     stopNavigating: (G, ctx, pos) => {
                         //climber automatically drop
-                        G.players[ctx.currentPlayer].carryingPlayer = -1;
+                        G.players[G.navigatingID].carryingPlayer = -1;
                         G.isNavigating = false;
                         G.navigatingNumMoves = 0;
                         ctx.events.endStage();
