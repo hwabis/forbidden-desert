@@ -4,6 +4,7 @@ export const ForbiddenDesert = {
     setup: (ctx) => ({
         players: setupPlayers(ctx.numPlayers),
         tiles: setupTiles(),
+        equipmentDeck: setupEquipment(),
         difficultyName: "",
         stormLevel: 0,
         numDraws: 0,
@@ -94,6 +95,12 @@ export const ForbiddenDesert = {
                             }
                             const index = hid + (vid % 5);
                             G.tiles[index].finalParts.push(partName);
+                        }
+                    }
+                    else if (G.tiles[currPos].type === "gear" || G.tiles[currPos].type === "tunnel") {
+                        if (G.equipmentDeck.length > 0) {
+                            //just pop off the top; deck is already shuffled
+                            G.players[ctx.currentPlayer].equipment.push(G.equipmentDeck.pop());
                         }
                     }
                     G.numMoves += 1;
@@ -524,6 +531,7 @@ var setupPlayers = (numPlayers) => {
             position: pos,
             water: 0,
             maxWater: 0,
+            equipment: [],
             carryingPlayer: -1,
         });
     }
@@ -608,6 +616,26 @@ var setupTiles = () => {
         tiles[sandTiles[i]].sandCount = 1;
     }
     return tiles;
+}
+
+var setupEquipment = () => {
+    var deck = [];
+    for (var i = 0; i < 3; i++) {
+        deck.push("Jet Pack");
+    }
+    for (var i = 0; i < 3; i++) {
+        deck.push("Dune Blaster");
+    }
+    for (var i = 0; i < 2; i++) {
+        deck.push("Terrascope");
+    }
+    for (var i = 0; i < 2; i++) {
+        deck.push("Solar Shield");
+    }
+    deck.push("Secret Water Reserve");
+    deck.push("Time Throttle");
+    shuffle(deck);
+    return deck;
 }
 
 //https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array lol sorry :(

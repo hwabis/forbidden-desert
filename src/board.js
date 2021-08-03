@@ -58,7 +58,7 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     excavate() {
         if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed === true) {
-            this.setState({ excavateErrorMsg: "This tile is already revealed!" })
+            this.setState({ excavateErrorMsg: "This tile is already excavated!" })
             setTimeout(() => this.setState({ excavateErrorMsg: '' }), 3000);
         }
         else if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount !== 0) {
@@ -644,15 +644,25 @@ export class ForbiddenDesertBoard extends React.Component {
             if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].carryingPlayer !== -1) {
                 playerInfoList.push(
                     <div>
-                        {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
-                        - Carrying Player {this.props.G.players[i].carryingPlayer}
+                        <div>
+                            {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
+                            - Carrying Player {this.props.G.players[i].carryingPlayer}
+                        </div>
+                        <div>
+                            {this.props.G.players[i].equipment.join(", ")}
+                        </div>
                     </div>
                 );
             }
             else {
                 playerInfoList.push(
                     <div>
-                        {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
+                        <div>
+                            {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}
+                        </div>
+                        <div>
+                            {this.props.G.players[i].equipment.join(", ")}
+                        </div>
                     </div>
                 );
             }
@@ -785,7 +795,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     Climber: can move over any tile; allows everyone on current tile to move. Carry (0): bring another player
                 </div>
                 <div>
-                    Explorer: can move, dig, and use items diagonally
+                    Explorer: can move, dig, and use Dune Blaster diagonally
                 </div>
                 <div>
                     Meteorologist: Mitigate (1): draw 1 less storm card at end of turn
@@ -795,6 +805,32 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <div>
                     Water Carrier: can give water to adjacent players. Collect Water (1): collect 2 water from a well
+                </div>
+                <p></p>
+                <div>
+                    Dune Blaster: dig all sand from a diggable tile
+                </div>
+                <div>
+                    Jet Pack: move to any unblocked tile. Can carry one player on ride
+                </div>
+                <div>
+                    Secret Water Reserve: give 2 water to all players on current tile
+                </div>
+                <div>
+                    Solar Shield: prevent Sun Beats Down to all players on tile this was used, until user's next turn
+                </div>
+                <div>
+                    Terrascope: peak under an unexcavated tile
+                </div>
+                <div>
+                    Time Throttle (owner's turn only): gain 2 extra actions this turn
+                </div>
+                <p></p>
+                <div>
+                    Starting equipment deck: 3x Dune Blaster, 3x Jet Pack,
+                </div>
+                <div>
+                    2x Solar Shield, 2x Terrascope, 1x Secret Water Reserve, 1x Time Throttle
                 </div>
                 <p></p>
                 <div>Hotkeys:</div>
