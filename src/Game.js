@@ -1,19 +1,21 @@
 import { INVALID_MOVE } from "boardgame.io/core";
 
 export const ForbiddenDesert = {
-    //there's a bug where sometimes (particularly when people are at 0 water),
-    //onEnd happens twice. i can't figure out the cause, but turnEnded should fix it
     setup: (ctx) => ({
         players: setupPlayers(ctx.numPlayers),
         tiles: setupTiles(),
+        difficultyName: "",
         stormLevel: 0,
         numDraws: 0,
+        //for showing end-of-last-turn history
         lastDrawType: [],
+        //collect 4 parts
         collectedParts: [],
         //for storm probability stuff (see sim.py)
         stormPicksUpProb: 1,
         sunBeatsDownProb: 1,
-        //for turn onEnd
+        //for turn onEnd; there's a bug where sometimes (particularly when people are at 0 water),
+        //onEnd happens twice. i can't figure out the cause, but this should fix it
         turnEnded: false,
         //use this instead of ctx.numMoves
         numMoves: 0,
@@ -100,7 +102,7 @@ export const ForbiddenDesert = {
             undoable: false
         },
         giveWater: (G, ctx, id) => {
-            //free action
+            //free move
             G.players[ctx.currentPlayer].water -= 1;
             G.players[id].water += 1;
         },
@@ -149,7 +151,7 @@ export const ForbiddenDesert = {
         },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
-                //free move (lol)
+                //free move
                 G.players[id].role = role;
                 if (role === "Archeologist" || role === "Climber") {
                     G.players[id].maxWater = 3;
@@ -168,12 +170,22 @@ export const ForbiddenDesert = {
         },
         setDifficulty: {
             move: (G, ctx, diff) => {
-                //free move (lol)
+                //free move 
                 G.stormLevel = diff;
                 if (diff === 0) {
                     G.numDraws = 2;
+                    G.difficultyName = "Novice";
                 }
                 else {
+                    if (diff === 1) {
+                        G.difficultyName = "Normal";
+                    }
+                    else if (diff === 2) {
+                        G.difficultyName = "Elite";
+                    }
+                    else if (diff === 3) {
+                        G.difficultyName = "Legendary";
+                    }
                     G.numDraws = 3;
                 }
             },
@@ -188,6 +200,9 @@ export const ForbiddenDesert = {
         },
         addSand: (G, ctx, id) => {
             G.tiles[id].sandCount += 1;
+        },
+        magicFinalPart: (G, ctx) => {
+            G.collectedParts.push("Z");
         },
     },
 
@@ -465,13 +480,33 @@ export const ForbiddenDesert = {
     endIf: (G, ctx) => {
         for (var i = 0; i < G.players.length; i++) {
             if (G.players[i].water < 0) {
-                return true;
+                return { win: false };
             }
         }
         if ((ctx.numPlayers === 2 && G.stormLevel === 13) ||
             ((ctx.numPlayers === 3 || ctx.numPlayers === 4) && G.stormLevel === 14) ||
             (ctx.numPlayers === 5 && G.stormLevel === 15)) {
-            return true;
+            return { win: false };
+        }
+        if (G.collectedParts.length === 4) {
+            //first find launchpad position
+            var launchpadPos;
+            for (var i = 0; i < G.tiles.length; i++) {
+                if (G.tiles[i].type === "launchpad") {
+                    launchpadPos = i;
+                    break;
+                }
+            }
+            //check if every player is on it
+            var count = 0;
+            for (var i = 0; i < G.players.length; i++) {
+                if (G.players[i].position === launchpadPos) {
+                    count += 1;
+                }
+            }
+            if (count === G.players.length) {
+                return { win: true };
+            }
         }
         return false;
     },

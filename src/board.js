@@ -321,7 +321,7 @@ export class ForbiddenDesertBoard extends React.Component {
         let idToStateClass =
             new Array(25).fill(" ")
                 .map((currentClass, tileID, _) => {
-                    if (this.state.digging && this.tileIsDiggable(tileID) && this.props.G.numMoves < 4) {
+                    if (this.state.digging && this.tileIsDiggable(tileID) && this.props.G.numMoves < 4 && !this.props.ctx.gameover) {
                         return `${currentClass} diggable` // Add the `diggable` class to this
                     } else {
                         return `${currentClass}`; // Do not add any more classes
@@ -329,7 +329,8 @@ export class ForbiddenDesertBoard extends React.Component {
                 }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
                 .map((currentClass, tileID, _) => {
                     if (!this.state.digging && this.tileIsMovable(tileID)
-                        && ((!this.props.G.isNavigating && this.props.G.numMoves < 4) || (this.props.G.isNavigating && this.props.G.navigatingNumMoves < 3))) {
+                        && ((!this.props.G.isNavigating && this.props.G.numMoves < 4) || (this.props.G.isNavigating && this.props.G.navigatingNumMoves < 3))
+                        && !this.props.ctx.gameover) {
                         return `${currentClass} movable`
                     } else {
                         return `${currentClass}`;
@@ -392,6 +393,22 @@ export class ForbiddenDesertBoard extends React.Component {
         }
 
         var header = [];
+        if (this.props.ctx.gameover) {
+            if (this.props.ctx.gameover.win) {
+                header.push(
+                    <div>
+                        VICTORY (Difficulty: {this.props.G.difficultyName})
+                    </div>
+                )
+            }
+            else {
+                header.push(
+                    <div>
+                        DEFEAT (Difficulty: {this.props.G.difficultyName})
+                    </div>
+                )
+            }
+        }
         if (this.props.G.isNavigating) {
             header.push(
                 <div>
