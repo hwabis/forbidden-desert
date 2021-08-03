@@ -18,7 +18,7 @@ class App extends React.Component {
             FORBIDDEN DESERT
           </div>
           <div>
-            Based off the original game designed by Gamewright.
+            Based off the original game by Gamewright, designed by Matt Leacock.
           </div>
           <div>
             <a href="https://www.gamewright.com/gamewright/pdfs/Rules/ForbiddenDesertTM-RULES.pdf" target="_blank">Official rules manual</a>
