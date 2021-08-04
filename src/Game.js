@@ -157,7 +157,6 @@ export const ForbiddenDesert = {
             }
         },
         duneBlaster: (G, ctx, playerID, equipmentIndex, targetTileID) => {
-            console.log("DUNE BLASTED");
             G.players[playerID].equipment.splice(equipmentIndex, 1);
             G.tiles[targetTileID].sandCount = 0;
         },

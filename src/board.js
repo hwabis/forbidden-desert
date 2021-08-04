@@ -30,8 +30,8 @@ export class ForbiddenDesertBoard extends React.Component {
         var currentPlayerID;
         if (this.state.duneBlasting) {
             currentPlayerID = this.state.duneBlastingPlayerID;
-            if (this.isBuried2(currentPlayerID)) {
-                if (this.isSameTile3(currentPlayerID, id)) {
+            if (this.isBuried()) {
+                if (this.isSameTile(id)) {
                     this.props.moves.duneBlaster(currentPlayerID, this.state.duneBlastingInventoryID, id);
                     this.setState({
                         duneBlasting: false,
@@ -40,8 +40,8 @@ export class ForbiddenDesertBoard extends React.Component {
                     });
                 }
             }
-            else if (this.isAdjacentTile3(currentPlayerID, id) || this.isSameTile3(currentPlayerID, id) ||
-                (this.isDiagonalTile3(currentPlayerID, id) && this.props.G.players[currentPlayerID].role === "Explorer")) {
+            else if (this.isAdjacentTile(id) || this.isSameTile(id) ||
+                (this.isDiagonalTile(id) && this.props.G.players[currentPlayerID].role === "Explorer")) {
                 if (this.props.G.tiles[id].sandCount > 0) {
                     this.props.moves.duneBlaster(currentPlayerID, this.state.duneBlastingInventoryID, id);
                     this.setState({
@@ -151,7 +151,9 @@ export class ForbiddenDesertBoard extends React.Component {
             if (playerID === this.state.duneBlastingPlayerID) {
                 this.setState({
                     digging: false,
-                    duneBlasting: !this.state.duneBlasting
+                    duneBlasting: false,
+                    duneBlastingPlayerID: -1,
+                    duneBlastingInventoryID: -1
                 });
             }
             else {
@@ -186,6 +188,9 @@ export class ForbiddenDesertBoard extends React.Component {
     isAdjacentTile(id) {
         var currentPlayerID;
         this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+        if (this.state.duneBlasting) {
+            currentPlayerID = this.state.duneBlastingPlayerID
+        }
 
         const currentPlayerPos = this.props.G.players[currentPlayerID].position;
         var check1 = id >= 0 && id <= 24 &&
@@ -215,35 +220,24 @@ export class ForbiddenDesertBoard extends React.Component {
             return check1;
         }
     }
-    isAdjacentTile3(playerID, tileID) {
-        const currentPlayerPos = this.props.G.players[playerID].position;
-        var check1 = tileID >= 0 && tileID <= 24 &&
-            (tileID === currentPlayerPos - 1 || tileID === currentPlayerPos + 1 ||
-                tileID === currentPlayerPos - 5 || tileID === currentPlayerPos + 5);
-        if (tileID === currentPlayerPos - 1 || tileID === currentPlayerPos + 1) {
-            //check2 is to prevent moving across the entire board, e.g. between 4-5, 9-10, etc.
-            var check2 = (Math.floor(tileID / 5) === Math.floor(currentPlayerPos / 5));
-            return check2;
-        }
-        else {
-            return check1;
-        }
-    }
     isSameTile(id) {
         var currentPlayerID;
         this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+        if (this.state.duneBlasting) {
+            currentPlayerID = this.state.duneBlastingPlayerID
+        }
 
         return (id === this.props.G.players[currentPlayerID].position);
     }
     isSameTile2(playerID1, playerID2) {
         return (this.props.G.players[playerID1].position === this.props.G.players[playerID2].position);
     }
-    isSameTile3(playerID, tileID) {
-        return (tileID === this.props.G.players[playerID].position);
-    }
     isDiagonalTile(id) {
         var currentPlayerID;
         this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+        if (this.state.duneBlasting) {
+            currentPlayerID = this.state.duneBlastingPlayerID
+        }
 
         const currentPlayerPos = this.props.G.players[currentPlayerID].position;
         var check1 = id >= 0 && id <= 24 &&
@@ -261,15 +255,6 @@ export class ForbiddenDesertBoard extends React.Component {
                 pos1 === playerID2 + 4 || pos1 === playerID2 + 6);
         //check2 is to make sure id is exactly one row away from the current tile
         var check2 = Math.abs(Math.floor(pos1 / 5) - Math.floor(playerID2 / 5)) === 1;
-        return check1 && check2;
-    }
-    isDiagonalTile3(playerID, tileID) {
-        const currentPlayerPos = this.props.G.players[playerID].position;
-        var check1 = tileID >= 0 && tileID <= 24 &&
-            (tileID === currentPlayerPos - 6 || tileID === currentPlayerPos - 4 ||
-                tileID === currentPlayerPos + 4 || tileID === currentPlayerPos + 6);
-        //check2 is to make sure id is exactly one row away from the current tile
-        var check2 = Math.abs(Math.floor(tileID / 5) - Math.floor(currentPlayerPos / 5)) === 1;
         return check1 && check2;
     }
     endTurn() {
@@ -299,34 +284,26 @@ export class ForbiddenDesertBoard extends React.Component {
     //for idToStateClass purposes, not onClickTile
     tileIsDiggable(id) {
         if (this.isBuried()) {
-            return this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0;
+            return this.isSameTile(id) && (this.state.digging || this.state.duneBlasting) && this.props.G.tiles[id].sandCount > 0;
             //last condition here should always be true lol
         }
         else {
             return (this.isAdjacentTile(id) || this.isSameTile(id)
                 || (this.props.G.players[this.props.ctx.currentPlayer].role === "Explorer" && this.isDiagonalTile(id)))
-                && (this.state.digging && this.props.G.tiles[id].sandCount > 0);
+                && (this.state.digging || this.state.duneBlasting) && this.props.G.tiles[id].sandCount > 0;
         }
     }
     //returns whether current player is buried
     isBuried() {
         var currentPlayerID;
         this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+        if (this.state.duneBlasting) {
+            currentPlayerID = this.state.duneBlastingPlayerID
+        }
 
         //check if current tile has a climber on it;
         //iterate through all players, and check if a climber's position is current position
         const currPos = this.props.G.players[currentPlayerID].position;
-        for (var i = 0; i < this.props.G.players.length; i++) {
-            if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].position === currPos) {
-                return false;
-            }
-        }
-        return this.props.G.tiles[currPos].sandCount > 1;
-    }
-    isBuried2(playerID) {
-        //check if current tile has a climber on it;
-        //iterate through all players, and check if a climber's position is current position
-        const currPos = this.props.G.players[playerID].position;
         for (var i = 0; i < this.props.G.players.length; i++) {
             if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].position === currPos) {
                 return false;
@@ -449,14 +426,16 @@ export class ForbiddenDesertBoard extends React.Component {
         let idToStateClass =
             new Array(25).fill(" ")
                 .map((currentClass, tileID, _) => {
-                    if (this.state.digging && this.tileIsDiggable(tileID) && this.props.G.numMoves < 4 && !this.props.ctx.gameover) {
+                    if ((this.state.digging || this.state.duneBlasting)
+                        && this.tileIsDiggable(tileID) && this.props.G.numMoves < 4 && !this.props.ctx.gameover) {
                         return `${currentClass} diggable` // Add the `diggable` class to this
                     } else {
                         return `${currentClass}`; // Do not add any more classes
                     }
                 }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
                 .map((currentClass, tileID, _) => {
-                    if (!this.state.digging && this.tileIsMovable(tileID)
+                    if (!(this.state.digging || this.state.duneBlasting)
+                        && this.tileIsMovable(tileID)
                         && ((!this.props.G.isNavigating && this.props.G.numMoves < 4) || (this.props.G.isNavigating && this.props.G.navigatingNumMoves < 3))
                         && !this.props.ctx.gameover) {
                         return `${currentClass} movable`
