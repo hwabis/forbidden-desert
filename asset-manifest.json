@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/forbidden-desert/static/css/main.7ff60445.chunk.css",
-    "main.js": "/forbidden-desert/static/js/main.536cd2ea.chunk.js",
-    "main.js.map": "/forbidden-desert/static/js/main.536cd2ea.chunk.js.map",
+    "main.js": "/forbidden-desert/static/js/main.a3e9a113.chunk.js",
+    "main.js.map": "/forbidden-desert/static/js/main.a3e9a113.chunk.js.map",
     "runtime-main.js": "/forbidden-desert/static/js/runtime-main.5ebc221e.js",
     "runtime-main.js.map": "/forbidden-desert/static/js/runtime-main.5ebc221e.js.map",
     "static/js/2.4235b6e5.chunk.js": "/forbidden-desert/static/js/2.4235b6e5.chunk.js",
@@ -16,6 +16,6 @@
     "static/js/runtime-main.5ebc221e.js",
     "static/js/2.4235b6e5.chunk.js",
     "static/css/main.7ff60445.chunk.css",
-    "static/js/main.536cd2ea.chunk.js"
+    "static/js/main.a3e9a113.chunk.js"
   ]
 }
