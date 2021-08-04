@@ -97,17 +97,19 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     giveWaterTo(giverID, receiverID) {
         if (this.props.G.players[giverID].water === 0) {
-            this.setState({ givingWater: false, waterErrorMsg: "You don't have enough water!" });
+            this.setState({ waterErrorMsg: "You don't have enough water!" });
             setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
         }
         else if (this.props.G.players[receiverID].water === this.props.G.players[receiverID].maxWater) {
-            this.setState({ givingWater: false, waterErrorMsg: "Target has full water!" });
+            this.setState({ waterErrorMsg: "Target has full water!" });
             setTimeout(() => this.setState({ waterErrorMsg: '' }), 3000);
         }
         else {
             this.props.moves.giveWater(giverID, receiverID);
-            this.setState({ givingWater: false });
         }
+    }
+    giveEquipmentTo(player, index, targetPlayerID) {
+        this.props.moves.giveEquipment(player, index, targetPlayerID);
     }
     pickUpFinalPart() {
         //no need to check condition; button won't show up if it's not met
@@ -289,7 +291,7 @@ export class ForbiddenDesertBoard extends React.Component {
         }
         else {
             return (this.isAdjacentTile(id) || this.isSameTile(id)
-                || (this.props.G.players[(this.state.duneBlasting ? this.state.duneBlastingPlayerID: this.props.ctx.currentPlayer)].role === "Explorer" && this.isDiagonalTile(id)))
+                || (this.props.G.players[(this.state.duneBlasting ? this.state.duneBlastingPlayerID : this.props.ctx.currentPlayer)].role === "Explorer" && this.isDiagonalTile(id)))
                 && (this.state.digging || this.state.duneBlasting) && this.props.G.tiles[id].sandCount > 0;
         }
     }
@@ -757,14 +759,27 @@ export class ForbiddenDesertBoard extends React.Component {
             for (var k = 0; k < this.props.G.players[i].equipment.length; k++) {
                 const player = i;
                 const index = k;
+                //setup give buttons
+                var giveEquipmentButtons = [];
+                //oh god too many loop variables too many inconsistent names im so bad :(
+                for (var l = 0; l < this.props.ctx.numPlayers; l++) {
+                    const targetPlayerID = l;
+                    if (targetPlayerID !== player && (this.isSameTile2(player, targetPlayerID))) {
+                        giveEquipmentButtons.push(
+                            <button className="small-button" onClick={() => { this.giveEquipmentTo(player, index, targetPlayerID); }}>
+                                {targetPlayerID}
+                            </button>
+                        );
+                    }
+                }
                 playerInfoList.push(
                     <div>
-                        {this.props.G.players[player].equipment[index]}&nbsp;
+                        {this.props.G.players[player].equipment[index]} -&nbsp;
                         <button className="small-button" onClick={() => {
                             this.useEquipment(player, index, this.props.G.players[player].equipment[index]);
                         }}>
                             Use
-                        </button>
+                        </button> - Give to: {giveEquipmentButtons}
                     </div>
                 );
             }

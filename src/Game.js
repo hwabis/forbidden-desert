@@ -156,6 +156,11 @@ export const ForbiddenDesert = {
                 G.numMoves += 1;
             }
         },
+        giveEquipment: (G, ctx, playerID, equipmentIndex, targetPlayerID) => {
+            const item = G.players[playerID].equipment[equipmentIndex];
+            G.players[targetPlayerID].equipment.push(item);
+            G.players[playerID].equipment.splice(equipmentIndex, 1);
+        },
         duneBlaster: (G, ctx, playerID, equipmentIndex, targetTileID) => {
             G.players[playerID].equipment.splice(equipmentIndex, 1);
             G.tiles[targetTileID].sandCount = 0;
