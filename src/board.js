@@ -864,10 +864,10 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <p></p>
                 <div>Hotkeys:</div>
-                <div>Dig: alt + d</div>
-                <div>Excavate: alt + x</div>
-                <div>Undo: alt + z</div>
-                <div>End turn / navigation: alt + e</div>
+                <div>Dig: shift + alt + d</div>
+                <div>Excavate: shift + alt + x</div>
+                <div>Undo: shift + alt + z</div>
+                <div>End turn / navigation: shift + alt + e</div>
             </div>
         )
 
