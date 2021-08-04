@@ -289,7 +289,7 @@ export class ForbiddenDesertBoard extends React.Component {
         }
         else {
             return (this.isAdjacentTile(id) || this.isSameTile(id)
-                || (this.props.G.players[this.props.ctx.currentPlayer].role === "Explorer" && this.isDiagonalTile(id)))
+                || (this.props.G.players[(this.state.duneBlasting ? this.state.duneBlastingPlayerID: this.props.ctx.currentPlayer)].role === "Explorer" && this.isDiagonalTile(id)))
                 && (this.state.digging || this.state.duneBlasting) && this.props.G.tiles[id].sandCount > 0;
         }
     }
