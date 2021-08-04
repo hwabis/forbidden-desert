@@ -711,13 +711,6 @@ export class ForbiddenDesertBoard extends React.Component {
                 {this.state.waterErrorMsg}
             </div>
         );
-        if (this.state.duneBlasting) {
-            rightbar.push(
-                <div>
-                    Choose a tile to use Dune Blast.
-                </div>
-            )
-        }
         rightbar.push(<div>Players:</div>)
         var playerInfoList = [];
         for (var i = 0; i < this.props.ctx.numPlayers; i++) {
@@ -785,6 +778,15 @@ export class ForbiddenDesertBoard extends React.Component {
             }
         }
         rightbar.push(playerInfoList);
+
+        if (this.state.duneBlasting) {
+            rightbar.push(
+                <div>
+                    <p></p>
+                    ==Choose a tile to use Dune Blast.==
+                </div>
+            )
+        }
 
         rightbar.push(
             <div>
