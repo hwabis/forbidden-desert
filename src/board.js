@@ -474,10 +474,10 @@ export class ForbiddenDesertBoard extends React.Component {
         if (!this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button accesskey="d" onClick={() => { this.setState({ digging: !this.state.digging }); }}>
+                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging }); }}>
                         Dig (1)
                     </button>
-                    <button accesskey="x" onClick={() => { this.excavate(); }}>
+                    <button accessKey="x" onClick={() => { this.excavate(); }}>
                         Excavate (1)
                     </button>
                     <div>
@@ -602,10 +602,10 @@ export class ForbiddenDesertBoard extends React.Component {
         if (this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button accesskey="z" onClick={() => { this.props.undo(); }}>
+                    <button accessKey="z" onClick={() => { this.props.undo(); }}>
                         Undo
                     </button>
-                    <button accesskey="e" onClick={() => { this.props.moves.stopNavigating() }}>
+                    <button accessKey="e" onClick={() => { this.props.moves.stopNavigating() }}>
                         End navigation
                     </button>
                 </div>
@@ -614,10 +614,10 @@ export class ForbiddenDesertBoard extends React.Component {
         else {
             actionButtons.push(
                 <div>
-                    <button accesskey="z" onClick={() => { this.props.undo(); }}>
+                    <button accessKey="z" onClick={() => { this.props.undo(); }}>
                         Undo
                     </button>
-                    <button accesskey="e" onClick={() => { this.endTurn(); }}>
+                    <button accessKey="e" onClick={() => { this.endTurn(); }}>
                         End turn
                     </button>
                 </div>
@@ -829,7 +829,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <p></p>
                 <div>
-                    Dune Blaster: dig all sand from a diggable tile
+                    Dune Blaster: dig all sand from a tile you can dig
                 </div>
                 <div>
                     Jet Pack: move to any unblocked tile. Can carry one player on ride
@@ -844,7 +844,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     &emsp;the tile this was used, until user's next turn
                 </div>
                 <div>
-                    Terrascope: peak under an unexcavated tile
+                    Terrascope: peek under an unexcavated tile
                 </div>
                 <div>
                     Time Throttle (owner's turn only): gain 2 extra actions this turn
