@@ -766,7 +766,9 @@ export class ForbiddenDesertBoard extends React.Component {
             draw6 = "13 - 14";
             death = "15";
         }
-        rightbar.push(
+
+        var infobar = []
+        infobar.push(
             <div className="small">
                 <p></p>
                 <div>
@@ -789,22 +791,31 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <p></p>
                 <div>
-                    Archeologist: removes 2 sand when digging
+                    Archeologist - removes 2 sand when digging
                 </div>
                 <div>
-                    Climber: can move over any tile; allows everyone on current tile to move. Carry (0): bring another player
+                    Climber - can move over any tile; allows everyone on current tile to move.
                 </div>
                 <div>
-                    Explorer: can move, dig, and use Dune Blaster diagonally
+                    &emsp;Carry (0): bring another player
                 </div>
                 <div>
-                    Meteorologist: Mitigate (1): draw 1 less storm card at end of turn
+                    Explorer - can move, dig, and use Dune Blaster diagonally
                 </div>
                 <div>
-                    Navigator: Navigate (1): move any other player up to 3 tiles; Climber and Explorer keep their abilities
+                    Meteorologist - Mitigate (1): draw 1 less storm card at end of turn
                 </div>
                 <div>
-                    Water Carrier: can give water to adjacent players. Collect Water (1): collect 2 water from a well
+                    Navigator - Navigate (1): move any other player up to 3 tiles;
+                </div>
+                <div>
+                    &emsp;Climber and Explorer keep their abilities
+                </div>
+                <div>
+                    Water Carrier - can give water to adjacent players.
+                </div>
+                <div>
+                    &emsp;Collect Water (1): collect 2 water from a well
                 </div>
                 <p></p>
                 <div>
@@ -817,7 +828,10 @@ export class ForbiddenDesertBoard extends React.Component {
                     Secret Water Reserve: give 2 water to all players on current tile
                 </div>
                 <div>
-                    Solar Shield: prevent Sun Beats Down to all players on tile this was used, until user's next turn
+                    Solar Shield: prevent Sun Beats Down to all players on
+                </div>
+                <div>
+                    &emsp;the tile this was used, until user's next turn
                 </div>
                 <div>
                     Terrascope: peak under an unexcavated tile
@@ -827,10 +841,16 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <p></p>
                 <div>
-                    Starting equipment deck: 3x Dune Blaster, 3x Jet Pack,
+                    Starting equipment deck:
                 </div>
                 <div>
-                    2x Solar Shield, 2x Terrascope, 1x Secret Water Reserve, 1x Time Throttle
+                    3x Dune Blaster, 3x Jet Pack,
+                </div>
+                <div>
+                    2x Solar Shield, 2x Terrascope,
+                </div>
+                <div>
+                    1x Secret Water Reserve, 1x Time Throttle
                 </div>
                 <p></p>
                 <div>Hotkeys:</div>
@@ -856,6 +876,9 @@ export class ForbiddenDesertBoard extends React.Component {
                 </div>
                 <div className="fl">
                     {rightbar}
+                </div>
+                <div className="fl">
+                    {infobar}
                 </div>
             </div>
         );

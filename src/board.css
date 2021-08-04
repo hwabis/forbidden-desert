@@ -79,6 +79,7 @@ td {
 .purple {color: #C638C6;}
 
 .small {
+    margin-left: 10px;
     font-size: small;
     color: gray;
 }
