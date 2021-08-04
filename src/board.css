@@ -11,12 +11,12 @@ td {
     background-size: 100% 100%;
 }
 
-.storm {
-    border: 0px ;
-}
-
 .fl {
     float: left;
+}
+
+.storm {
+    border: 0px ;
 }
 
 .unrevealed {background-image: url("img/back.png");}
@@ -78,7 +78,7 @@ td {
 
 .purple {color: #C638C6;}
 
-.small {
+.infobar {
     margin-left: 10px;
     font-size: small;
     color: gray;
@@ -106,4 +106,8 @@ ul {
 
 .movable {
     border: 2px cyan solid;
+}
+
+.small-button {
+    font-size: 16px;
 }

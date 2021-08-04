@@ -108,10 +108,10 @@ export const ForbiddenDesert = {
             },
             undoable: false
         },
-        giveWater: (G, ctx, id) => {
+        giveWater: (G, ctx, giveID, receiveID) => {
             //free move
-            G.players[ctx.currentPlayer].water -= 1;
-            G.players[id].water += 1;
+            G.players[giveID].water -= 1;
+            G.players[receiveID].water += 1;
         },
         pickUpFinalPart: (G, ctx) => {
             if (G.numMoves < 4) {
