@@ -156,6 +156,11 @@ export const ForbiddenDesert = {
                 G.numMoves += 1;
             }
         },
+        duneBlaster: (G, ctx, playerID, equipmentIndex, targetTileID) => {
+            console.log("DUNE BLASTED");
+            G.players[playerID].equipment.splice(equipmentIndex, 1);
+            G.tiles[targetTileID].sandCount = 0;
+        },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
                 //free move
@@ -211,6 +216,9 @@ export const ForbiddenDesert = {
         magicFinalPart: (G, ctx) => {
             G.collectedParts.push("Z");
         },
+        giveDuneBlaster: (G, ctx, playerID) => {
+            G.players[playerID].equipment.push("Dune Blaster");
+        }
     },
 
     turn: {

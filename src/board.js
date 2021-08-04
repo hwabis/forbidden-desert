@@ -8,6 +8,9 @@ export class ForbiddenDesertBoard extends React.Component {
         digging: false,
         chooseCarry: false,
         chooseNavigate: false,
+        duneBlasting: false,
+        duneBlastingPlayerID: -1,
+        duneBlastingInventoryID: -1,
         excavateErrorMsg: '',
         mitigateErrorMsg: '',
         carryErrorMsg: '',
@@ -22,36 +25,61 @@ export class ForbiddenDesertBoard extends React.Component {
         this.props.moves.setDifficulty(diff);
         this.setState({ assignDifficulty: true })
     }
-    //move, or dig if this.state.digging
+    //move, or dig if this.state.digging, or dune blast if this.state.duneBlasting
     onClickTile(id) {
         var currentPlayerID;
-        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
-
-        if (this.isBuried()) {
-            //you can only dig when buried
-            if (this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0) {
-                this.props.moves.dig(id);
-                this.setState({ digging: false });
+        if (this.state.duneBlasting) {
+            currentPlayerID = this.state.duneBlastingPlayerID;
+            if (this.isBuried2(currentPlayerID)) {
+                if (this.isSameTile3(currentPlayerID, id)) {
+                    this.props.moves.duneBlaster(currentPlayerID, this.state.duneBlastingInventoryID, id);
+                    this.setState({
+                        duneBlasting: false,
+                        duneBlastingPlayerID: -1,
+                        duneBlastingInventoryID: -1,
+                    });
+                }
+            }
+            else if (this.isAdjacentTile3(currentPlayerID, id) || this.isSameTile3(currentPlayerID, id) ||
+                (this.isDiagonalTile3(currentPlayerID, id) && this.props.G.players[currentPlayerID].role === "Explorer")) {
+                if (this.props.G.tiles[id].sandCount > 0) {
+                    this.props.moves.duneBlaster(currentPlayerID, this.state.duneBlastingInventoryID, id);
+                    this.setState({
+                        duneBlasting: false,
+                        duneBlastingPlayerID: -1,
+                        duneBlastingInventoryID: -1,
+                    });
+                }
             }
         }
-        else if (this.isAdjacentTile(id) || this.isSameTile(id) ||
-            (this.isDiagonalTile(id) && this.props.G.players[currentPlayerID].role === "Explorer")) {
-            if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
-                this.props.moves.dig(id);
-                this.setState({ digging: false });
+        else {
+            this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+            if (this.isBuried()) {
+                //you can only dig when buried
+                if (this.isSameTile(id) && this.state.digging && this.props.G.tiles[id].sandCount > 0) {
+                    this.props.moves.dig(id);
+                    this.setState({ digging: false });
+                }
             }
-            else if (!this.isSameTile(id) &&
-                (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[currentPlayerID].role === "Climber")
-                && !this.state.digging) {
+            else if (this.isAdjacentTile(id) || this.isSameTile(id) ||
+                (this.isDiagonalTile(id) && this.props.G.players[currentPlayerID].role === "Explorer")) {
+                if (this.state.digging && this.props.G.tiles[id].sandCount > 0) {
+                    this.props.moves.dig(id);
+                    this.setState({ digging: false });
+                }
+                else if (!this.isSameTile(id) &&
+                    (this.props.G.tiles[id].sandCount < 2 || this.props.G.players[currentPlayerID].role === "Climber")
+                    && !this.state.digging) {
+                    this.props.moves.move(id);
+                }
+            }
+            //move through tunnel
+            else if (this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed &&
+                this.props.G.tiles[this.props.G.players[currentPlayerID].position].type === "tunnel" &&
+                this.props.G.tiles[this.props.G.players[currentPlayerID].position].isRevealed &&
+                this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
                 this.props.moves.move(id);
             }
-        }
-        //move through tunnel
-        else if (this.props.G.tiles[id].type === "tunnel" && this.props.G.tiles[id].isRevealed &&
-            this.props.G.tiles[this.props.G.players[currentPlayerID].position].type === "tunnel" &&
-            this.props.G.tiles[this.props.G.players[currentPlayerID].position].isRevealed &&
-            this.props.G.tiles[id].sandCount < 2 && !this.state.digging) {
-            this.props.moves.move(id);
         }
     }
     excavate() {
@@ -118,6 +146,40 @@ export class ForbiddenDesertBoard extends React.Component {
             this.props.moves.drop();
         }
     }
+    useEquipment(playerID, equipmentIndex, equipmentName) {
+        if (equipmentName === "Dune Blaster") {
+            if (playerID === this.state.duneBlastingPlayerID) {
+                this.setState({
+                    digging: false,
+                    duneBlasting: !this.state.duneBlasting
+                });
+            }
+            else {
+                this.setState({
+                    digging: false,
+                    duneBlasting: true,
+                    duneBlastingPlayerID: playerID,
+                    duneBlastingInventoryID: equipmentIndex
+                });
+            }
+            //the actual move happens in onClickTile
+        }
+        else if (equipmentName === "Jet Pack") {
+
+        }
+        else if (equipmentName === "Solar Shield") {
+
+        }
+        else if (equipmentName === "Terrascope") {
+
+        }
+        else if (equipmentName === "Secret Water Reserve") {
+
+        }
+        else if (equipmentName === "Time Throttle") {
+
+        }
+    }
     //SPAGHETTI CODE ALERT: PARAMETERS ARE VERY INCONSISTENT ACROSS THESE FUNCTIONS
     //SOME ARE TILE ID'S OR SOMETHING, SOME ARE PLAYER ID'S
     //honestly these one-parameter methods shouldn't exist. but i would have to refactor a LOT if i were to fix it
@@ -153,6 +215,20 @@ export class ForbiddenDesertBoard extends React.Component {
             return check1;
         }
     }
+    isAdjacentTile3(playerID, tileID) {
+        const currentPlayerPos = this.props.G.players[playerID].position;
+        var check1 = tileID >= 0 && tileID <= 24 &&
+            (tileID === currentPlayerPos - 1 || tileID === currentPlayerPos + 1 ||
+                tileID === currentPlayerPos - 5 || tileID === currentPlayerPos + 5);
+        if (tileID === currentPlayerPos - 1 || tileID === currentPlayerPos + 1) {
+            //check2 is to prevent moving across the entire board, e.g. between 4-5, 9-10, etc.
+            var check2 = (Math.floor(tileID / 5) === Math.floor(currentPlayerPos / 5));
+            return check2;
+        }
+        else {
+            return check1;
+        }
+    }
     isSameTile(id) {
         var currentPlayerID;
         this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
@@ -161,6 +237,9 @@ export class ForbiddenDesertBoard extends React.Component {
     }
     isSameTile2(playerID1, playerID2) {
         return (this.props.G.players[playerID1].position === this.props.G.players[playerID2].position);
+    }
+    isSameTile3(playerID, tileID) {
+        return (tileID === this.props.G.players[playerID].position);
     }
     isDiagonalTile(id) {
         var currentPlayerID;
@@ -177,15 +256,24 @@ export class ForbiddenDesertBoard extends React.Component {
     isDiagonalTile2(playerID1, playerID2) {
         var pos1 = this.props.G.players[playerID1].position;
         var pos2 = this.props.G.players[playerID2].position;
-        var check1 = 
+        var check1 =
             (pos1 === playerID2 - 6 || pos1 === playerID2 - 4 ||
                 pos1 === playerID2 + 4 || pos1 === playerID2 + 6);
         //check2 is to make sure id is exactly one row away from the current tile
         var check2 = Math.abs(Math.floor(pos1 / 5) - Math.floor(playerID2 / 5)) === 1;
         return check1 && check2;
     }
+    isDiagonalTile3(playerID, tileID) {
+        const currentPlayerPos = this.props.G.players[playerID].position;
+        var check1 = tileID >= 0 && tileID <= 24 &&
+            (tileID === currentPlayerPos - 6 || tileID === currentPlayerPos - 4 ||
+                tileID === currentPlayerPos + 4 || tileID === currentPlayerPos + 6);
+        //check2 is to make sure id is exactly one row away from the current tile
+        var check2 = Math.abs(Math.floor(tileID / 5) - Math.floor(currentPlayerPos / 5)) === 1;
+        return check1 && check2;
+    }
     endTurn() {
-        this.setState({ digging: false });
+        this.setState({ digging: false, duneBlasting: false });
         this.props.events.endTurn();
     }
 
@@ -228,6 +316,17 @@ export class ForbiddenDesertBoard extends React.Component {
         //check if current tile has a climber on it;
         //iterate through all players, and check if a climber's position is current position
         const currPos = this.props.G.players[currentPlayerID].position;
+        for (var i = 0; i < this.props.G.players.length; i++) {
+            if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].position === currPos) {
+                return false;
+            }
+        }
+        return this.props.G.tiles[currPos].sandCount > 1;
+    }
+    isBuried2(playerID) {
+        //check if current tile has a climber on it;
+        //iterate through all players, and check if a climber's position is current position
+        const currPos = this.props.G.players[playerID].position;
         for (var i = 0; i < this.props.G.players.length; i++) {
             if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].position === currPos) {
                 return false;
@@ -474,7 +573,7 @@ export class ForbiddenDesertBoard extends React.Component {
         if (!this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging }); }}>
+                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging, duneBlasting: false }); }}>
                         Dig (1)
                     </button>
                     <button accessKey="x" onClick={() => { this.excavate(); }}>
@@ -631,12 +730,20 @@ export class ForbiddenDesertBoard extends React.Component {
                 {this.state.waterErrorMsg}
             </div>
         );
+        if (this.state.duneBlasting) {
+            rightbar.push(
+                <div>
+                    Choose a tile to use Dune Blast.
+                </div>
+            )
+        }
         rightbar.push(<div>Players:</div>)
         var playerInfoList = [];
         for (var i = 0; i < this.props.ctx.numPlayers; i++) {
-            const giver = i;
+            //setup water buttons
             var giveWaterButtons = [];
             for (var j = 0; j < this.props.ctx.numPlayers; j++) {
+                const giver = i;
                 const index = j;
                 if (index !== giver
                     && (this.isSameTile2(giver, index)
@@ -649,30 +756,36 @@ export class ForbiddenDesertBoard extends React.Component {
                     );
                 }
             }
+            //listing + water buttons
             if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].carryingPlayer !== -1) {
                 playerInfoList.push(
                     <div>
-                        <div>
-                            {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}&nbsp;
-                            - Carrying Player {this.props.G.players[i].carryingPlayer}&nbsp;
-                            - Give water to: {giveWaterButtons}
-                        </div>
-                        <div>
-                            {this.props.G.players[i].equipment.join(", ")}
-                        </div>
+                        {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}&nbsp;
+                        - Carrying Player {this.props.G.players[i].carryingPlayer}&nbsp;
+                        - Give water to: {giveWaterButtons}
                     </div>
                 );
             }
             else {
                 playerInfoList.push(
                     <div>
-                        <div>
-                            {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}&nbsp;
-                            - Give water to: {giveWaterButtons}
-                        </div>
-                        <div>
-                            {this.props.G.players[i].equipment.join(", ")}
-                        </div>
+                        {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}&nbsp;
+                        - Give water to: {giveWaterButtons}
+                    </div>
+                );
+            }
+            //equipment
+            for (var k = 0; k < this.props.G.players[i].equipment.length; k++) {
+                const player = i;
+                const index = k;
+                playerInfoList.push(
+                    <div>
+                        {this.props.G.players[player].equipment[index]}&nbsp;
+                        <button className="small-button" onClick={() => {
+                            this.useEquipment(player, index, this.props.G.players[player].equipment[index]);
+                        }}>
+                            Use
+                        </button>
                     </div>
                 );
             }
