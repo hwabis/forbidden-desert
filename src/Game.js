@@ -13,8 +13,8 @@ export const ForbiddenDesert = {
         //collect 4 parts
         collectedParts: [],
         //for storm probability stuff (see sim.py)
-        stormPicksUpProb: 1,
-        sunBeatsDownProb: 1,
+        stormPicksUpProb: 3,
+        sunBeatsDownProb: 3,
         //for turn onEnd; there's a bug where sometimes (particularly when people are at 0 water),
         //onEnd happens twice. i can't figure out the cause, but this should fix it
         turnEnded: false,
@@ -378,7 +378,7 @@ export const ForbiddenDesert = {
                             G.stormLevel += 1;
                             G.lastDrawType.push("Storm Picks Up");
                             //reset stormPicksUp probability
-                            G.stormPicksUpProb = 1;
+                            G.stormPicksUpProb = 3;
                             //increment sunBeatsDown
                             G.sunBeatsDownProb += 2;
                         }
@@ -398,7 +398,7 @@ export const ForbiddenDesert = {
                             }
                             G.lastDrawType.push("Sun Beats Down");
                             //reset sunBeatsDown
-                            G.sunBeatsDownProb = 1;
+                            G.sunBeatsDownProb = 3;
                             //increment stormPicksUp
                             G.stormPicksUpProb += 1;
                         }

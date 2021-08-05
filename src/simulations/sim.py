@@ -7,7 +7,7 @@ import statistics
 # storm probability should be about 9.7% (3/31),
 # and sun beats down probability should be about 12.9% (4/31)
 
-prob = 1  # in percent
+prob = 3  # in percent
 totalcount = 0
 currcount = 1
 counts = []
@@ -16,13 +16,13 @@ for i in range(numtrials):
     if (random.random() < (prob)/100):
         counts.append(currcount)
         currcount = 1
-        prob = 1
+        prob = 3
         totalcount += 1
     else:
-        # for storm: (gives ~8.2% total prob)
-        prob += 1
-        # for sun: (gives ~11.1% total prob)
-        #prob += 2
+        # for storm: (gives ~9.5% total prob)
+        #prob += 1
+        # for sun: (gives ~12.3% total prob)
+        prob += 2
         currcount += 1
 
 print("Total prob: " + str(totalcount / numtrials))
