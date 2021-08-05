@@ -231,6 +231,14 @@ export const ForbiddenDesert = {
             },
             undoable: false
         },
+        timeThrottle: {
+            move: (G, ctx, playerID, equipmentIndex) => {
+                G.numMoves -= 2;
+                //remove item
+                G.players[playerID].equipment.splice(equipmentIndex, 1);
+            },
+            undoable: false
+        },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
                 //free move
@@ -300,6 +308,9 @@ export const ForbiddenDesert = {
         },
         giveSecretWaterReserve: (G, ctx, playerID) => {
             G.players[playerID].equipment.push("Secret Water Reserve");
+        },
+        giveTimeThrottle: (G, ctx, playerID) => {
+            G.players[playerID].equipment.push("Time Throttle");
         },
     },
 

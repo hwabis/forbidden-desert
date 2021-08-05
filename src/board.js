@@ -265,7 +265,7 @@ export class ForbiddenDesertBoard extends React.Component {
             this.props.moves.secretWaterReserve(playerID, equipmentIndex);
         }
         else if (equipmentName === "Time Throttle") {
-
+            this.props.moves.timeThrottle(playerID, equipmentIndex);
         }
     }
     //SPAGHETTI CODE ALERT: PARAMETERS ARE VERY INCONSISTENT ACROSS THESE FUNCTIONS
@@ -897,16 +897,26 @@ export class ForbiddenDesertBoard extends React.Component {
                         );
                     }
                 }
-                playerInfoList.push(
-                    <div>
-                        {this.props.G.players[player].equipment[index]} -&nbsp;
-                        <button className="small-button" onClick={() => {
-                            this.useEquipment(player, index, this.props.G.players[player].equipment[index]);
-                        }}>
-                            Use
-                        </button> - Give to: {giveEquipmentButtons}
-                    </div>
-                );
+                //don't show use button if it's a time throttle and it's not your turn
+                if (this.props.G.players[player].equipment[index] === "Time Throttle" && player != this.props.ctx.currentPlayer) {
+                    playerInfoList.push(
+                        <div>
+                            {this.props.G.players[player].equipment[index]} - Give to: {giveEquipmentButtons}
+                        </div>
+                    );
+                }
+                else {
+                    playerInfoList.push(
+                        <div>
+                            {this.props.G.players[player].equipment[index]} -&nbsp;
+                            <button className="small-button" onClick={() => {
+                                this.useEquipment(player, index, this.props.G.players[player].equipment[index]);
+                            }}>
+                                Use
+                            </button> - Give to: {giveEquipmentButtons}
+                        </div>
+                    );
+                }
             }
         }
         rightbar.push(playerInfoList);
