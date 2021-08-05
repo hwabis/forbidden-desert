@@ -1,7 +1,6 @@
 # forbidden-desert
 WIP:
-* Equipment: water reserve, solar shield, terrascope, time throttle
-* "Fog of war" 
+* Equipment: water reserve, solar shield, time throttle
 
 Play here: https://hwabis.github.io/forbidden-desert/
 
