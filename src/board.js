@@ -72,12 +72,14 @@ export class ForbiddenDesertBoard extends React.Component {
         }
         else if (this.state.terrascoping) {
             currentPlayerID = this.state.terrascopingPlayerID;
-            this.props.moves.terrascope(currentPlayerID, this.state.terrascopingInventoryID, id);
-            this.setState({
-                terrascoping: false,
-                terrascopingPlayerID: -1,
-                terrascopingInventoryID: -1
-            });
+            if (!this.props.G.tiles[id].isRevealed && !this.props.G.tiles[id].peek) {
+                this.props.moves.terrascope(currentPlayerID, this.state.terrascopingInventoryID, id);
+                this.setState({
+                    terrascoping: false,
+                    terrascopingPlayerID: -1,
+                    terrascopingInventoryID: -1
+                });
+            }
         }
         else {
             this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
@@ -514,14 +516,14 @@ export class ForbiddenDesertBoard extends React.Component {
             new Array(25).fill(" ")
                 .map((currentClass, tileID, _) => {
                     if ((this.state.digging || this.state.duneBlasting)
-                        && this.tileIsDiggable(tileID) && this.props.G.numMoves < 4 && !this.props.ctx.gameover) {
+                        && this.tileIsDiggable(tileID) && (this.state.duneBlasting || this.props.G.numMoves < 4) && !this.props.ctx.gameover) {
                         return `${currentClass} diggable` // Add the `diggable` class to this
                     } else {
                         return `${currentClass}`; // Do not add any more classes
                     }
                 }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
                 .map((currentClass, tileID, _) => {
-                    if (!(this.state.digging || this.state.duneBlasting || this.state.jetPacking)
+                    if (!(this.state.digging || this.state.duneBlasting || this.state.jetPacking || this.state.terrascoping)
                         && this.tileIsMovable(tileID)
                         && ((!this.props.G.isNavigating && this.props.G.numMoves < 4) || (this.props.G.isNavigating && this.props.G.navigatingNumMoves < 3))
                         && !this.props.ctx.gameover) {
@@ -533,7 +535,15 @@ export class ForbiddenDesertBoard extends React.Component {
                 .map((currentClass, tileID, _) => {
                     if (this.state.jetPacking && this.props.G.tiles[tileID].sandCount < 2
                         && !this.props.ctx.gameover) {
-                        return `${currentClass} jet-packable`
+                        return `${currentClass} item-select`
+                    } else {
+                        return `${currentClass}`;
+                    }
+                })
+                .map((currentClass, tileID, _) => {
+                    if (this.state.terrascoping && !this.props.G.tiles[tileID].isRevealed 
+                        && !this.props.G.tiles[tileID].peek && !this.props.ctx.gameover) {
+                        return `${currentClass} item-select`
                     } else {
                         return `${currentClass}`;
                     }
@@ -939,7 +949,10 @@ export class ForbiddenDesertBoard extends React.Component {
             rightbar.push(
                 <div>
                     <p></p>
-                    Peeked tiles: {peekedTiles.join(", ")}
+                    Peeked tiles:
+                    <div>
+                        {peekedTiles.join(", ")}
+                    </div>
                 </div>
             )
         }
