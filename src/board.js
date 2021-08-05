@@ -11,6 +11,9 @@ export class ForbiddenDesertBoard extends React.Component {
         duneBlasting: false,
         duneBlastingPlayerID: -1,
         duneBlastingInventoryID: -1,
+        jetPacking: false,
+        jetPackingPlayerID: -1,
+        jetPackingInventoryID: -1,
         excavateErrorMsg: '',
         mitigateErrorMsg: '',
         carryErrorMsg: '',
@@ -50,6 +53,18 @@ export class ForbiddenDesertBoard extends React.Component {
                         duneBlastingInventoryID: -1,
                     });
                 }
+            }
+        }
+        else if (this.state.jetPacking) {
+            currentPlayerID = this.state.jetPackingPlayerID;
+            //gonna assume you can jetpack out even when buried...
+            if (this.props.G.tiles[id].sandCount < 2) {
+                this.props.moves.jetPack(currentPlayerID, this.state.jetPackingInventoryID, id);
+                this.setState({
+                    jetPacking: false,
+                    jetPackingPlayerID: -1,
+                    jetPackingInventoryID: -1
+                });
             }
         }
         else {
@@ -131,21 +146,26 @@ export class ForbiddenDesertBoard extends React.Component {
     collectWater() {
         this.props.moves.collectWater();
     }
-    carry(playerID) {
-        this.setState({ chooseCarry: false, carrying: true });
-        this.props.moves.carry(playerID);
+    carry(playerID, carrierID) {
+        this.setState({ chooseCarry: false });
+        this.props.moves.carry(playerID, carrierID);
     }
-    drop() {
+    drop(playerID) {
         var currentPlayerID;
-        this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+        if (playerID === undefined) {
+            this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
+        }
+        else {
+            currentPlayerID = playerID;
+        }
 
-        this.setState({ chooseCarry: false, carrying: false });
+        this.setState({ chooseCarry: false });
         if (this.props.G.players[currentPlayerID].carryingPlayer === -1) {
             this.setState({ dropErrorMsg: "Nobody to drop! Carry first." });
             setTimeout(() => this.setState({ dropErrorMsg: '' }), 3000);
         }
         else {
-            this.props.moves.drop();
+            this.props.moves.drop(currentPlayerID);
         }
     }
     useEquipment(playerID, equipmentIndex, equipmentName) {
@@ -153,6 +173,7 @@ export class ForbiddenDesertBoard extends React.Component {
             if (playerID === this.state.duneBlastingPlayerID) {
                 this.setState({
                     digging: false,
+                    jetPacking: false,
                     duneBlasting: false,
                     duneBlastingPlayerID: -1,
                     duneBlastingInventoryID: -1
@@ -161,6 +182,7 @@ export class ForbiddenDesertBoard extends React.Component {
             else {
                 this.setState({
                     digging: false,
+                    jetPacking: false,
                     duneBlasting: true,
                     duneBlastingPlayerID: playerID,
                     duneBlastingInventoryID: equipmentIndex
@@ -169,7 +191,29 @@ export class ForbiddenDesertBoard extends React.Component {
             //the actual move happens in onClickTile
         }
         else if (equipmentName === "Jet Pack") {
-
+            if (playerID === this.state.jetPackingPlayerID) {
+                this.setState({
+                    digging: false,
+                    duneBlasting: false,
+                    jetPacking: false,
+                    jetPackingPlayerID: -1,
+                    jetPackingInventoryID: -1
+                });
+                //drop anyone if was carrying
+                //TODO: THIS FIXES PLAYERS BEING ABLE TO ABUSE CARRY -> MOVE EVEN IF THEY'RE NOT CLIMBER
+                //BUT THIS PREVENTS UNDO UNNECESSARILY... can't think of a fix for now :(
+                this.props.moves.noUndoDrop(playerID);
+            }
+            else {
+                this.setState({
+                    digging: false,
+                    duneBlasting: false,
+                    jetPacking: true,
+                    jetPackingPlayerID: playerID,
+                    jetPackingInventoryID: equipmentIndex
+                });
+            }
+            //the actual move happens in onClickTile
         }
         else if (equipmentName === "Solar Shield") {
 
@@ -260,7 +304,7 @@ export class ForbiddenDesertBoard extends React.Component {
         return check1 && check2;
     }
     endTurn() {
-        this.setState({ digging: false, duneBlasting: false });
+        this.setState({ digging: false, duneBlasting: false, jetPacking: false });
         this.props.events.endTurn();
     }
 
@@ -554,7 +598,7 @@ export class ForbiddenDesertBoard extends React.Component {
         if (!this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging, duneBlasting: false }); }}>
+                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging, duneBlasting: false, jetpacking: false }); }}>
                         Dig (1)
                     </button>
                     <button accessKey="x" onClick={() => { this.excavate(); }}>
@@ -596,14 +640,19 @@ export class ForbiddenDesertBoard extends React.Component {
             }
         }
 
-        //carry for climber only
-        if (this.props.G.players[currentPlayerID].role === "Climber") {
+        //carry for climber only, or jetPacking
+        if (this.props.G.players[currentPlayerID].role === "Climber"
+            || this.state.jetPacking) {
+            var carryingPlayerID = currentPlayerID;
+            if (this.state.jetPacking) {
+                carryingPlayerID = this.state.jetPackingPlayerID;
+            }
             actionButtons.push(
                 <div>
                     <button onClick={() => { this.setState({ chooseCarry: !this.state.chooseCarry }) }}>
                         Carry (0):
                     </button>
-                    <button onClick={() => { this.drop(); }}>
+                    <button onClick={() => { this.drop(carryingPlayerID); }}>
                         Drop (0)
                     </button>
                 </div>
@@ -614,10 +663,10 @@ export class ForbiddenDesertBoard extends React.Component {
                 var playersFound = false;
                 for (var i = 0; i < this.props.G.players.length; i++) {
                     const index = i;
-                    if (index != currentPlayerID &&
-                        this.isSameTile(this.props.G.players[index].position)) {
+                    if (index != carryingPlayerID &&
+                        this.isSameTile2(index, carryingPlayerID)) {
                         actionButtons.push(
-                            <button onClick={() => { this.carry(index); }}>
+                            <button onClick={() => { this.carry(index, carryingPlayerID); }}>
                                 Player {index}
                             </button>
                         );
@@ -731,7 +780,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 }
             }
             //listing + water buttons
-            if (this.props.G.players[i].role === "Climber" && this.props.G.players[i].carryingPlayer !== -1) {
+            if (this.props.G.players[i].carryingPlayer !== -1) {
                 playerInfoList.push(
                     <div>
                         {i} - {this.props.G.players[i].role} 🍼 {this.props.G.players[i].water} / {this.props.G.players[i].maxWater}&nbsp;
@@ -784,6 +833,14 @@ export class ForbiddenDesertBoard extends React.Component {
                 <div>
                     <p></p>
                     ==Choose a tile to use Dune Blast.==
+                </div>
+            )
+        }
+        if (this.state.jetPacking) {
+            rightbar.push(
+                <div>
+                    <p></p>
+                    ==Choose a tile to use Jetpack to.==
                 </div>
             )
         }

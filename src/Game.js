@@ -139,13 +139,26 @@ export const ForbiddenDesert = {
             }
         },
         //climber
-        carry: (G, ctx, id) => {
+        carry: (G, ctx, id, carrierID) => {
             //free move
-            G.players[ctx.currentPlayer].carryingPlayer = id;
+            var carryPlayerID;
+            carrierID = undefined ? carryPlayerID = ctx.currentPlayer : carryPlayerID = carrierID;
+            G.players[carryPlayerID].carryingPlayer = id;
         },
-        drop: (G, ctx) => {
+        drop: (G, ctx, playerID) => {
             //free move
-            G.players[ctx.currentPlayer].carryingPlayer = -1;
+            var carryPlayerID;
+            playerID = undefined ? carryPlayerID = ctx.currentPlayer : carryPlayerID = playerID;
+            G.players[carryPlayerID].carryingPlayer = -1;
+        },
+        noUndoDrop: {
+            move: (G, ctx, playerID) => {
+                //free move
+                var carryPlayerID;
+                playerID = undefined ? carryPlayerID = ctx.currentPlayer : carryPlayerID = playerID;
+                G.players[carryPlayerID].carryingPlayer = -1;
+            },
+            undoable: false
         },
         //navigator
         navigate: (G, ctx, id) => {
@@ -161,9 +174,27 @@ export const ForbiddenDesert = {
             G.players[targetPlayerID].equipment.push(item);
             G.players[playerID].equipment.splice(equipmentIndex, 1);
         },
-        duneBlaster: (G, ctx, playerID, equipmentIndex, targetTileID) => {
-            G.players[playerID].equipment.splice(equipmentIndex, 1);
-            G.tiles[targetTileID].sandCount = 0;
+        duneBlaster: {
+            move: (G, ctx, playerID, equipmentIndex, targetTileID) => {
+                G.tiles[targetTileID].sandCount = 0;
+                //remove item
+                G.players[playerID].equipment.splice(equipmentIndex, 1);
+            },
+            undoable: false
+        },
+        jetPack: {
+            move: (G, ctx, playerID, equipmentIndex, targetTileID) => {
+                //move
+                G.players[playerID].position = targetTileID;
+                if (G.players[playerID].carryingPlayer !== -1) {
+                    G.players[G.players[playerID].carryingPlayer].position = targetTileID;
+                }
+                //drop any players
+                G.players[playerID].carryingPlayer = -1;
+                //remove item
+                G.players[playerID].equipment.splice(equipmentIndex, 1);
+            },
+            undoable: false
         },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
@@ -222,7 +253,10 @@ export const ForbiddenDesert = {
         },
         giveDuneBlaster: (G, ctx, playerID) => {
             G.players[playerID].equipment.push("Dune Blaster");
-        }
+        },
+        giveJetPack: (G, ctx, playerID) => {
+            G.players[playerID].equipment.push("Jet Pack");
+        },
     },
 
     turn: {
