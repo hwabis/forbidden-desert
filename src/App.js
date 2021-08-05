@@ -11,9 +11,6 @@ class App extends React.Component {
     if (this.state.numPlayers === null) {
       return (
         <div className="center">
-          <div>
-            !! THIS IS A WORK IN PROGRESS !!
-          </div>
           <div id="title">
             FORBIDDEN DESERT
           </div>
