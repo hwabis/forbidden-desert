@@ -622,7 +622,7 @@ export const ForbiddenDesert = {
                     count += 1;
                 }
             }
-            if (count === G.players.length) {
+            if (count === G.players.length && G.tiles[launchpadPos].isRevealed) {
                 return { win: true };
             }
         }
