@@ -1,7 +1,6 @@
 # forbidden-desert
 WIP:
-* Equipment (from gear + tunnel tiles)
-  * Giving/using items on other players' turns
+* Equipment: water reserve, solar shield, terrascope, time throttle
 * "Fog of war" 
 
 Play here: https://hwabis.github.io/forbidden-desert/
@@ -18,3 +17,5 @@ The official rules are [here](https://www.gamewright.com/gamewright/pdfs/Rules/F
 * Running out of sand markers is not a lose condition
 * You may have duplicate roles across different players (Yes, a team of only Meteorologists would be a free win, but that wouldn't be very fun...)
 * Players can spawn on any tile, not just a regular equipment tile
+
+Note that you cannot undo the excavate action and item uses (to prevent certain abusable interactions).
