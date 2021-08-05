@@ -480,7 +480,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     }
                 }) // You can chain additional `map` function calls if you need to add more classes to a tile based on the current state of your program
                 .map((currentClass, tileID, _) => {
-                    if (!(this.state.digging || this.state.duneBlasting)
+                    if (!(this.state.digging || this.state.duneBlasting || this.state.jetPacking)
                         && this.tileIsMovable(tileID)
                         && ((!this.props.G.isNavigating && this.props.G.numMoves < 4) || (this.props.G.isNavigating && this.props.G.navigatingNumMoves < 3))
                         && !this.props.ctx.gameover) {
@@ -488,7 +488,15 @@ export class ForbiddenDesertBoard extends React.Component {
                     } else {
                         return `${currentClass}`;
                     }
-                }) // May be problematic if you somehow add multiple classes that have conflicting properties
+                })
+                .map((currentClass, tileID, _) => {
+                    if (this.state.jetPacking && this.props.G.tiles[tileID].sandCount < 2
+                        && !this.props.ctx.gameover) {
+                        return `${currentClass} jet-packable`
+                    } else {
+                        return `${currentClass}`;
+                    }
+                })
 
         var tiles = [];
         for (var i = 0; i < 5; i++) {
@@ -598,7 +606,7 @@ export class ForbiddenDesertBoard extends React.Component {
         if (!this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging, duneBlasting: false, jetpacking: false }); }}>
+                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging, duneBlasting: false, jetPacking: false }); }}>
                         Dig (1)
                     </button>
                     <button accessKey="x" onClick={() => { this.excavate(); }}>
@@ -830,7 +838,7 @@ export class ForbiddenDesertBoard extends React.Component {
 
         if (this.state.duneBlasting) {
             rightbar.push(
-                <div>
+                <div className="red">
                     <p></p>
                     ==Choose a tile to use Dune Blast.==
                 </div>
@@ -838,7 +846,7 @@ export class ForbiddenDesertBoard extends React.Component {
         }
         if (this.state.jetPacking) {
             rightbar.push(
-                <div>
+                <div className="red">
                     <p></p>
                     ==Choose a tile to use Jetpack to.==
                 </div>
