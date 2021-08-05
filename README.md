@@ -1,7 +1,4 @@
 # forbidden-desert
-WIP:
-* Equipment: water reserve, solar shield, time throttle
-
 Play here: https://hwabis.github.io/forbidden-desert/
 
 Created with [boardgame.io](https://boardgame.io/) and React; based off of Gamewright's Forbidden Desert board game, designed by Matt Leacock.
