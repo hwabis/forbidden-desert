@@ -1133,7 +1133,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     Dune Blaster: dig all sand from a tile you can dig
                 </div>
                 <div>
-                    Jet Pack: move to any unblocked tile (climber is not exempt);
+                    Jet Pack: move to any unblocked tile (Climber is not exempt);
                 </div>
                 <div>
                     &emsp;can carry one player on ride
