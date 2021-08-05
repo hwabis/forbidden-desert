@@ -208,8 +208,24 @@ export const ForbiddenDesert = {
             undoable: false
         },
         solarShield: {
-            move: (G, ctx, playerID, equipmentIndex, targetTileID) => {
+            move: (G, ctx, playerID, equipmentIndex) => {
                 G.players[playerID].solarShielding = true;
+                //remove item
+                G.players[playerID].equipment.splice(equipmentIndex, 1);
+            },
+            undoable: false
+        },
+        secretWaterReserve: {
+            move: (G, ctx, playerID, equipmentIndex) => {
+                //everyone on this tile gets two water
+                for (var i = 0; i < G.players.length; i++) {
+                    if (G.players[i].position === G.players[playerID].position) {
+                        G.players[i].water += 2;
+                    }
+                    if (G.players[i].water > G.players[i].maxWater) {
+                        G.players[i].water = G.players[i].maxWater;
+                    }
+                }
                 //remove item
                 G.players[playerID].equipment.splice(equipmentIndex, 1);
             },
@@ -281,6 +297,9 @@ export const ForbiddenDesert = {
         },
         giveSolarShield: (G, ctx, playerID) => {
             G.players[playerID].equipment.push("Solar Shield");
+        },
+        giveSecretWaterReserve: (G, ctx, playerID) => {
+            G.players[playerID].equipment.push("Secret Water Reserve");
         },
     },
 

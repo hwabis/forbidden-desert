@@ -262,7 +262,7 @@ export class ForbiddenDesertBoard extends React.Component {
             //the actual move happens in onClickTile
         }
         else if (equipmentName === "Secret Water Reserve") {
-
+            this.props.moves.secretWaterReserve(playerID, equipmentIndex);
         }
         else if (equipmentName === "Time Throttle") {
 
