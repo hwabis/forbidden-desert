@@ -1,7 +1,7 @@
 # forbidden-desert
 Play here: https://hwabis.github.io/forbidden-desert/
 
-![Screenshot of Forbidden Desert](https://github.com/hwabis/forbidden-desert/blob/master/screenshot.png)
+<img src="https://github.com/hwabis/forbidden-desert/blob/master/screenshot.png">
 
 Created with [boardgame.io](https://boardgame.io/) and React; based off of Gamewright's Forbidden Desert board game, designed by Matt Leacock.
 
