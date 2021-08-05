@@ -1142,7 +1142,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     Secret Water Reserve: give 2 water to all players on current tile
                 </div>
                 <div>
-                    Solar Shield: prevent Sun Beats Down to all players onthe user's tile;
+                    Solar Shield: prevent Sun Beats Down to all players on the user's tile;
                 </div>
                 <div>
                     &emsp;expires at the start of the user's next turn
