@@ -1133,16 +1133,19 @@ export class ForbiddenDesertBoard extends React.Component {
                     Dune Blaster: dig all sand from a tile you can dig
                 </div>
                 <div>
-                    Jet Pack: move to any unblocked tile. Can carry one player on ride
+                    Jet Pack: move to any unblocked tile (climber is not exempt);
+                </div>
+                <div>
+                    &emsp;can carry one player on ride
                 </div>
                 <div>
                     Secret Water Reserve: give 2 water to all players on current tile
                 </div>
                 <div>
-                    Solar Shield: prevent Sun Beats Down to all players on
+                    Solar Shield: prevent Sun Beats Down to all players onthe user's tile;
                 </div>
                 <div>
-                    &emsp;the tile this was used, until user's next turn
+                    &emsp;expires at the start of the user's next turn
                 </div>
                 <div>
                     Terrascope: peek under an unexcavated tile
@@ -1164,7 +1167,7 @@ export class ForbiddenDesertBoard extends React.Component {
                     1x Secret Water Reserve, 1x Time Throttle
                 </div>
                 <p></p>
-                <div>Hotkeys:</div>
+                <div>Hotkeys (some may not function depending on the browser):</div>
                 <div>Dig: shift + alt + d</div>
                 <div>Excavate: shift + alt + x</div>
                 <div>Undo: shift + alt + z</div>
