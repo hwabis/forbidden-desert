@@ -778,7 +778,8 @@ export class ForbiddenDesertBoard extends React.Component {
         //has at least 1 finalPart, and the tile is revealed
         if (!this.props.G.isNavigating) {
             if (this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].isRevealed &&
-                this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].finalParts.length > 0) {
+                this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].finalParts.length > 0 &&
+                this.props.G.tiles[this.props.G.players[this.props.ctx.currentPlayer].position].sandCount < 2) {
                 actionButtons.push(
                     <button onClick={() => { this.pickUpFinalPart(); }}>
                         Pick up part (1)
