@@ -55,6 +55,9 @@ export const ForbiddenDesert = {
             move: (G, ctx) => {
                 if (G.numMoves < 4) {
                     const currPos = G.players[ctx.currentPlayer].position;
+                    //remove peeked
+                    G.tiles[currPos].peek = false;
+
                     G.tiles[currPos].isRevealed = true;
                     if (G.tiles[currPos].type === "well") {
                         //everyone on currPos gets two water
@@ -196,6 +199,14 @@ export const ForbiddenDesert = {
             },
             undoable: false
         },
+        terrascope: {
+            move: (G, ctx, playerID, equipmentIndex, targetTileID) => {
+                G.tiles[targetTileID].peek = true;
+                //remove item
+                G.players[playerID].equipment.splice(equipmentIndex, 1);
+            },
+            undoable: false
+        },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
                 //free move
@@ -257,6 +268,9 @@ export const ForbiddenDesert = {
         giveJetPack: (G, ctx, playerID) => {
             G.players[playerID].equipment.push("Jet Pack");
         },
+        giveTerrascope: (G, ctx, playerID) => {
+            G.players[playerID].equipment.push("Terrascope");
+        }
     },
 
     turn: {
@@ -595,21 +609,24 @@ var setupTiles = () => {
             isRevealed: false,
             sandCount: 0,
             type: "well",
-            finalParts: []
+            finalParts: [],
+            peek: false
         });
     }
     tiles.push({
         isRevealed: false,
         sandCount: 0,
         type: "mirage",
-        finalParts: []
+        finalParts: [],
+        peek: false
     });
     for (var i = 0; i < 9; i++) {
         tiles.push({
             isRevealed: false,
             sandCount: 0,
             type: "gear",
-            finalParts: []
+            finalParts: [],
+            peek: false
         });
     }
     for (var i = 0; i < 3; i++) {
@@ -617,7 +634,8 @@ var setupTiles = () => {
             isRevealed: false,
             sandCount: 0,
             type: "tunnel",
-            finalParts: []
+            finalParts: [],
+            peek: false
         })
     }
     for (var i = 0; i < 4; i++) {
@@ -638,7 +656,8 @@ var setupTiles = () => {
                 type: "clue",
                 part: part,
                 pos: pos,
-                finalParts: []
+                finalParts: [],
+                peek: false
             });
         }
     }
@@ -646,14 +665,16 @@ var setupTiles = () => {
         isRevealed: false,
         sandCount: 0,
         type: "launchpad",
-        finalParts: []
+        finalParts: [],
+        peek: false
     })
     shuffle(tiles);
     tiles.splice(12, 0, {
         isRevealed: false,
         sandCount: 0,
         type: "storm",
-        finalParts: []
+        finalParts: [],
+        peek: false
     });
 
     //setup sand

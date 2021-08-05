@@ -14,6 +14,9 @@ export class ForbiddenDesertBoard extends React.Component {
         jetPacking: false,
         jetPackingPlayerID: -1,
         jetPackingInventoryID: -1,
+        terrascoping: false,
+        terrascopingPlayerID: -1,
+        terrascopingInventoryID: -1,
         excavateErrorMsg: '',
         mitigateErrorMsg: '',
         carryErrorMsg: '',
@@ -66,6 +69,15 @@ export class ForbiddenDesertBoard extends React.Component {
                     jetPackingInventoryID: -1
                 });
             }
+        }
+        else if (this.state.terrascoping) {
+            currentPlayerID = this.state.terrascopingPlayerID;
+            this.props.moves.terrascope(currentPlayerID, this.state.terrascopingInventoryID, id);
+            this.setState({
+                terrascoping: false,
+                terrascopingPlayerID: -1,
+                terrascopingInventoryID: -1
+            });
         }
         else {
             this.props.G.isNavigating ? currentPlayerID = this.props.G.navigatingID : currentPlayerID = this.props.ctx.currentPlayer;
@@ -174,6 +186,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.setState({
                     digging: false,
                     jetPacking: false,
+                    terrascoping: false,
                     duneBlasting: false,
                     duneBlastingPlayerID: -1,
                     duneBlastingInventoryID: -1
@@ -183,6 +196,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.setState({
                     digging: false,
                     jetPacking: false,
+                    terrascoping: false,
                     duneBlasting: true,
                     duneBlastingPlayerID: playerID,
                     duneBlastingInventoryID: equipmentIndex
@@ -195,6 +209,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.setState({
                     digging: false,
                     duneBlasting: false,
+                    terrascoping: false,
                     jetPacking: false,
                     jetPackingPlayerID: -1,
                     jetPackingInventoryID: -1
@@ -208,6 +223,7 @@ export class ForbiddenDesertBoard extends React.Component {
                 this.setState({
                     digging: false,
                     duneBlasting: false,
+                    terrascoping: false,
                     jetPacking: true,
                     jetPackingPlayerID: playerID,
                     jetPackingInventoryID: equipmentIndex
@@ -219,7 +235,27 @@ export class ForbiddenDesertBoard extends React.Component {
 
         }
         else if (equipmentName === "Terrascope") {
-
+            if (playerID === this.state.terrascopingPlayerID) {
+                this.setState({
+                    digging: false,
+                    duneBlasting: false,
+                    jetPacking: false,
+                    terrascoping: false,
+                    terrascopingPlayerID: -1,
+                    terrascopingInventoryID: -1
+                });
+            }
+            else {
+                this.setState({
+                    digging: false,
+                    duneBlasting: false,
+                    jetPacking: false,
+                    terrascoping: true,
+                    terrascopingPlayerID: playerID,
+                    terrascopingInventoryID: equipmentIndex
+                });
+            }
+            //the actual move happens in onClickTile
         }
         else if (equipmentName === "Secret Water Reserve") {
 
@@ -304,7 +340,12 @@ export class ForbiddenDesertBoard extends React.Component {
         return check1 && check2;
     }
     endTurn() {
-        this.setState({ digging: false, duneBlasting: false, jetPacking: false });
+        this.setState({
+            digging: false,
+            duneBlasting: false,
+            jetPacking: false,
+            terrascoping: false,
+        });
         this.props.events.endTurn();
     }
 
@@ -535,8 +576,12 @@ export class ForbiddenDesertBoard extends React.Component {
                     }
                     //render unrevealed backgrounds (set by className CSS)
                     if (this.props.G.tiles[id].isRevealed === false) {
-                        row.push(<td key={id} className={(this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
-                            "unrevealed-water" : "unrevealed") + idToStateClass[id]} onClick={() => this.onClickTile(id)}>{tile}</td>);
+                        var classN = (this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
+                            "unrevealed-water" : "unrevealed") + idToStateClass[id];
+                        if (this.props.G.tiles[id].hasOwnProperty("peek") && this.props.G.tiles[id].peek === true) {
+                            classN = classN + " grayscale";
+                        }
+                        row.push(<td key={id} className={classN} onClick={() => this.onClickTile(id)}>{tile}</td>);
                     }
                     //render clue tile (assign the right className)
                     else if (this.props.G.tiles[id].type === "clue") {
@@ -606,7 +651,14 @@ export class ForbiddenDesertBoard extends React.Component {
         if (!this.props.G.isNavigating) {
             actionButtons.push(
                 <div>
-                    <button accessKey="d" onClick={() => { this.setState({ digging: !this.state.digging, duneBlasting: false, jetPacking: false }); }}>
+                    <button accessKey="d" onClick={() => {
+                        this.setState({
+                            digging: !this.state.digging,
+                            duneBlasting: false,
+                            jetPacking: false,
+                            terrascoping: false
+                        });
+                    }}>
                         Dig (1)
                     </button>
                     <button accessKey="x" onClick={() => { this.excavate(); }}>
@@ -849,6 +901,44 @@ export class ForbiddenDesertBoard extends React.Component {
                 <div className="red">
                     <p></p>
                     ==Choose a tile to use Jetpack to.==
+                </div>
+            )
+        }
+        if (this.state.terrascoping) {
+            rightbar.push(
+                <div className="red">
+                    <p></p>
+                    ==Choose a tile to peak.==
+                </div>
+            )
+        }
+
+        //show tiles that are peeked, if any
+        var peekedTiles = []
+        for (var i = 0; i < this.props.G.tiles.length; i++) {
+            if (this.props.G.tiles[i].peek === true) {
+                if (this.props.G.tiles[i].type !== "clue") {
+                    peekedTiles.push(this.props.G.tiles[i].type);
+                }
+                else {
+                    var partLetter = this.props.G.tiles[i].part;
+                    var color;
+                    if (partLetter === "A") color = "red";
+                    if (partLetter === "B") color = "green";
+                    if (partLetter === "C") color = "blue";
+                    if (partLetter === "D") color = "purple";
+                    var pos;
+                    if (this.props.G.tiles[i].pos === "h") pos = "horizontal";
+                    if (this.props.G.tiles[i].pos === "v") pos = "vertical";
+                    peekedTiles.push("clue - " + partLetter + " (" + color + ") - " + pos);
+                }
+            }
+        }
+        if (peekedTiles.length > 0) {
+            rightbar.push(
+                <div>
+                    <p></p>
+                    Peeked tiles: {peekedTiles.join(", ")}
                 </div>
             )
         }
