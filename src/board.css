@@ -23,6 +23,10 @@ td {
 
 .unrevealed-water {background-image: url("img/back-water.png");}
 
+.unrevealed-peeked {background-image: url("img/back-peeked.png");}
+
+.unrevealed-water-peeked {background-image: url("img/back-water-peeked.png");}
+
 .well {background-image: url("img/well.png");}
 
 .tunnel {background-image: url("img/tunnel.png");}
@@ -77,8 +81,6 @@ td {
 .blue {color: #5385f9;}
 
 .purple {color: #C638C6;}
-
-.grayscale {filter: grayscale(50%);}
 
 .infobar {
     margin-left: 10px;

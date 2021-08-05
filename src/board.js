@@ -577,10 +577,11 @@ export class ForbiddenDesertBoard extends React.Component {
                     //render unrevealed backgrounds (set by className CSS)
                     if (this.props.G.tiles[id].isRevealed === false) {
                         var classN = (this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
-                            "unrevealed-water" : "unrevealed") + idToStateClass[id];
+                            "unrevealed-water" : "unrevealed");
                         if (this.props.G.tiles[id].hasOwnProperty("peek") && this.props.G.tiles[id].peek === true) {
-                            classN = classN + " grayscale";
+                            classN = classN + "-peeked";
                         }
+                        classN = classN + idToStateClass[id];
                         row.push(<td key={id} className={classN} onClick={() => this.onClickTile(id)}>{tile}</td>);
                     }
                     //render clue tile (assign the right className)
