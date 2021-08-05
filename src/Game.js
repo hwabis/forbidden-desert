@@ -207,6 +207,14 @@ export const ForbiddenDesert = {
             },
             undoable: false
         },
+        solarShield: {
+            move: (G, ctx, playerID, equipmentIndex, targetTileID) => {
+                G.players[playerID].solarShielding = true;
+                //remove item
+                G.players[playerID].equipment.splice(equipmentIndex, 1);
+            },
+            undoable: false
+        },
         setPlayerInfo: {
             move: (G, ctx, id, role) => {
                 //free move
@@ -270,7 +278,10 @@ export const ForbiddenDesert = {
         },
         giveTerrascope: (G, ctx, playerID) => {
             G.players[playerID].equipment.push("Terrascope");
-        }
+        },
+        giveSolarShield: (G, ctx, playerID) => {
+            G.players[playerID].equipment.push("Solar Shield");
+        },
     },
 
     turn: {
@@ -309,6 +320,8 @@ export const ForbiddenDesert = {
         onBegin: (G, ctx) => {
             G.numMoves = 0;
             G.turnEnded = false;
+            //remove solarShielding from current player
+            G.players[ctx.currentPlayer].solarShielding = false;
         },
         onEnd: (G, ctx) => {
             if (!G.turnEnded) {
@@ -341,7 +354,15 @@ export const ForbiddenDesert = {
                         }
                         else {
                             for (var i = 0; i < G.players.length; i++) {
-                                if (!(G.tiles[G.players[i].position].type === "tunnel" && G.tiles[G.players[i].position].isRevealed)) {
+                                //first check if player is on a tile with a player with solarShielding
+                                var solarShielded = false;
+                                for (var j = 0; j < G.players.length; j++) {
+                                    if (G.players[j].position === G.players[i].position && G.players[j].solarShielding) {
+                                        solarShielded = true;
+                                    }
+                                }
+                                if (!(G.tiles[G.players[i].position].type === "tunnel" && G.tiles[G.players[i].position].isRevealed)
+                                    && !solarShielded) {
                                     G.players[i].water -= 1;
                                 }
                             }
@@ -593,6 +614,7 @@ var setupPlayers = (numPlayers) => {
             maxWater: 0,
             equipment: [],
             carryingPlayer: -1,
+            solarShielding: false,
         });
     }
     return players;

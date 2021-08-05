@@ -112,8 +112,12 @@ ul {
     border: 2px cyan solid;
 }
 
-.item-select{
+.item-select {
     border: 2px yellow solid;
+}
+
+.shielded {
+    filter: grayscale(100%) brightness(80%) sepia(100%) hue-rotate(-120deg) saturate(600%) contrast(0.8);
 }
 
 .small-button {

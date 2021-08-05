@@ -234,7 +234,9 @@ export class ForbiddenDesertBoard extends React.Component {
             //the actual move happens in onClickTile
         }
         else if (equipmentName === "Solar Shield") {
-
+            //apparently solar shields move with the player
+            //https://boardgamegeek.com/thread/1346173/solar-shield-clarification
+            this.props.moves.solarShield(playerID, equipmentIndex);
         }
         else if (equipmentName === "Terrascope") {
             if (playerID === this.state.terrascopingPlayerID) {
@@ -541,12 +543,21 @@ export class ForbiddenDesertBoard extends React.Component {
                     }
                 })
                 .map((currentClass, tileID, _) => {
-                    if (this.state.terrascoping && !this.props.G.tiles[tileID].isRevealed 
+                    if (this.state.terrascoping && !this.props.G.tiles[tileID].isRevealed
                         && !this.props.G.tiles[tileID].peek && !this.props.ctx.gameover) {
                         return `${currentClass} item-select`
                     } else {
                         return `${currentClass}`;
                     }
+                })
+                .map((currentClass, tileID, _) => {
+                    //find all players on current tile, and whether they are solarShielding
+                    for (var i = 0; i < this.props.G.players.length; i++) {
+                        if (this.props.G.players[i].position === tileID && this.props.G.players[i].solarShielding) {
+                            return `${currentClass} shielded`
+                        }
+                    }
+                    return `${currentClass}`;
                 })
 
         var tiles = [];
@@ -584,11 +595,12 @@ export class ForbiddenDesertBoard extends React.Component {
                     if (this.props.G.tiles[id].finalParts.length > 0) {
                         tile.push(<div className="final-part">Parts: {this.props.G.tiles[id].finalParts}</div>)
                     }
+
                     //render unrevealed backgrounds (set by className CSS)
                     if (this.props.G.tiles[id].isRevealed === false) {
                         var classN = (this.props.G.tiles[id].type === "well" || this.props.G.tiles[id].type === "mirage" ?
                             "unrevealed-water" : "unrevealed");
-                        if (this.props.G.tiles[id].hasOwnProperty("peek") && this.props.G.tiles[id].peek === true) {
+                        if (this.props.G.tiles[id].peek === true) {
                             classN = classN + "-peeked";
                         }
                         classN = classN + idToStateClass[id];
